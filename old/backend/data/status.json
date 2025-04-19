@@ -1,0 +1,14 @@
+{
+  "monitor_files": {
+    "Status": "Stopped"
+  },
+  "monitor_folders": {
+    "Status": "Stopped"
+  },
+  "monitor_ips": {
+    "Status": "Stopped"
+  },
+  "alerts": {
+    "Status": "Stopped"
+  }
+}

@@ -1,0 +1,27 @@
+{
+    "folders": [
+        "C:\\Users\\tapso\\OneDrive\\Documents\\Presentation"
+    ],
+    "ips": [
+        "8.8.8.8",
+        "20.198.162.76",
+        "127.0.0.1",
+        "192.168.1.1"
+    ],
+    "interval": 10,
+    "files": [
+        "C:\\Users\\tapso\\OneDrive\\Documents\\resuktat.txt",
+        "C:\\Users\\tapso\\OneDrive\\Documents\\Nouveau Document texte.txt"
+    ],
+    "email": {
+        "smtpServer": "smtp.office365.com",
+        "smtpPort": 587,
+        "recipients": [
+            "sunnoogo-caleb.tapsoba@efrei.net",
+            "tapsobascaleb@icloud.com",
+            "sunnoogo@gmail.com",
+            "tapsobascaleb@iclou1d.com"
+        ],
+        "interval": 3660
+    }
+}
