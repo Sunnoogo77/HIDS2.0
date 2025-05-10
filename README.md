@@ -73,5 +73,3 @@ docker-compose up --build
 ## 📝 License
 
 MIT © 2025 Ton Nom
-
-```
