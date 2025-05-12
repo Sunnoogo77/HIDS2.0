@@ -1,0 +1,81 @@
+hids_web/
+├── app/
+│   ├── main.py              # FastAPI() instantiation & router include
+│   ├── core/                # app-wide config & utilities
+│   │   ├── config.py        # Settings (pydantic BaseSettings)
+│   │   ├── security.py      # JWT handling, password hashing
+│   │   └── __init__.py
+│   │
+│   ├── db/                  # Database setup
+│   │   ├── session.py       # SessionLocal / engine
+│   │   └── base.py          # Base class for ORM / models
+│   │
+│   ├── models/              # Pydantic & (optionally) ORM models
+│   │   ├── user.py
+│   │   ├── monitored_item.py
+│   │   ├── alert.py
+│   │   └── report.py
+│   │
+│   ├── services/            # Pure-Python business logic
+│   │   ├── auth_service.py
+│   │   ├── user_service.py
+│   │   ├── monitoring_service.py
+│   │   ├── alert_service.py
+│   │   └── report_service.py
+│   │
+│   └── api/                 # FastAPI routers (HTTP layer)
+│       ├── auth.py          # /auth/login, /auth/logout
+│       ├── users.py         # /users CRUD
+│       ├── monitoring.py    # /monitoring/files, /monitoring/ips
+│       ├── alerts.py        # /alerts, /alerts/by-type, /alerts/over-time
+│       ├── reports.py       # /reports, /reports/{id}/download/view/email
+│       ├── integrations.py  # /integrations, /integrations/virustotal
+│       ├── webhooks.py      # /webhooks CRUD
+│       └── config.py        # /config/access, /updates, /updates/check
+│
+├── task_worker.py          # Celery/RQ worker entrypoint
+├── Dockerfile
+├── docker-compose.yml
+└── requirements.txt
+
+
+
+
+
+
+hids-web/
+├── backend/                            # All server-side code
+│   ├── app/
+│   │   ├── main.py                     # FastAPI app factory & router includes
+│   │   ├── core/                       # config, security, CORS, settings
+│   │   ├── db/                         # DB session / ORM base
+│   │   ├── models/                     # Pydantic & (optionally) ORM models
+│   │   ├── services/                   # Business logic (scan, alerts, reports…)
+│   │   └── api/                        # FastAPI routers (auth, users, monitoring…)
+│   ├── requirements.txt
+│   ├── Dockerfile
+│   └── task_worker.py                  # Celery / background worker entrypoint
+│
+├── frontend/                           # All client-side code (React/Vue/etc.)
+│   ├── public/                         # static assets & index.html
+│   ├── src/
+│   │   ├── components/                 # reusable UI components
+│   │   ├── pages/                      # Dashboard, Surveillance, Alerts, etc.
+│   │   ├── services/                   # API client wrappers
+│   │   ├── App.jsx (or .tsx)
+│   │   └── index.jsx
+│   ├── package.json
+│   ├── tailwind.config.js              # if you use Tailwind
+│   └── vite.config.js (or webpack)
+│
+├── models.json                         # JSON Schemas (User, MonitoredItem, Alert, Report)
+├── routes.json                         # Full API inventory
+├── README.md
+├── docker-compose.yml                  # Brings up frontend + backend + broker + db
+├── inventaire_routes.md                # Your markdown inventory
+└── Visuel_anticipe/                    # mockup images
+    ├── dashboard.png
+    ├── Alerts&Logs.png
+    ├── Surveillance_files_folders.png
+    ├── Surveillance_ip.png
+    └── Settings.png

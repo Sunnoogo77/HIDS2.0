@@ -1,0 +1,168 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "definitions": {
+      "User": {
+        "type": "object",
+        "required": ["id", "email", "role", "status"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the user"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "User's email address"
+          },
+          "role": {
+            "type": "string",
+            "enum": ["admin", "user"],
+            "description": "Role assigned to the user"
+          },
+          "password_hash": {
+            "type": "string",
+            "description": "Password hash (storage only)"
+          },
+          "last_login": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp of the user's last login"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["active", "inactive"],
+            "description": "Account status"
+          }
+        },
+        "additionalProperties": false
+      },
+  
+      "MonitoredItem": {
+        "type": "object",
+        "required": ["id", "type", "path_or_ip", "frequency", "status"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for this monitored item"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["file", "folder", "ip"],
+            "description": "Type of the monitored entity"
+          },
+          "path_or_ip": {
+            "type": "string",
+            "description": "Filesystem path or IP address"
+          },
+          "frequency": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Scan frequency in seconds"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["active", "paused"],
+            "description": "Monitoring status"
+          },
+          "last_scan": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp of the last scan"
+          }
+        },
+        "additionalProperties": false
+      },
+  
+      "Alert": {
+        "type": "object",
+        "required": ["id", "timestamp", "source", "severity", "details"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique identifier for the alert"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "When the alert was generated"
+          },
+          "source": {
+            "type": "string",
+            "enum": ["hash", "network"],
+            "description": "Alert origin (file-hash change or network event)"
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["low", "medium", "high", "critical"],
+            "description": "Severity level of the alert"
+          },
+          "details": {
+            "type": "object",
+            "description": "Additional data specific to the alert",
+            "properties": {
+              "path": { "type": "string", "description": "Affected path" },
+              "old_hash": { "type": "string", "description": "Previous hash value" },
+              "new_hash": { "type": "string", "description": "Updated hash value" },
+              "ip": { "type": "string", "description": "Involved IP address" },
+              "message": { "type": "string", "description": "Free-form alert message" }
+            },
+            "additionalProperties": true
+          }
+        },
+        "additionalProperties": false
+      },
+  
+      "Report": {
+        "type": "object",
+        "required": ["id", "type", "date_generated", "json_url"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Unique report identifier"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["summary", "detailed"],
+            "description": "Report format requested"
+          },
+          "date_generated": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Timestamp when the report was generated"
+          },
+          "json_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL to retrieve the report JSON"
+          },
+          "html_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Webview URL for the HTML report",
+            "nullable": true
+          },
+          "pdf_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Download URL for the PDF report",
+            "nullable": true
+          },
+          "emailed_to": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "email"
+            },
+            "description": "List of email addresses the report was sent to",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+  

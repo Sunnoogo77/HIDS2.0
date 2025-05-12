@@ -1,362 +1,391 @@
 {
-    "auth": [
-      {
-        "method": "POST",
-        "path": "/auth/login",
-        "description": "Connexion (renvoie JWT)",
-        "body": {
-          "email": "string",
-          "password": "string"
-        }
-      },
-      {
-        "method": "POST",
-        "path": "/auth/logout",
-        "description": "Déconnexion (invalidate token)",
-        "body": null
+  "auth": [
+    {
+      "method": "POST",
+      "path": "/auth/login",
+      "description": "Login (returns JWT)",
+      "body": {
+        "email": "string",
+        "password": "string"
       }
-    ],
-  
-    "users": [
-      {
-        "method": "GET",
-        "path": "/users",
-        "description": "Lister tous les utilisateurs (admin only)",
-        "query": null
-      },
-      {
-        "method": "GET",
-        "path": "/users/{userId}",
-        "description": "Détails d’un utilisateur",
-        "pathParams": {
-          "userId": "string"
-        }
-      },
-      {
-        "method": "POST",
-        "path": "/users",
-        "description": "Créer un utilisateur (admin)",
-        "body": {
-          "email": "string",
-          "password": "string",
-          "role": "admin | user"
-        }
-      },
-      {
-        "method": "PUT",
-        "path": "/users/{userId}",
-        "description": "Modifier rôle ou statut (admin)",
-        "pathParams": {
-          "userId": "string"
-        },
-        "body": {
-          "role?": "string",
-          "status?": "active | inactive"
-        }
-      },
-      {
-        "method": "PUT",
-        "path": "/users/{userId}/password",
-        "description": "Changer mot de passe",
-        "pathParams": {
-          "userId": "string"
-        },
-        "body": {
-          "new_password": "string"
-        }
-      },
-      {
-        "method": "DELETE",
-        "path": "/users/{userId}",
-        "description": "Supprimer un utilisateur (admin)",
-        "pathParams": {
-          "userId": "string"
-        }
+    },
+    {
+      "method": "POST",
+      "path": "/auth/logout",
+      "description": "Logout (invalidate token)",
+      "body": null
+    }
+  ],
+
+  "users": [
+    {
+      "method": "GET",
+      "path": "/users",
+      "description": "List all users (admin only)",
+      "query": null
+    },
+    {
+      "method": "GET",
+      "path": "/users/{userId}",
+      "description": "Get user details",
+      "pathParams": {
+        "userId": "string"
       }
-    ],
-  
-    "status": [
-      {
-        "method": "GET",
-        "path": "/status",
-        "description": "État global du HIDS Engine et des sous-moteurs",
-        "response": {
-          "engine": "running | stopped",
-          "file": "active | paused",
-          "folder": "active | paused",
-          "ip": "active | paused"
-        }
+    },
+    {
+      "method": "POST",
+      "path": "/users",
+      "description": "Create a new user (admin only)",
+      "body": {
+        "email": "string",
+        "password": "string",
+        "role": "admin | user"
       }
-    ],
-  
-    "metrics": [
-      {
-        "method": "GET",
-        "path": "/metrics/entities",
-        "description": "Nombre total d’éléments surveillés"
+    },
+    {
+      "method": "PUT",
+      "path": "/users/{userId}",
+      "description": "Update user role or status (admin only)",
+      "pathParams": {
+        "userId": "string"
       },
-      {
-        "method": "GET",
-        "path": "/metrics/alerts/active",
-        "description": "Nombre d’alertes actives"
-      },
-      {
-        "method": "GET",
-        "path": "/metrics/alerts/latest",
-        "description": "Détails de la dernière alerte"
-      },
-      {
-        "method": "GET",
-        "path": "/metrics/scans/next",
-        "description": "Délai ou timestamp du prochain scan"
+      "body": {
+        "role?": "string",
+        "status?": "active | inactive"
       }
-    ],
-  
-    "activity": [
-      {
-        "method": "GET",
-        "path": "/activity",
-        "description": "Flux d’événements récents",
-        "query": {
-          "limit?": "number",
-          "since?": "ISO8601 timestamp"
-        }
+    },
+    {
+      "method": "PUT",
+      "path": "/users/{userId}/password",
+      "description": "Change user password",
+      "pathParams": {
+        "userId": "string"
+      },
+      "body": {
+        "new_password": "string"
       }
-    ],
-  
-    "alerts": [
-      {
-        "method": "GET",
-        "path": "/alerts/by-type",
-        "description": "Données pour histogramme “Alerts by Type”",
-        "query": {
-          "from?": "ISO8601",
-          "to?": "ISO8601"
-        }
-      },
-      {
-        "method": "GET",
-        "path": "/alerts/over-time",
-        "description": "Série temporelle des alertes",
-        "query": {
-          "from?": "ISO8601",
-          "to?": "ISO8601",
-          "interval?": "hour | day"
-        }
-      },
-      {
-        "method": "GET",
-        "path": "/alerts",
-        "description": "Lister et filtrer les alertes",
-        "query": {
-          "from?": "ISO8601",
-          "to?": "ISO8601",
-          "type?": "hash | network",
-          "entityType?": "file | folder | ip",
-          "severity?": "low | medium | high | critical",
-          "page?": "number",
-          "pageSize?": "number"
-        }
-      },
-      {
-        "method": "GET",
-        "path": "/alerts/{alertId}",
-        "description": "Détails d’une alerte",
-        "pathParams": {
-          "alertId": "string"
-        }
+    },
+    {
+      "method": "DELETE",
+      "path": "/users/{userId}",
+      "description": "Delete a user (admin only)",
+      "pathParams": {
+        "userId": "string"
       }
-    ],
-  
-    "logs": [
-      {
-        "method": "GET",
-        "path": "/logs",
-        "description": "Lister et filtrer tous les logs",
-        "query": {
-          "from?": "ISO8601",
-          "to?": "ISO8601",
-          "source?": "hash | network",
-          "page?": "number",
-          "pageSize?": "number"
-        }
-      },
-      {
-        "method": "GET",
-        "path": "/logs/export",
-        "description": "Exporter logs filtrés (CSV/JSON)",
-        "query": {
-          "same as /logs": "…"
-        }
+    }
+  ],
+
+  "status": [
+    {
+      "method": "GET",
+      "path": "/status",
+      "description": "Get global status of HIDS engine and sub-engines",
+      "response": {
+        "engine": "running | stopped",
+        "file": "active | paused",
+        "folder": "active | paused",
+        "ip": "active | paused"
       }
-    ],
-  
-    "monitoring": [
-      {
-        "method": "GET",
-        "path": "/monitoring/files",
-        "description": "Lister fichiers surveillés"
-      },
-      {
-        "method": "POST",
-        "path": "/monitoring/files",
-        "description": "Ajouter un fichier à surveiller",
-        "body": {
-          "path": "string",
-          "frequency": "number"
-        }
-      },
-      {
-        "method": "PUT",
-        "path": "/monitoring/files/{fileId}",
-        "description": "Mettre à jour un fichier",
-        "pathParams": {
-          "fileId": "string"
-        },
-        "body": {
-          "frequency?": "number",
-          "status?": "active | paused"
-        }
-      },
-      {
-        "method": "DELETE",
-        "path": "/monitoring/files/{fileId}",
-        "description": "Supprimer un fichier surveillé"
-      },
-      {
-        "method": "GET",
-        "path": "/monitoring/ips",
-        "description": "Lister IPs surveillées"
-      },
-      {
-        "method": "POST",
-        "path": "/monitoring/ips",
-        "description": "Ajouter une IP à surveiller",
-        "body": {
-          "ip": "string",
-          "hostname?": "string",
-          "frequency": "number"
-        }
-      },
-      {
-        "method": "PUT",
-        "path": "/monitoring/ips/{ipId}",
-        "description": "Mettre à jour une IP",
-        "pathParams": {
-          "ipId": "string"
-        },
-        "body": {
-          "frequency?": "number",
-          "status?": "active | paused"
-        }
-      },
-      {
-        "method": "DELETE",
-        "path": "/monitoring/ips/{ipId}",
-        "description": "Supprimer une IP surveillée"
+    }
+  ],
+
+  "metrics": [
+    {
+      "method": "GET",
+      "path": "/metrics/entities",
+      "description": "Get total number of monitored entities"
+    },
+    {
+      "method": "GET",
+      "path": "/metrics/alerts/active",
+      "description": "Get count of active alerts"
+    },
+    {
+      "method": "GET",
+      "path": "/metrics/alerts/latest",
+      "description": "Get details of the latest alert"
+    },
+    {
+      "method": "GET",
+      "path": "/metrics/scans/next",
+      "description": "Get timestamp or delay until the next scheduled scan"
+    }
+  ],
+
+  "activity": [
+    {
+      "method": "GET",
+      "path": "/activity",
+      "description": "Fetch recent activity events",
+      "query": {
+        "limit?": "number",
+        "since?": "ISO8601 timestamp"
       }
-    ],
-  
-    "reports": [
-      {
-        "method": "POST",
-        "path": "/reports",
-        "description": "Générer un rapport",
-        "body": {
-          "type": "summary | detailed",
-          "from": "ISO8601",
-          "to": "ISO8601"
-        }
-      },
-      {
-        "method": "GET",
-        "path": "/reports",
-        "description": "Lister rapports existants",
-        "query": {
-          "page?": "number",
-          "pageSize?": "number"
-        }
-      },
-      {
-        "method": "GET",
-        "path": "/reports/{reportId}/download",
-        "description": "Télécharger un rapport",
-        "pathParams": {
-          "reportId": "string"
-        }
+    }
+  ],
+
+  "alerts": [
+    {
+      "method": "GET",
+      "path": "/alerts/by-type",
+      "description": "Get data for 'Alerts by Type' histogram",
+      "query": {
+        "from?": "ISO8601",
+        "to?": "ISO8601"
       }
-    ],
-  
-    "integrations": [
-      {
-        "method": "GET",
-        "path": "/integrations",
-        "description": "Voir clés API et webhooks"
-      },
-      {
-        "method": "PUT",
-        "path": "/integrations/virustotal",
-        "description": "Enregistrer clé VirusTotal",
-        "body": {
-          "apiKey": "string"
-        }
+    },
+    {
+      "method": "GET",
+      "path": "/alerts/over-time",
+      "description": "Get time-series data of alerts",
+      "query": {
+        "from?": "ISO8601",
+        "to?": "ISO8601",
+        "interval?": "hour | day"
       }
-    ],
-  
-    "webhooks": [
-      {
-        "method": "POST",
-        "path": "/webhooks",
-        "description": "Ajouter un webhook",
-        "body": {
-          "url": "string",
-          "active": "boolean"
-        }
-      },
-      {
-        "method": "PUT",
-        "path": "/webhooks/{webhookId}",
-        "description": "Modifier un webhook",
-        "pathParams": {
-          "webhookId": "string"
-        },
-        "body": {
-          "url?": "string",
-          "active?": "boolean"
-        }
-      },
-      {
-        "method": "DELETE",
-        "path": "/webhooks/{webhookId}",
-        "description": "Supprimer un webhook"
+    },
+    {
+      "method": "GET",
+      "path": "/alerts",
+      "description": "List and filter alerts",
+      "query": {
+        "from?": "ISO8601",
+        "to?": "ISO8601",
+        "type?": "hash | network",
+        "entityType?": "file | folder | ip",
+        "severity?": "low | medium | high | critical",
+        "page?": "number",
+        "pageSize?": "number"
       }
-    ],
-  
-    "config": [
-      {
-        "method": "GET",
-        "path": "/config/access",
-        "description": "Voir restrictions admin-only"
-      },
-      {
-        "method": "PUT",
-        "path": "/config/access",
-        "description": "Mettre à jour toggles d’accès",
-        "body": {
-          "reportsAdminOnly": "boolean",
-          "settingsAdminOnly": "boolean"
-        }
-      },
-      {
-        "method": "GET",
-        "path": "/updates",
-        "description": "Version actuelle de l’app"
-      },
-      {
-        "method": "POST",
-        "path": "/updates/check",
-        "description": "Forcer recherche de nouvelle version"
+    },
+    {
+      "method": "GET",
+      "path": "/alerts/{alertId}",
+      "description": "Get details of a specific alert",
+      "pathParams": {
+        "alertId": "string"
       }
-    ]
-  }
-  
+    }
+  ],
+
+  "logs": [
+    {
+      "method": "GET",
+      "path": "/logs",
+      "description": "List and filter all logs",
+      "query": {
+        "from?": "ISO8601",
+        "to?": "ISO8601",
+        "source?": "hash | network",
+        "page?": "number",
+        "pageSize?": "number"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/logs/export",
+      "description": "Export filtered logs (CSV/JSON)",
+      "query": {
+        "same as /logs": "…"
+      }
+    }
+  ],
+
+  "monitoring": [
+    {
+      "method": "GET",
+      "path": "/monitoring/files",
+      "description": "List monitored files"
+    },
+    {
+      "method": "POST",
+      "path": "/monitoring/files",
+      "description": "Add a file to monitoring",
+      "body": {
+        "path": "string",
+        "frequency": "number"
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/monitoring/files/{fileId}",
+      "description": "Update monitored file settings",
+      "pathParams": {
+        "fileId": "string"
+      },
+      "body": {
+        "frequency?": "number",
+        "status?": "active | paused"
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/monitoring/files/{fileId}",
+      "description": "Remove a file from monitoring"
+    },
+    {
+      "method": "GET",
+      "path": "/monitoring/ips",
+      "description": "List monitored IPs"
+    },
+    {
+      "method": "POST",
+      "path": "/monitoring/ips",
+      "description": "Add an IP to monitoring",
+      "body": {
+        "ip": "string",
+        "hostname?": "string",
+        "frequency": "number"
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/monitoring/ips/{ipId}",
+      "description": "Update monitored IP settings",
+      "pathParams": {
+        "ipId": "string"
+      },
+      "body": {
+        "frequency?": "number",
+        "status?": "active | paused"
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/monitoring/ips/{ipId}",
+      "description": "Remove an IP from monitoring"
+    }
+  ],
+
+  "reports": [
+    {
+      "method": "POST",
+      "path": "/reports",
+      "description": "Generate a new report",
+      "body": {
+        "type": "summary | detailed",
+        "from": "ISO8601",
+        "to": "ISO8601"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/reports",
+      "description": "List existing reports",
+      "query": {
+        "page?": "number",
+        "pageSize?": "number"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/reports/{reportId}",
+      "description": "Get report metadata and URLs (JSON, HTML, PDF)",
+      "pathParams": {
+        "reportId": "string"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/reports/{reportId}/download",
+      "description": "Download the PDF version of the report",
+      "pathParams": {
+        "reportId": "string"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/reports/{reportId}/view",
+      "description": "Render the report as HTML in browser",
+      "pathParams": {
+        "reportId": "string"
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/reports/{reportId}/email",
+      "description": "Send the report via email",
+      "pathParams": {
+        "reportId": "string"
+      },
+      "body": {
+        "to": ["string"]
+      }
+    }
+  ],
+
+  "integrations": [
+    {
+      "method": "GET",
+      "path": "/integrations",
+      "description": "View API keys and webhooks configuration"
+    },
+    {
+      "method": "PUT",
+      "path": "/integrations/virustotal",
+      "description": "Save VirusTotal API key",
+      "body": {
+        "apiKey": "string"
+      }
+    }
+  ],
+
+  "webhooks": [
+    {
+      "method": "POST",
+      "path": "/webhooks",
+      "description": "Create a new webhook",
+      "body": {
+        "url": "string",
+        "active": "boolean"
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/webhooks/{webhookId}",
+      "description": "Update an existing webhook",
+      "pathParams": {
+        "webhookId": "string"
+      },
+      "body": {
+        "url?": "string",
+        "active?": "boolean"
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/webhooks/{webhookId}",
+      "description": "Delete a webhook",
+      "pathParams": {
+        "webhookId": "string"
+      }
+    }
+  ],
+
+  "config": [
+    {
+      "method": "GET",
+      "path": "/config/access",
+      "description": "Get admin-only access settings"
+    },
+    {
+      "method": "PUT",
+      "path": "/config/access",
+      "description": "Update admin-only access toggles",
+      "body": {
+        "reportsAdminOnly": "boolean",
+        "settingsAdminOnly": "boolean"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/updates",
+      "description": "Get current application version"
+    },
+    {
+      "method": "POST",
+      "path": "/updates/check",
+      "description": "Trigger a check for new application version"
+    }
+  ]
+}

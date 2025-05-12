@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  api:
+    build:
+      context: ./backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/logs:/app/logs
+      - ./backend/data:/app/data
+      - ./backend/app:/app/app
+    ports:
+      - "8000:8000"
+  #    - ./data:/app/data
+  # when you add a frontend:
+  # web:
+  #   build: ./frontend
+  #   ports: ["3000:3000"]
