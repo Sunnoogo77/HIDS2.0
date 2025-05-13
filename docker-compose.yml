@@ -1,18 +1,14 @@
-version: '3.8'
 services:
   api:
-    build:
-      context: ./backend
-    ports:
-      - "8000:8000"
+    build: ./backend
+    env_file:
+      - ./.env
     volumes:
-      - ./backend/logs:/app/logs
-      - ./backend/data:/app/data
+      - ./data:/app/data
+      - ./logs:/app/logs
       - ./backend/app:/app/app
     ports:
       - "8000:8000"
-  #    - ./data:/app/data
-  # when you add a frontend:
-  # web:
-  #   build: ./frontend
-  #   ports: ["3000:3000"]
+
+
+  # future front-end or other services go here...

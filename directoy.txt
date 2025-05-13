@@ -79,3 +79,167 @@ hids-web/
     ├── Surveillance_files_folders.png
     ├── Surveillance_ip.png
     └── Settings.png
+
+
+
+📑 Phase 0 – Project & Environment Setup
+Goal: Have a reproducible containerized environment and skeleton repo.
+
+Tasks:
+
+Standardize directory layout (as we sketched: app/, core/, db/, models/, services/, api/).
+
+Place backend/Dockerfile and move docker-compose.yml to repo root.
+
+Create empty data/ and logs/ folders; add to .gitignore if needed.
+
+Tests:
+
+docker-compose up --build starts without errors.
+
+curl http://localhost:8000/docs returns the Swagger UI (even if empty).
+
+🛠 Phase 1 – Core Infrastructure
+Goal: Wire in configuration, database connection, logging, and settings.
+
+Config:
+
+core/config.py loads environment vars (DB path, JWT secret, log level).
+
+Database:
+
+db/session.py sets up SQLAlchemy with SQLite (sqlite:///./data/hids.db).
+
+Create a simple Base model and run a “create_all()” on startup.
+
+Logging:
+
+Configure Python logging to write to /app/logs/hids.log with INFO level.
+
+Tests:
+
+Start container, inspect that data/hids.db exists.
+
+Write a tiny script or fixture that opens a session and does a simple query on an empty table.
+
+Check that /app/logs/hids.log is created and contains startup log lines.
+
+🔐 Phase 2 – Authentication & Security
+Goal: Implement JWT-based login/logout and password hashing.
+
+Models: Pydantic schemas for AuthLogin and AuthResponse.
+
+Service: auth_service.py with authenticate_user(), create_access_token().
+
+Router: api/auth.py → POST /auth/login, POST /auth/logout.
+
+Tests:
+
+Unit‐test authenticate_user() against a dummy in-memory user.
+
+Integration test via TestClient:
+
+Valid credentials → status 200 + token.
+
+Invalid credentials → status 401.
+
+👤 Phase 3 – User Management
+Goal: CRUD endpoints for users, with admin-only guards.
+
+Models: UserCreate, UserRead, UserUpdate.
+
+Service: user_service.py methods: create_user(), get_user(), list_users(), update_user(), delete_user().
+
+Router: api/users.py → protect with dependency get_current_admin_user().
+
+Tests:
+
+Unit tests for user_service with an in-memory SQLite database.
+
+Integration tests:
+
+Non-admin token cannot call /users → 403.
+
+Admin token can list/create/update/delete.
+
+📂 Phase 4 – Monitoring CRUD
+Goal: Files & IPs endpoints to create, read, update, delete monitored items.
+
+Models: MonitoredItemCreate, MonitoredItemRead, MonitoredItemUpdate.
+
+Service: monitoring_service.py handling DB or JSON‐file persistence.
+
+Router: api/monitoring.py under /monitoring/files and /monitoring/ips.
+
+Tests:
+
+Unit‐test service methods for adding/updating/deleting items.
+
+Integration tests via TestClient: CRUD scenarios and 404 checks.
+
+🚨 Phase 5 – Alerts & Logs Retrieval
+Goal: Expose stored alerts and logs with filtering & pagination.
+
+Models: AlertRead, LogRead.
+
+Service: alert_service.py, log_service.py that read from DB or files.
+
+Router: api/alerts.py, api/logs.py.
+
+Tests:
+
+Seed the DB with test alerts/logs, verify filters (date range, type, severity) work.
+
+Check pagination headers/body.
+
+📊 Phase 6 – Metrics & Status Endpoints
+Goal: Implement /status, /metrics/*, /activity endpoints.
+
+Service: status_service.py to gather engine/file/folder/ip state.
+
+Router: api/status.py, api/metrics.py, api/activity.py.
+
+Tests:
+
+Stub the engine states, assert the JSON matches the schema.
+
+Verify time‐series endpoints return correct intervals.
+
+📝 Phase 7 – Reporting
+Goal: JSON report generation, plus stubs for HTML, PDF, email.
+
+Models: ReportRequest, ReportRead.
+
+Service: report_service.py—for now, produce JSON files under /app/data/reports/{id}.json.
+
+Router: api/reports.py → endpoints: generate, list, metadata, download, view, email.
+
+Tests:
+
+Integration tests: generate a report, then GET metadata, GET JSON, GET download stub.
+
+🔗 Phase 8 – Integrations & Webhooks
+Goal: Expose /integrations and /webhooks for external hooks.
+
+Models: Integration, WebhookCreate, WebhookRead.
+
+Service: integration_service.py, webhook_service.py.
+
+Router: api/integrations.py, api/webhooks.py.
+
+Tests:
+
+CRUD webhooks, toggle active flag, simulate a call to a dummy webhook endpoint.
+
+✅ Phase 9 – End-to-End & CI
+Goal: Wire up pytest + GitHub Actions for automated testing & code quality.
+
+E2E Tests: spin up container, hit /docs, run through key flows (auth → user CRUD → monitoring → alerts → report).
+
+CI Pipeline:
+
+lint (flake8/mypy)
+
+pytest --cov
+
+Build Docker image
