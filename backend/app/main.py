@@ -4,6 +4,7 @@ from app.core.config import settings
 from app.db.base import Base
 from app.db.session import engine
 from app.api.status import router as status_router
+from app.api.auth import router as auth_router
 
 
 logger.info(f"Starting {settings.APP_NAME}... (version: {settings.VERSION})")
@@ -11,7 +12,8 @@ logger.info(f"Starting {settings.APP_NAME}... (version: {settings.VERSION})")
 
 app = FastAPI(
     title=settings.APP_NAME,
-    version="2.0.0",
+    version=settings.VERSION,
+    # version="2.0.0",
     docs_url="/docs",
     redoc_url="/redoc"
 )
@@ -34,3 +36,4 @@ def on_shutdown():
     logger.info("Shutting down application...")
     
 app.include_router(status_router, prefix="/api")
+app.include_router(auth_router, prefix="/api")
