@@ -2,7 +2,7 @@
 from passlib.context import CryptContext
 from app.db.session import SessionLocal
 # Import your ORM User model once defined
-# from app.db.models import User as ORMUser
+from app.db.models import User as ORMUser
 from app.core.security import create_access_token
 from datetime import timedelta
 from typing import Optional
@@ -24,10 +24,10 @@ def authenticate_user(email: str, password: str):
     Replace ORMUser import and logic when your User model is ready.
     """
     db = SessionLocal()
-    # Example placeholder logic, adjust when ORMUser is available:
-    # user = db.query(ORMUser).filter(ORMUser.email == email).first()
-    user = None
+    user = db.query(ORMUser).filter(ORMUser.email == email).first()
+    
     db.close()
+    
     if not user or not verify_password(password, getattr(user, 'password_hash', '')):
         return None
     return user

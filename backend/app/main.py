@@ -5,6 +5,7 @@ from app.db.base import Base
 from app.db.session import engine
 from app.api.status import router as status_router
 from app.api.auth import router as auth_router
+from app.api.users import router as users_router
 
 
 logger.info(f"Starting {settings.APP_NAME}... (version: {settings.VERSION})")
@@ -37,3 +38,4 @@ def on_shutdown():
     
 app.include_router(status_router, prefix="/api")
 app.include_router(auth_router, prefix="/api")
+app.include_router(users_router, prefix="/api")
