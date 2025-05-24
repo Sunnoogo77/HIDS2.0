@@ -11,6 +11,7 @@ def create_user(user_in: UserCreate) -> ORMUser:
         raise ValueError("Email already registered")
 
     db_user = ORMUser(
+        username=user_in.username,
         email=user_in.email,
         password_hash=get_password_hash(user_in.password),
         is_admin=user_in.is_admin,

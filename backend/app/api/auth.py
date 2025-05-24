@@ -11,7 +11,7 @@ def login(form_data: AuthLogin):
     """
     Authenticate user and return JWT token.
     """
-    user = authenticate_user(form_data.email, form_data.password)
+    user = authenticate_user(form_data.username, form_data.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

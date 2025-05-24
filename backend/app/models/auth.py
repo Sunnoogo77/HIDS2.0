@@ -4,7 +4,7 @@ from typing import Optional
 
 
 class AuthLogin(BaseModel):
-    email: EmailStr
+    username: str
     password: str
 
 
@@ -14,4 +14,4 @@ class Token(BaseModel):
 
 
 class TokenData(BaseModel):
-    email: Optional[EmailStr] = None
+    username: Optional[str] = None

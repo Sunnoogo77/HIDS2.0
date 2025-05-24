@@ -18,22 +18,21 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
 
-def authenticate_user(email: str, password: str):
+def authenticate_user(username: str, password: str):
     """
     Stub: query the database for user, verify password.
     Replace ORMUser import and logic when your User model is ready.
     """
     db = SessionLocal()
-    user = db.query(ORMUser).filter(ORMUser.email == email).first()
-    
+    user = db.query(ORMUser).filter(ORMUser.username == username).first()
     db.close()
     
-    if not user or not verify_password(password, getattr(user, 'password_hash', '')):
+    if not user or not verify_password(password, user.password_hash):
         return None
     return user
 
 
 def generate_user_token(user, expires_minutes: Optional[int] = None) -> str:
-    data = {"sub": user.email}
+    data = {"sub": user.username}
     expire_delta = timedelta(minutes=expires_minutes) if expires_minutes else None
     return create_access_token(data=data, expires_delta=expire_delta)
