@@ -1,5 +1,6 @@
 # File: backend/app/api/auth.py
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi.security import OAuth2PasswordRequestForm
 from app.models.auth import AuthLogin, Token
 from app.services.auth_service import authenticate_user, generate_user_token
 
@@ -15,7 +16,7 @@ def login(form_data: AuthLogin):
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password"
+            detail="Incorrect username or password",
         )
     access_token = generate_user_token(user)
     return {"access_token": access_token, "token_type": "bearer"}
