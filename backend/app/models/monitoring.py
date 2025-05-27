@@ -27,14 +27,16 @@ class FolderItemRead(MonitoredItemBase):
     class Config:
         orm_mode = True
 
-class IPItemCreate(BaseModel):
+class IPMonitoredBase(BaseModel):
     ip: str
     hostname: Optional[str]
     frequency: Literal["minutely", "hourly", "daily", "weekly"]
+    status: Optional[Literal["active", "paused"]] = "active"
 
-class IPItemRead(MonitoredItemBase):
+class IPItemCreate(IPMonitoredBase):
+    pass
+
+class IPItemRead(IPMonitoredBase):
     id: int
-    hostname: Optional[str]
-
     class Config:
         orm_mode = True

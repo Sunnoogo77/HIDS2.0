@@ -22,6 +22,14 @@ router = APIRouter(
 )
 
 # --- File monitoring endpoints ---
+@router.get("/files/{file_id}", response_model=FileItemRead)
+def read_file_item(file_id: int):
+    """Get a single monitored file by ID."""
+    item = get_file_item(file_id)
+    if not item:
+        raise HTTPException(status_code=404, detail="File not found")
+    return item
+
 @router.get("/files", response_model=List[FileItemRead])
 def read_file_items(skip: int = 0, limit: int = 100):
     return get_file_items(skip=skip, limit=limit)
@@ -46,6 +54,14 @@ def remove_file_item(file_id: int):
     return None
 
 # --- IP monitoring endpoints ---
+@router.get("/ips/{ip_id}", response_model=IPItemRead)
+def read_ip_item(ip_id: int):
+    """Get a single monitored IP by ID."""
+    item = get_ip_item(ip_id)
+    if not item:
+        raise HTTPException(status_code=404, detail="IP not found")
+    return item
+
 @router.get("/ips", response_model=List[IPItemRead])
 def read_ip_items(skip: int = 0, limit: int = 100):
     return get_ip_items(skip=skip, limit=limit)
@@ -70,6 +86,14 @@ def remove_ip_item(ip_id: int):
     return None
 
 # --- Folder monitoring endpoints ---
+@router.get("/folders/{folder_id}", response_model=FolderItemRead)
+def read_folder_item(folder_id: int):
+    """Get a single monitored folder by ID."""
+    item = get_folder_item(folder_id)
+    if not item:
+        raise HTTPException(status_code=404, detail="Folder not found")
+    return item
+
 @router.get("/folders", response_model=List[FolderItemRead])
 def read_folder_items(skip: int = 0, limit: int = 100):
     return get_folder_items(skip=skip, limit=limit)
