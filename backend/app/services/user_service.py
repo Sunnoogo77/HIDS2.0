@@ -80,8 +80,6 @@ def change_user_password(user_id: int, new_password: str) -> bool:
         db.close()
         return False
     user.password_hash = get_password_hash(new_password)
-    
     db.commit()
     db.close()
-    
     return True
