@@ -1,0 +1,102 @@
+Structure du dossier pour le volume Windows
+Le numéro de série du volume est 26D4-DE23
+C:.
+¦   .env
+¦   .gitattributes
+¦   directoy.txt
+¦   docker-compose.yml
+¦   inventaire_routes.md
+¦   models.json
+¦   README.md
+¦   routes.json
+¦   tree.txt
+¦   
+¦           
++---backend
+¦   ¦   Dockerfile
+¦   ¦   requirements.txt
+¦   ¦   task_worker.py
+¦   ¦   
+¦   +---app
+¦       ¦   main.py
+¦       ¦   
+¦       +---api
+¦       ¦   ¦   alerts.py
+¦       ¦   ¦   auth.py
+¦       ¦   ¦   configs.py
+¦       ¦   ¦   integrations.py
+¦       ¦   ¦   monitoring.py
+¦       ¦   ¦   reports.py
+¦       ¦   ¦   status.py
+¦       ¦   ¦   users.py
+¦       ¦   ¦   webhooks.py
+¦       ¦   ¦   
+¦       ¦   +---__pycache__
+¦       ¦           auth.cpython-310.pyc
+¦       ¦           monitoring.cpython-310.pyc
+¦       ¦           status.cpython-310.pyc
+¦       ¦           users.cpython-310.pyc
+¦       ¦           
+¦       +---core
+¦       ¦   ¦   config.py
+¦       ¦   ¦   logging.py
+¦       ¦   ¦   security.py
+¦       ¦   ¦   __init__.py
+¦       ¦   ¦   
+¦       ¦   +---__pycache__
+¦       ¦           config.cpython-310.pyc
+¦       ¦           logging.cpython-310.pyc
+¦       ¦           security.cpython-310.pyc
+¦       ¦           __init__.cpython-310.pyc
+¦       ¦           
+¦       +---db
+¦       ¦   ¦   base.py
+¦       ¦   ¦   models.py
+¦       ¦   ¦   session.py
+¦       ¦   ¦   
+¦       ¦   +---__pycache__
+¦       ¦           base.cpython-310.pyc
+¦       ¦           models.cpython-310.pyc
+¦       ¦           session.cpython-310.pyc
+¦       ¦           
+¦       +---models
+¦       ¦   ¦   alert.py
+¦       ¦   ¦   auth.py
+¦       ¦   ¦   monitoring.py
+¦       ¦   ¦   report.py
+¦       ¦   ¦   user.py
+¦       ¦   ¦   
+¦       ¦   +---__pycache__
+¦       ¦           auth.cpython-310.pyc
+¦       ¦           monitoring.cpython-310.pyc
+¦       ¦           user.cpython-310.pyc
+¦       ¦           
+¦       +---services
+¦       ¦   ¦   alert_service.py
+¦       ¦   ¦   auth_service.py
+¦       ¦   ¦   monitoring_service.py
+¦       ¦   ¦   report_service.py
+¦       ¦   ¦   user_service.py
+¦       ¦   ¦   
+¦       ¦   +---__pycache__
+¦       ¦           auth_service.cpython-310.pyc
+¦       ¦           monitoring_service.cpython-310.pyc
+¦       ¦           user_service.cpython-310.pyc
+¦       ¦           
+¦       +---__pycache__
+¦               main.cpython-310.pyc
+¦               
++---data
+¦       hids - Copie.sql
+¦       hids.db
+¦       
++---img
+¦       Alerts&Logs.png
+¦       dashboard.png
+¦       Settings.png
+¦       Surveillance_files_folders.png
+¦       Surveillance_ip.png
+¦       
++---logs
+        hids.log
+        
