@@ -2,6 +2,8 @@
 from typing import List, Optional
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import NoResultFound
+from sqlalchemy.exc import IntegrityError
+
 
 from app.db.session import SessionLocal
 from app.db.models import MonitoredFile, MonitoredIP, MonitoredFolder
@@ -24,18 +26,35 @@ def get_file_item(file_id: int) -> Optional[MonitoredFile]:
     return item
 
 
+# def create_file_item(file_in: FileItemCreate) -> MonitoredFile:
+#     db: Session = SessionLocal()
+#     db_item = MonitoredFile(
+#         path=file_in.path,
+#         frequency=file_in.frequency
+#     )
+#     db.add(db_item)
+#     db.commit()
+#     db.refresh(db_item)
+#     db.close()
+#     return db_item
+
 def create_file_item(file_in: FileItemCreate) -> MonitoredFile:
     db: Session = SessionLocal()
-    db_item = MonitoredFile(
-        path=file_in.path,
-        frequency=file_in.frequency
-    )
-    db.add(db_item)
-    db.commit()
-    db.refresh(db_item)
-    db.close()
-    return db_item
-
+    try:
+        existing = db.query(MonitoredFile).filter(MonitoredFile.path == file_in.path).first()
+        if existing:
+            db.close()
+            return existing
+        db_item = MonitoredFile(path=file_in.path, frequency=file_in.frequency)
+        db.add(db_item)
+        db.commit()
+        db.refresh(db_item)
+        db.close()
+        return db_item
+    except IntegrityError:
+        db.rollback()
+        db.close()
+        raise
 
 def update_file_item(file_id: int, file_in: FileItemCreate) -> MonitoredFile:
     db: Session = SessionLocal()
@@ -76,18 +95,40 @@ def get_ip_item(ip_id: int) -> Optional[MonitoredIP]:
     return item
 
 
+# def create_ip_item(ip_in: IPItemCreate) -> MonitoredIP:
+#     db: Session = SessionLocal()
+#     db_item = MonitoredIP(
+#         ip=ip_in.ip,
+#         hostname=ip_in.hostname,
+#         frequency=ip_in.frequency
+#     )
+#     db.add(db_item)
+#     db.commit()
+#     db.refresh(db_item)
+#     db.close()
+#     return db_item
+
 def create_ip_item(ip_in: IPItemCreate) -> MonitoredIP:
     db: Session = SessionLocal()
-    db_item = MonitoredIP(
-        ip=ip_in.ip,
-        hostname=ip_in.hostname,
-        frequency=ip_in.frequency
-    )
-    db.add(db_item)
-    db.commit()
-    db.refresh(db_item)
-    db.close()
-    return db_item
+    try:
+        existing = db.query(MonitoredIP).filter(MonitoredIP.ip == ip_in.ip).first()
+        if existing:
+            db.close()
+            return existing
+        db_item = MonitoredIP(
+            ip=ip_in.ip,
+            hostname=ip_in.hostname,
+            frequency=ip_in.frequency
+        )
+        db.add(db_item)
+        db.commit()
+        db.refresh(db_item)
+        db.close()
+        return db_item
+    except IntegrityError:
+        db.rollback()
+        db.close()
+        raise
 
 
 def update_ip_item(ip_id: int, ip_in: IPItemCreate) -> MonitoredIP:
@@ -130,17 +171,35 @@ def get_folder_item(folder_id: int) -> Optional[MonitoredFolder]:
     return item
 
 
+# def create_folder_item(folder_in: FolderItemCreate) -> MonitoredFolder:
+#     db: Session = SessionLocal()
+#     db_item = MonitoredFolder(
+#         path=folder_in.path,
+#         frequency=folder_in.frequency
+#     )
+#     db.add(db_item)
+#     db.commit()
+#     db.refresh(db_item)
+#     db.close()
+#     return db_item
+
 def create_folder_item(folder_in: FolderItemCreate) -> MonitoredFolder:
     db: Session = SessionLocal()
-    db_item = MonitoredFolder(
-        path=folder_in.path,
-        frequency=folder_in.frequency
-    )
-    db.add(db_item)
-    db.commit()
-    db.refresh(db_item)
-    db.close()
-    return db_item
+    try:
+        
+        existing = db.query(MonitoredFolder).filter(MonitoredFolder.path == folder_in.path).first()
+        if existing:
+            db.close()
+            return existing
+        db_item = MonitoredFolder(path=folder_in.path, frequency=folder_in.frequency)
+        db.add(db_item); db.commit(); db.refresh(db_item)
+        db.close()
+        return db_item
+    except IntegrityError:
+        db.rollback()
+        db.close()
+        
+        raise
 
 
 def update_folder_item(folder_id: int, folder_in: FolderItemCreate) -> MonitoredFolder:

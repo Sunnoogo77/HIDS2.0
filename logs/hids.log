@@ -803,3 +803,41 @@ Traceback (most recent call last):
     version = _bcrypt.__about__.__version__
 AttributeError: module 'bcrypt' has no attribute '__about__'
 2025-06-05 10:45:07,404 | INFO | hids | Shutting down application...
+2025-08-11 13:32:04,446 | ERROR | fastapi | Form data requires "python-multipart" to be installed. 
+You can install "python-multipart" with: 
+
+pip install python-multipart
+
+2025-08-11 14:18:18,876 | ERROR | fastapi | Form data requires "python-multipart" to be installed. 
+You can install "python-multipart" with: 
+
+pip install python-multipart
+
+2025-08-11 14:32:34,215 | ERROR | fastapi | Form data requires "python-multipart" to be installed. 
+You can install "python-multipart" with: 
+
+pip install python-multipart
+
+2025-08-11 14:33:29,511 | INFO | hids | Starting HIDS-Web API... (version: 2.0.0)
+2025-08-11 14:33:29,522 | INFO | hids | Creating database tables (if not exist)...
+2025-08-11 14:33:29,533 | INFO | hids | Database ready.
+2025-08-14 21:14:10,844 | INFO | hids | Starting HIDS-Web API... (version: 2.0.0)
+2025-08-14 21:14:10,857 | INFO | hids | Creating database tables (if not exist)...
+2025-08-14 21:14:10,869 | INFO | hids | Database ready.
+2025-08-15 03:20:09,667 | INFO | hids | Starting HIDS-Web API... (version: 2.0.0)
+2025-08-15 03:20:09,679 | INFO | hids | Creating database tables (if not exist)...
+2025-08-15 03:20:09,692 | INFO | hids | Database ready.
+2025-08-15 03:28:45,958 | WARNING | passlib.handlers.bcrypt | (trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/passlib/handlers/bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+AttributeError: module 'bcrypt' has no attribute '__about__'
+2025-08-15 04:04:06,500 | INFO | hids | Shutting down application...
+2025-08-15 04:04:07,972 | INFO | hids | Starting HIDS-Web API... (version: 2.0.0)
+2025-08-15 04:04:07,986 | INFO | hids | Creating database tables (if not exist)...
+2025-08-15 04:04:07,997 | INFO | hids | Database ready.
+2025-08-15 04:14:41,010 | WARNING | passlib.handlers.bcrypt | (trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/passlib/handlers/bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+AttributeError: module 'bcrypt' has no attribute '__about__'

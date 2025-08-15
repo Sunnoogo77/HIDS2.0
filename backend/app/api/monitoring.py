@@ -1,6 +1,7 @@
 # File: backend/app/api/monitoring.py
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.exc import IntegrityError
 
 from app.models.monitoring import (
     FileItemCreate, FileItemRead,
@@ -35,8 +36,13 @@ def read_file_items(skip: int = 0, limit: int = 100):
     return get_file_items(skip=skip, limit=limit)
 
 @router.post("/files", response_model=FileItemRead, status_code=status.HTTP_201_CREATED)
+# def add_file_item(file_in: FileItemCreate):
+#     return create_file_item(file_in)
 def add_file_item(file_in: FileItemCreate):
-    return create_file_item(file_in)
+    try:
+        return create_file_item(file_in)
+    except IntegrityError:
+        raise HTTPException(status_code=409, detail="File path already exists")
 
 @router.put("/files/{file_id}", response_model=FileItemRead)
 def edit_file_item(file_id: int, file_in: FileItemCreate):
@@ -67,8 +73,13 @@ def read_ip_items(skip: int = 0, limit: int = 100):
     return get_ip_items(skip=skip, limit=limit)
 
 @router.post("/ips", response_model=IPItemRead, status_code=status.HTTP_201_CREATED)
+# def add_ip_item(ip_in: IPItemCreate):
+#     return create_ip_item(ip_in)
 def add_ip_item(ip_in: IPItemCreate):
-    return create_ip_item(ip_in)
+    try:
+        return create_ip_item(ip_in)
+    except IntegrityError:
+        raise HTTPException(status_code=409, detail="IP address already exists")
 
 @router.put("/ips/{ip_id}", response_model=IPItemRead)
 def edit_ip_item(ip_id: int, ip_in: IPItemCreate):
@@ -98,9 +109,27 @@ def read_folder_item(folder_id: int):
 def read_folder_items(skip: int = 0, limit: int = 100):
     return get_folder_items(skip=skip, limit=limit)
 
+# @router.post("/folders", response_model=FolderItemRead, status_code=status.HTTP_201_CREATED)
+# def add_folder_item(folder_in: FolderItemCreate):
+#     return create_folder_item(folder_in)
+# def add_folder_item(folder_in: FolderItemCreate):
+#     try:
+#         return create_folder_item(folder_in)
+#     except IntegrityError:
+#         raise HTTPException(status_code=409, detail="Folder path already exists")
 @router.post("/folders", response_model=FolderItemRead, status_code=status.HTTP_201_CREATED)
 def add_folder_item(folder_in: FolderItemCreate):
-    return create_folder_item(folder_in)
+    try:
+        return create_folder_item(folder_in)
+    except IntegrityError:
+        # doublon sur path => 409
+        raise HTTPException(status_code=409, detail="Folder already monitored")
+    except Exception as e:
+        # filet de sécurité: requalifie les contraintes uniques non mappées
+        if "UNIQUE constraint failed: monitored_folders.path" in str(e):
+            raise HTTPException(status_code=409, detail="Folder already monitored")
+        raise
+
 
 @router.put("/folders/{folder_id}", response_model=FolderItemRead)
 def edit_folder_item(folder_id: int, folder_in: FolderItemCreate):

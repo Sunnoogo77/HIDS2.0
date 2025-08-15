@@ -1,5 +1,5 @@
 # backend/app/core/config.py
-
+import logging
 from pydantic import BaseSettings, Field
 
 class Settings(BaseSettings):

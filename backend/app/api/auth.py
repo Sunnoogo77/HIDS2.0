@@ -8,7 +8,8 @@ router = APIRouter(tags=["auth"])
 
 
 @router.post("/auth/login", response_model=Token)
-def login(form_data: AuthLogin):
+# def login(form_data: AuthLogin):
+def login(form_data: OAuth2PasswordRequestForm = Depends()):
     """
     Authenticate user and return JWT token.
     """

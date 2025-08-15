@@ -3,6 +3,10 @@ services:
     build: ./backend
     env_file:
       - ./.env
+    environment:
+      JWT_SECRET: "${JWT_SECRET:?JWT_SECRET not set}"
+      LOG_LEVEL: "${LOG_LEVEL:-INFO}"
+      DATABASE_URL: "${DATABASE_URL:-sqlite:///./data/hids.db}"
     volumes:
       - ./data:/app/data
       - ./logs:/app/logs

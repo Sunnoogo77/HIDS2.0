@@ -38,5 +38,6 @@ def on_shutdown():
     
 app.include_router(status_router, prefix="/api")
 app.include_router(auth_router, prefix="/api")
-app.include_router(users_router, prefix="/api")
+# app.include_router(users_router, prefix="/api")
+app.include_router(users_router)
 app.include_router(monitoring_router)
