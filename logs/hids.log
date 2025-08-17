@@ -1820,3 +1820,653 @@ AttributeError: module 'bcrypt' has no attribute '__about__'
 2025-08-15 13:12:54,850 | INFO | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:12:54.850523"}
 2025-08-15 13:12:54,850 | INFO | hids-scheduler | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:12:54.850523"}
 2025-08-15 13:12:54,851 | INFO | apscheduler.executors.default | Job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:13:54 UTC)" executed successfully
+2025-08-15 13:13:54,840 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:14:54 UTC)" (scheduled at 2025-08-15 13:13:54.838481+00:00)
+2025-08-15 13:13:54,842 | INFO | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:13:54.841925"}
+2025-08-15 13:13:54,840 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:14:54 UTC)" (scheduled at 2025-08-15 13:13:54.839325+00:00)
+2025-08-15 13:13:54,842 | INFO | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:13:54.842562"}
+2025-08-15 13:13:54,842 | INFO | hids-scheduler | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:13:54.841925"}
+2025-08-15 13:13:54,842 | INFO | hids-scheduler | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:13:54.842562"}
+2025-08-15 13:13:54,843 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:14:54 UTC)" executed successfully
+2025-08-15 13:13:54,843 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:14:54 UTC)" executed successfully
+2025-08-15 13:13:54,849 | INFO | apscheduler.executors.default | Running job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:14:54 UTC)" (scheduled at 2025-08-15 13:13:54.848779+00:00)
+2025-08-15 13:13:54,850 | INFO | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:13:54.850131"}
+2025-08-15 13:13:54,850 | INFO | hids-scheduler | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:13:54.850131"}
+2025-08-15 13:13:54,850 | INFO | apscheduler.executors.default | Job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:14:54 UTC)" executed successfully
+2025-08-15 13:14:54,843 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:15:54 UTC)" (scheduled at 2025-08-15 13:14:54.838481+00:00)
+2025-08-15 13:14:54,844 | INFO | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:14:54.844568"}
+2025-08-15 13:14:54,843 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:15:54 UTC)" (scheduled at 2025-08-15 13:14:54.839325+00:00)
+2025-08-15 13:14:54,845 | INFO | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:14:54.845323"}
+2025-08-15 13:14:54,844 | INFO | hids-scheduler | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:14:54.844568"}
+2025-08-15 13:14:54,845 | INFO | hids-scheduler | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:14:54.845323"}
+2025-08-15 13:14:54,845 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:15:54 UTC)" executed successfully
+2025-08-15 13:14:54,846 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:15:54 UTC)" executed successfully
+2025-08-15 13:14:54,849 | INFO | apscheduler.executors.default | Running job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:15:54 UTC)" (scheduled at 2025-08-15 13:14:54.848779+00:00)
+2025-08-15 13:14:54,849 | INFO | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:14:54.849644"}
+2025-08-15 13:14:54,849 | INFO | hids-scheduler | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:14:54.849644"}
+2025-08-15 13:14:54,850 | INFO | apscheduler.executors.default | Job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:15:54 UTC)" executed successfully
+2025-08-15 13:15:54,841 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:16:54 UTC)" (scheduled at 2025-08-15 13:15:54.838481+00:00)
+2025-08-15 13:15:54,842 | INFO | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:15:54.842559"}
+2025-08-15 13:15:54,841 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:16:54 UTC)" (scheduled at 2025-08-15 13:15:54.839325+00:00)
+2025-08-15 13:15:54,843 | INFO | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:15:54.843238"}
+2025-08-15 13:15:54,842 | INFO | hids-scheduler | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:15:54.842559"}
+2025-08-15 13:15:54,843 | INFO | hids-scheduler | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:15:54.843238"}
+2025-08-15 13:15:54,843 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:16:54 UTC)" executed successfully
+2025-08-15 13:15:54,844 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:16:54 UTC)" executed successfully
+2025-08-15 13:15:54,849 | INFO | apscheduler.executors.default | Running job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:16:54 UTC)" (scheduled at 2025-08-15 13:15:54.848779+00:00)
+2025-08-15 13:15:54,850 | INFO | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:15:54.850192"}
+2025-08-15 13:15:54,850 | INFO | hids-scheduler | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:15:54.850192"}
+2025-08-15 13:15:54,850 | INFO | apscheduler.executors.default | Job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:16:54 UTC)" executed successfully
+2025-08-15 13:16:54,840 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:17:54 UTC)" (scheduled at 2025-08-15 13:16:54.838481+00:00)
+2025-08-15 13:16:54,841 | INFO | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:16:54.841684"}
+2025-08-15 13:16:54,840 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:17:54 UTC)" (scheduled at 2025-08-15 13:16:54.839325+00:00)
+2025-08-15 13:16:54,842 | INFO | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:16:54.842361"}
+2025-08-15 13:16:54,841 | INFO | hids-scheduler | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:16:54.841684"}
+2025-08-15 13:16:54,842 | INFO | hids-scheduler | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:16:54.842361"}
+2025-08-15 13:16:54,842 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:17:54 UTC)" executed successfully
+2025-08-15 13:16:54,843 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:17:54 UTC)" executed successfully
+2025-08-15 13:16:54,849 | INFO | apscheduler.executors.default | Running job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:17:54 UTC)" (scheduled at 2025-08-15 13:16:54.848779+00:00)
+2025-08-15 13:16:54,850 | INFO | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:16:54.850019"}
+2025-08-15 13:16:54,850 | INFO | hids-scheduler | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:16:54.850019"}
+2025-08-15 13:16:54,851 | INFO | apscheduler.executors.default | Job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:17:54 UTC)" executed successfully
+2025-08-15 13:17:09,797 | INFO | hids | Shutting down application...
+2025-08-15 13:17:09,798 | INFO | apscheduler.scheduler | Scheduler has been shut down
+2025-08-15 13:17:10,984 | INFO | hids | Starting HIDS-Web API... (version: 2.0.0)
+2025-08-15 13:17:11,005 | INFO | hids | Creating database tables (if not exist)...
+2025-08-15 13:17:11,016 | INFO | hids | Database ready.
+2025-08-15 13:17:11,017 | INFO | apscheduler.scheduler | Scheduler started
+2025-08-15 13:17:11,038 | INFO | apscheduler.scheduler | Added job "scan_file" to job store "default"
+2025-08-15 13:17:11,039 | INFO | apscheduler.scheduler | Added job "scan_file" to job store "default"
+2025-08-15 13:17:11,040 | INFO | apscheduler.scheduler | Added job "scan_file" to job store "default"
+2025-08-15 13:17:11,049 | INFO | apscheduler.scheduler | Added job "scan_ip" to job store "default"
+2025-08-15 13:17:11,050 | INFO | apscheduler.scheduler | Added job "scan_ip" to job store "default"
+2025-08-15 13:17:11,051 | INFO | apscheduler.scheduler | Added job "scan_ip" to job store "default"
+2025-08-15 13:17:19,740 | INFO | hids | Shutting down application...
+2025-08-15 13:17:19,741 | INFO | apscheduler.scheduler | Scheduler has been shut down
+2025-08-15 13:17:20,683 | INFO | hids | Starting HIDS-Web API... (version: 2.0.0)
+2025-08-15 13:17:20,695 | INFO | hids | Creating database tables (if not exist)...
+2025-08-15 13:17:20,704 | INFO | hids | Database ready.
+2025-08-15 13:17:20,705 | INFO | apscheduler.scheduler | Scheduler started
+2025-08-15 13:17:20,716 | INFO | apscheduler.scheduler | Added job "scan_file" to job store "default"
+2025-08-15 13:17:20,717 | INFO | apscheduler.scheduler | Added job "scan_file" to job store "default"
+2025-08-15 13:17:20,718 | INFO | apscheduler.scheduler | Added job "scan_file" to job store "default"
+2025-08-15 13:17:20,725 | INFO | apscheduler.scheduler | Added job "scan_ip" to job store "default"
+2025-08-15 13:17:20,726 | INFO | apscheduler.scheduler | Added job "scan_ip" to job store "default"
+2025-08-15 13:17:20,727 | INFO | apscheduler.scheduler | Added job "scan_ip" to job store "default"
+2025-08-15 13:17:47,154 | INFO | hids | Shutting down application...
+2025-08-15 13:17:47,155 | INFO | apscheduler.scheduler | Scheduler has been shut down
+2025-08-15 13:17:48,152 | INFO | hids | Starting HIDS-Web API... (version: 2.0.0)
+2025-08-15 13:17:48,173 | INFO | hids | Creating database tables (if not exist)...
+2025-08-15 13:17:48,186 | INFO | hids | Database ready.
+2025-08-15 13:17:48,186 | INFO | apscheduler.scheduler | Scheduler started
+2025-08-15 13:17:48,200 | INFO | apscheduler.scheduler | Added job "scan_file" to job store "default"
+2025-08-15 13:17:48,201 | INFO | apscheduler.scheduler | Added job "scan_file" to job store "default"
+2025-08-15 13:17:48,202 | INFO | apscheduler.scheduler | Added job "scan_file" to job store "default"
+2025-08-15 13:17:48,211 | INFO | apscheduler.scheduler | Added job "scan_ip" to job store "default"
+2025-08-15 13:17:48,212 | INFO | apscheduler.scheduler | Added job "scan_ip" to job store "default"
+2025-08-15 13:17:48,213 | INFO | apscheduler.scheduler | Added job "scan_ip" to job store "default"
+2025-08-15 13:17:48,416 | INFO | hids | Shutting down application...
+2025-08-15 13:17:48,421 | INFO | apscheduler.scheduler | Scheduler has been shut down
+2025-08-15 13:17:49,287 | INFO | hids | Starting HIDS-Web API... (version: 2.0.0)
+2025-08-15 13:17:49,301 | INFO | hids | Creating database tables (if not exist)...
+2025-08-15 13:17:49,314 | INFO | hids | Database ready.
+2025-08-15 13:17:49,315 | INFO | apscheduler.scheduler | Scheduler started
+2025-08-15 13:17:49,326 | INFO | apscheduler.scheduler | Added job "scan_file" to job store "default"
+2025-08-15 13:17:49,327 | INFO | apscheduler.scheduler | Added job "scan_file" to job store "default"
+2025-08-15 13:17:49,328 | INFO | apscheduler.scheduler | Added job "scan_file" to job store "default"
+2025-08-15 13:17:49,335 | INFO | apscheduler.scheduler | Added job "scan_ip" to job store "default"
+2025-08-15 13:17:49,336 | INFO | apscheduler.scheduler | Added job "scan_ip" to job store "default"
+2025-08-15 13:17:49,337 | INFO | apscheduler.scheduler | Added job "scan_ip" to job store "default"
+2025-08-15 13:17:55,931 | INFO | hids | Shutting down application...
+2025-08-15 13:17:55,932 | INFO | apscheduler.scheduler | Scheduler has been shut down
+2025-08-15 13:17:56,718 | INFO | hids | Starting HIDS-Web API... (version: 2.0.0)
+2025-08-15 13:17:56,731 | INFO | hids | Creating database tables (if not exist)...
+2025-08-15 13:17:56,741 | INFO | hids | Database ready.
+2025-08-15 13:17:56,742 | INFO | apscheduler.scheduler | Scheduler started
+2025-08-15 13:17:56,754 | INFO | apscheduler.scheduler | Added job "scan_file" to job store "default"
+2025-08-15 13:17:56,755 | INFO | apscheduler.scheduler | Added job "scan_file" to job store "default"
+2025-08-15 13:17:56,755 | INFO | apscheduler.scheduler | Added job "scan_file" to job store "default"
+2025-08-15 13:17:56,762 | INFO | apscheduler.scheduler | Added job "scan_ip" to job store "default"
+2025-08-15 13:17:56,763 | INFO | apscheduler.scheduler | Added job "scan_ip" to job store "default"
+2025-08-15 13:17:56,763 | INFO | apscheduler.scheduler | Added job "scan_ip" to job store "default"
+2025-08-15 13:18:26,909 | WARNING | passlib.handlers.bcrypt | (trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/passlib/handlers/bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+AttributeError: module 'bcrypt' has no attribute '__about__'
+2025-08-15 13:18:56,756 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:19:56 UTC)" (scheduled at 2025-08-15 13:18:56.755028+00:00)
+2025-08-15 13:18:56,757 | INFO | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:18:56.757195"}
+2025-08-15 13:18:56,756 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:19:56 UTC)" (scheduled at 2025-08-15 13:18:56.755654+00:00)
+2025-08-15 13:18:56,758 | INFO | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:18:56.758035"}
+2025-08-15 13:18:56,757 | INFO | hids-scheduler | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:18:56.757195"}
+2025-08-15 13:18:56,758 | INFO | hids-scheduler | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:18:56.758035"}
+2025-08-15 13:18:56,759 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:19:56 UTC)" executed successfully
+2025-08-15 13:18:56,759 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:19:56 UTC)" executed successfully
+2025-08-15 13:18:56,764 | INFO | apscheduler.executors.default | Running job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:19:56 UTC)" (scheduled at 2025-08-15 13:18:56.763767+00:00)
+2025-08-15 13:18:56,765 | INFO | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:18:56.765652"}
+2025-08-15 13:18:56,765 | INFO | hids-scheduler | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:18:56.765652"}
+2025-08-15 13:18:56,766 | INFO | apscheduler.executors.default | Job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:19:56 UTC)" executed successfully
+2025-08-15 13:19:56,755 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:20:56 UTC)" (scheduled at 2025-08-15 13:19:56.755028+00:00)
+2025-08-15 13:19:56,756 | INFO | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:19:56.756801"}
+2025-08-15 13:19:56,756 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:20:56 UTC)" (scheduled at 2025-08-15 13:19:56.755654+00:00)
+2025-08-15 13:19:56,757 | INFO | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:19:56.757488"}
+2025-08-15 13:19:56,756 | INFO | hids-scheduler | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:19:56.756801"}
+2025-08-15 13:19:56,757 | INFO | hids-scheduler | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:19:56.757488"}
+2025-08-15 13:19:56,758 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:20:56 UTC)" executed successfully
+2025-08-15 13:19:56,758 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:20:56 UTC)" executed successfully
+2025-08-15 13:19:56,764 | INFO | apscheduler.executors.default | Running job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:20:56 UTC)" (scheduled at 2025-08-15 13:19:56.763767+00:00)
+2025-08-15 13:19:56,765 | INFO | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:19:56.765322"}
+2025-08-15 13:19:56,765 | INFO | hids-scheduler | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:19:56.765322"}
+2025-08-15 13:19:56,766 | INFO | apscheduler.executors.default | Job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:20:56 UTC)" executed successfully
+2025-08-15 13:20:56,758 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:21:56 UTC)" (scheduled at 2025-08-15 13:20:56.755028+00:00)
+2025-08-15 13:20:56,759 | INFO | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:20:56.759424"}
+2025-08-15 13:20:56,758 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:21:56 UTC)" (scheduled at 2025-08-15 13:20:56.755654+00:00)
+2025-08-15 13:20:56,760 | INFO | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:20:56.760018"}
+2025-08-15 13:20:56,759 | INFO | hids-scheduler | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:20:56.759424"}
+2025-08-15 13:20:56,760 | INFO | hids-scheduler | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:20:56.760018"}
+2025-08-15 13:20:56,760 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:21:56 UTC)" executed successfully
+2025-08-15 13:20:56,760 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:21:56 UTC)" executed successfully
+2025-08-15 13:20:56,764 | INFO | apscheduler.executors.default | Running job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:21:56 UTC)" (scheduled at 2025-08-15 13:20:56.763767+00:00)
+2025-08-15 13:20:56,764 | INFO | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:20:56.764843"}
+2025-08-15 13:20:56,764 | INFO | hids-scheduler | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:20:56.764843"}
+2025-08-15 13:20:56,765 | INFO | apscheduler.executors.default | Job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:21:56 UTC)" executed successfully
+2025-08-15 13:21:56,756 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:22:56 UTC)" (scheduled at 2025-08-15 13:21:56.755028+00:00)
+2025-08-15 13:21:56,757 | INFO | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:21:56.757900"}
+2025-08-15 13:21:56,756 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:22:56 UTC)" (scheduled at 2025-08-15 13:21:56.755654+00:00)
+2025-08-15 13:21:56,758 | INFO | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:21:56.758942"}
+2025-08-15 13:21:56,757 | INFO | hids-scheduler | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:21:56.757900"}
+2025-08-15 13:21:56,758 | INFO | hids-scheduler | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:21:56.758942"}
+2025-08-15 13:21:56,759 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:22:56 UTC)" executed successfully
+2025-08-15 13:21:56,759 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:22:56 UTC)" executed successfully
+2025-08-15 13:21:56,764 | INFO | apscheduler.executors.default | Running job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:22:56 UTC)" (scheduled at 2025-08-15 13:21:56.763767+00:00)
+2025-08-15 13:21:56,765 | INFO | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:21:56.765597"}
+2025-08-15 13:21:56,765 | INFO | hids-scheduler | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:21:56.765597"}
+2025-08-15 13:21:56,766 | INFO | apscheduler.executors.default | Job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:22:56 UTC)" executed successfully
+2025-08-15 13:22:46,056 | INFO | hids | Shutting down application...
+2025-08-15 13:22:46,057 | INFO | apscheduler.scheduler | Scheduler has been shut down
+2025-08-15 13:22:46,948 | INFO | hids | Starting HIDS-Web API... (version: 2.0.0)
+2025-08-15 13:22:46,968 | INFO | hids | Creating database tables (if not exist)...
+2025-08-15 13:22:46,981 | INFO | hids | Database ready.
+2025-08-15 13:22:46,982 | INFO | apscheduler.scheduler | Scheduler started
+2025-08-15 13:22:46,998 | INFO | apscheduler.scheduler | Added job "scan_file" to job store "default"
+2025-08-15 13:22:46,999 | INFO | apscheduler.scheduler | Added job "scan_file" to job store "default"
+2025-08-15 13:22:47,000 | INFO | apscheduler.scheduler | Added job "scan_file" to job store "default"
+2025-08-15 13:22:47,010 | INFO | apscheduler.scheduler | Added job "scan_ip" to job store "default"
+2025-08-15 13:22:47,011 | INFO | apscheduler.scheduler | Added job "scan_ip" to job store "default"
+2025-08-15 13:22:47,012 | INFO | apscheduler.scheduler | Added job "scan_ip" to job store "default"
+2025-08-15 13:23:05,486 | INFO | hids | Shutting down application...
+2025-08-15 13:23:05,487 | INFO | apscheduler.scheduler | Scheduler has been shut down
+2025-08-15 13:23:06,272 | INFO | hids | Starting HIDS-Web API... (version: 2.0.0)
+2025-08-15 13:23:06,294 | INFO | hids | Creating database tables (if not exist)...
+2025-08-15 13:23:06,306 | INFO | hids | Database ready.
+2025-08-15 13:23:06,307 | INFO | apscheduler.scheduler | Scheduler started
+2025-08-15 13:23:06,319 | INFO | apscheduler.scheduler | Added job "scan_file" to job store "default"
+2025-08-15 13:23:06,320 | INFO | apscheduler.scheduler | Added job "scan_file" to job store "default"
+2025-08-15 13:23:06,321 | INFO | apscheduler.scheduler | Added job "scan_file" to job store "default"
+2025-08-15 13:23:06,328 | INFO | apscheduler.scheduler | Added job "scan_ip" to job store "default"
+2025-08-15 13:23:06,329 | INFO | apscheduler.scheduler | Added job "scan_ip" to job store "default"
+2025-08-15 13:23:06,330 | INFO | apscheduler.scheduler | Added job "scan_ip" to job store "default"
+2025-08-15 13:23:10,351 | INFO | hids | Shutting down application...
+2025-08-15 13:23:10,354 | INFO | apscheduler.scheduler | Scheduler has been shut down
+2025-08-15 13:23:10,988 | INFO | hids | Starting HIDS-Web API... (version: 2.0.0)
+2025-08-15 13:23:11,000 | INFO | hids | Creating database tables (if not exist)...
+2025-08-15 13:23:11,011 | INFO | hids | Database ready.
+2025-08-15 13:23:11,011 | INFO | apscheduler.scheduler | Scheduler started
+2025-08-15 13:23:11,021 | INFO | apscheduler.scheduler | Added job "scan_file" to job store "default"
+2025-08-15 13:23:11,022 | INFO | apscheduler.scheduler | Added job "scan_file" to job store "default"
+2025-08-15 13:23:11,023 | INFO | apscheduler.scheduler | Added job "scan_file" to job store "default"
+2025-08-15 13:23:11,029 | INFO | apscheduler.scheduler | Added job "scan_ip" to job store "default"
+2025-08-15 13:23:11,030 | INFO | apscheduler.scheduler | Added job "scan_ip" to job store "default"
+2025-08-15 13:23:11,031 | INFO | apscheduler.scheduler | Added job "scan_ip" to job store "default"
+2025-08-15 13:23:12,845 | INFO | hids | Shutting down application...
+2025-08-15 13:23:12,846 | INFO | apscheduler.scheduler | Scheduler has been shut down
+2025-08-15 13:23:13,548 | INFO | hids | Starting HIDS-Web API... (version: 2.0.0)
+2025-08-15 13:23:13,562 | INFO | hids | Creating database tables (if not exist)...
+2025-08-15 13:23:13,573 | INFO | hids | Database ready.
+2025-08-15 13:23:13,574 | INFO | apscheduler.scheduler | Scheduler started
+2025-08-15 13:23:13,583 | INFO | apscheduler.scheduler | Added job "scan_file" to job store "default"
+2025-08-15 13:23:13,584 | INFO | apscheduler.scheduler | Added job "scan_file" to job store "default"
+2025-08-15 13:23:13,585 | INFO | apscheduler.scheduler | Added job "scan_file" to job store "default"
+2025-08-15 13:23:13,592 | INFO | apscheduler.scheduler | Added job "scan_ip" to job store "default"
+2025-08-15 13:23:13,593 | INFO | apscheduler.scheduler | Added job "scan_ip" to job store "default"
+2025-08-15 13:23:13,594 | INFO | apscheduler.scheduler | Added job "scan_ip" to job store "default"
+2025-08-15 13:23:16,320 | INFO | hids | Shutting down application...
+2025-08-15 13:23:16,322 | INFO | apscheduler.scheduler | Scheduler has been shut down
+2025-08-15 13:23:17,033 | INFO | hids | Starting HIDS-Web API... (version: 2.0.0)
+2025-08-15 13:23:17,046 | INFO | hids | Creating database tables (if not exist)...
+2025-08-15 13:23:17,056 | INFO | hids | Database ready.
+2025-08-15 13:23:17,057 | INFO | apscheduler.scheduler | Scheduler started
+2025-08-15 13:23:17,067 | INFO | apscheduler.scheduler | Added job "scan_file" to job store "default"
+2025-08-15 13:23:17,068 | INFO | apscheduler.scheduler | Added job "scan_file" to job store "default"
+2025-08-15 13:23:17,069 | INFO | apscheduler.scheduler | Added job "scan_file" to job store "default"
+2025-08-15 13:23:17,075 | INFO | apscheduler.scheduler | Added job "scan_ip" to job store "default"
+2025-08-15 13:23:17,075 | INFO | apscheduler.scheduler | Added job "scan_ip" to job store "default"
+2025-08-15 13:23:17,076 | INFO | apscheduler.scheduler | Added job "scan_ip" to job store "default"
+2025-08-15 13:23:45,383 | WARNING | passlib.handlers.bcrypt | (trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/passlib/handlers/bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+AttributeError: module 'bcrypt' has no attribute '__about__'
+2025-08-15 13:24:17,071 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:25:17 UTC)" (scheduled at 2025-08-15 13:24:17.068342+00:00)
+2025-08-15 13:24:17,073 | INFO | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:24:17.073490"}
+2025-08-15 13:24:17,073 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:25:17 UTC)" (scheduled at 2025-08-15 13:24:17.069054+00:00)
+2025-08-15 13:24:17,074 | INFO | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:24:17.074312"}
+2025-08-15 13:24:17,073 | INFO | hids-scheduler | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:24:17.073490"}
+2025-08-15 13:24:17,074 | INFO | hids-scheduler | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:24:17.074312"}
+2025-08-15 13:24:17,074 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:25:17 UTC)" executed successfully
+2025-08-15 13:24:17,075 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:25:17 UTC)" executed successfully
+2025-08-15 13:24:17,076 | INFO | apscheduler.executors.default | Running job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:25:17 UTC)" (scheduled at 2025-08-15 13:24:17.076327+00:00)
+2025-08-15 13:24:17,077 | INFO | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:24:17.077255"}
+2025-08-15 13:24:17,077 | INFO | hids-scheduler | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:24:17.077255"}
+2025-08-15 13:24:17,077 | INFO | apscheduler.executors.default | Job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:25:17 UTC)" executed successfully
+2025-08-15 13:25:17,070 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:26:17 UTC)" (scheduled at 2025-08-15 13:25:17.068342+00:00)
+2025-08-15 13:25:17,070 | INFO | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:25:17.070921"}
+2025-08-15 13:25:17,070 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:26:17 UTC)" (scheduled at 2025-08-15 13:25:17.069054+00:00)
+2025-08-15 13:25:17,071 | INFO | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:25:17.071520"}
+2025-08-15 13:25:17,070 | INFO | hids-scheduler | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:25:17.070921"}
+2025-08-15 13:25:17,071 | INFO | hids-scheduler | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:25:17.071520"}
+2025-08-15 13:25:17,072 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:26:17 UTC)" executed successfully
+2025-08-15 13:25:17,072 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:26:17 UTC)" executed successfully
+2025-08-15 13:25:17,076 | INFO | apscheduler.executors.default | Running job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:26:17 UTC)" (scheduled at 2025-08-15 13:25:17.076327+00:00)
+2025-08-15 13:25:17,077 | INFO | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:25:17.077318"}
+2025-08-15 13:25:17,077 | INFO | hids-scheduler | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:25:17.077318"}
+2025-08-15 13:25:17,077 | INFO | apscheduler.executors.default | Job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:26:17 UTC)" executed successfully
+2025-08-15 13:26:17,069 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:27:17 UTC)" (scheduled at 2025-08-15 13:26:17.068342+00:00)
+2025-08-15 13:26:17,070 | INFO | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:26:17.070885"}
+2025-08-15 13:26:17,069 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:27:17 UTC)" (scheduled at 2025-08-15 13:26:17.069054+00:00)
+2025-08-15 13:26:17,071 | INFO | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:26:17.071616"}
+2025-08-15 13:26:17,070 | INFO | hids-scheduler | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:26:17.070885"}
+2025-08-15 13:26:17,071 | INFO | hids-scheduler | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:26:17.071616"}
+2025-08-15 13:26:17,072 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:27:17 UTC)" executed successfully
+2025-08-15 13:26:17,072 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:27:17 UTC)" executed successfully
+2025-08-15 13:26:17,076 | INFO | apscheduler.executors.default | Running job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:27:17 UTC)" (scheduled at 2025-08-15 13:26:17.076327+00:00)
+2025-08-15 13:26:17,077 | INFO | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:26:17.077583"}
+2025-08-15 13:26:17,077 | INFO | hids-scheduler | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:26:17.077583"}
+2025-08-15 13:26:17,078 | INFO | apscheduler.executors.default | Job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:27:17 UTC)" executed successfully
+2025-08-15 13:27:17,072 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:28:17 UTC)" (scheduled at 2025-08-15 13:27:17.068342+00:00)
+2025-08-15 13:27:17,073 | INFO | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:27:17.073674"}
+2025-08-15 13:27:17,073 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:28:17 UTC)" (scheduled at 2025-08-15 13:27:17.069054+00:00)
+2025-08-15 13:27:17,074 | INFO | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:27:17.074246"}
+2025-08-15 13:27:17,073 | INFO | hids-scheduler | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:27:17.073674"}
+2025-08-15 13:27:17,074 | INFO | hids-scheduler | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:27:17.074246"}
+2025-08-15 13:27:17,074 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:28:17 UTC)" executed successfully
+2025-08-15 13:27:17,075 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:28:17 UTC)" executed successfully
+2025-08-15 13:27:17,076 | INFO | apscheduler.executors.default | Running job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:28:17 UTC)" (scheduled at 2025-08-15 13:27:17.076327+00:00)
+2025-08-15 13:27:17,077 | INFO | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:27:17.077017"}
+2025-08-15 13:27:17,077 | INFO | hids-scheduler | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:27:17.077017"}
+2025-08-15 13:27:17,077 | INFO | apscheduler.executors.default | Job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:28:17 UTC)" executed successfully
+2025-08-15 13:28:17,071 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:29:17 UTC)" (scheduled at 2025-08-15 13:28:17.068342+00:00)
+2025-08-15 13:28:17,072 | INFO | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:28:17.072742"}
+2025-08-15 13:28:17,071 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:29:17 UTC)" (scheduled at 2025-08-15 13:28:17.069054+00:00)
+2025-08-15 13:28:17,073 | INFO | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:28:17.073802"}
+2025-08-15 13:28:17,072 | INFO | hids-scheduler | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:28:17.072742"}
+2025-08-15 13:28:17,073 | INFO | hids-scheduler | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:28:17.073802"}
+2025-08-15 13:28:17,074 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:29:17 UTC)" executed successfully
+2025-08-15 13:28:17,075 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:29:17 UTC)" executed successfully
+2025-08-15 13:28:17,076 | INFO | apscheduler.executors.default | Running job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:29:17 UTC)" (scheduled at 2025-08-15 13:28:17.076327+00:00)
+2025-08-15 13:28:17,077 | INFO | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:28:17.077412"}
+2025-08-15 13:28:17,077 | INFO | hids-scheduler | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:28:17.077412"}
+2025-08-15 13:28:17,078 | INFO | apscheduler.executors.default | Job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:29:17 UTC)" executed successfully
+2025-08-15 13:29:17,073 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:30:17 UTC)" (scheduled at 2025-08-15 13:29:17.068342+00:00)
+2025-08-15 13:29:17,073 | INFO | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:29:17.073747"}
+2025-08-15 13:29:17,073 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:30:17 UTC)" (scheduled at 2025-08-15 13:29:17.069054+00:00)
+2025-08-15 13:29:17,074 | INFO | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:29:17.074403"}
+2025-08-15 13:29:17,073 | INFO | hids-scheduler | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:29:17.073747"}
+2025-08-15 13:29:17,074 | INFO | hids-scheduler | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:29:17.074403"}
+2025-08-15 13:29:17,074 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:30:17 UTC)" executed successfully
+2025-08-15 13:29:17,075 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:30:17 UTC)" executed successfully
+2025-08-15 13:29:17,076 | INFO | apscheduler.executors.default | Running job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:30:17 UTC)" (scheduled at 2025-08-15 13:29:17.076327+00:00)
+2025-08-15 13:29:17,077 | INFO | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:29:17.077090"}
+2025-08-15 13:29:17,077 | INFO | hids-scheduler | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:29:17.077090"}
+2025-08-15 13:29:17,077 | INFO | apscheduler.executors.default | Job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:30:17 UTC)" executed successfully
+2025-08-15 13:29:44,248 | INFO | hids | Shutting down application...
+2025-08-15 13:29:44,249 | INFO | apscheduler.scheduler | Scheduler has been shut down
+2025-08-15 13:29:45,243 | INFO | hids | Starting HIDS-Web API... (version: 2.0.0)
+2025-08-15 13:29:45,259 | INFO | hids | Creating database tables (if not exist)...
+2025-08-15 13:29:45,270 | INFO | hids | Database ready.
+2025-08-15 13:29:45,271 | INFO | apscheduler.scheduler | Scheduler started
+2025-08-15 13:29:45,283 | INFO | apscheduler.scheduler | Added job "scan_file" to job store "default"
+2025-08-15 13:29:45,284 | INFO | apscheduler.scheduler | Added job "scan_file" to job store "default"
+2025-08-15 13:29:45,284 | INFO | apscheduler.scheduler | Added job "scan_file" to job store "default"
+2025-08-15 13:29:45,291 | INFO | apscheduler.scheduler | Added job "scan_ip" to job store "default"
+2025-08-15 13:29:45,292 | INFO | apscheduler.scheduler | Added job "scan_ip" to job store "default"
+2025-08-15 13:29:45,293 | INFO | apscheduler.scheduler | Added job "scan_ip" to job store "default"
+2025-08-15 13:29:47,220 | INFO | hids | Shutting down application...
+2025-08-15 13:29:47,221 | INFO | apscheduler.scheduler | Scheduler has been shut down
+2025-08-15 13:29:47,970 | INFO | hids | Starting HIDS-Web API... (version: 2.0.0)
+2025-08-15 13:29:47,985 | INFO | hids | Creating database tables (if not exist)...
+2025-08-15 13:29:47,995 | INFO | hids | Database ready.
+2025-08-15 13:29:47,996 | INFO | apscheduler.scheduler | Scheduler started
+2025-08-15 13:29:48,006 | INFO | apscheduler.scheduler | Added job "scan_file" to job store "default"
+2025-08-15 13:29:48,007 | INFO | apscheduler.scheduler | Added job "scan_file" to job store "default"
+2025-08-15 13:29:48,007 | INFO | apscheduler.scheduler | Added job "scan_file" to job store "default"
+2025-08-15 13:29:48,014 | INFO | apscheduler.scheduler | Added job "scan_ip" to job store "default"
+2025-08-15 13:29:48,015 | INFO | apscheduler.scheduler | Added job "scan_ip" to job store "default"
+2025-08-15 13:29:48,016 | INFO | apscheduler.scheduler | Added job "scan_ip" to job store "default"
+2025-08-15 13:30:05,155 | WARNING | passlib.handlers.bcrypt | (trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/passlib/handlers/bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+AttributeError: module 'bcrypt' has no attribute '__about__'
+2025-08-15 13:30:48,010 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:31:48 UTC)" (scheduled at 2025-08-15 13:30:48.007069+00:00)
+2025-08-15 13:30:48,011 | INFO | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:30:48.011660"}
+2025-08-15 13:30:48,011 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:31:48 UTC)" (scheduled at 2025-08-15 13:30:48.007806+00:00)
+2025-08-15 13:30:48,012 | INFO | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:30:48.012484"}
+2025-08-15 13:30:48,011 | INFO | hids-scheduler | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:30:48.011660"}
+2025-08-15 13:30:48,012 | INFO | hids-scheduler | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:30:48.012484"}
+2025-08-15 13:30:48,013 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:31:48 UTC)" executed successfully
+2025-08-15 13:30:48,013 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:31:48 UTC)" executed successfully
+2025-08-15 13:30:48,016 | INFO | apscheduler.executors.default | Running job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:31:48 UTC)" (scheduled at 2025-08-15 13:30:48.015820+00:00)
+2025-08-15 13:30:48,016 | INFO | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:30:48.016778"}
+2025-08-15 13:30:48,016 | INFO | hids-scheduler | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:30:48.016778"}
+2025-08-15 13:30:48,017 | INFO | apscheduler.executors.default | Job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:31:48 UTC)" executed successfully
+2025-08-15 13:31:48,009 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:32:48 UTC)" (scheduled at 2025-08-15 13:31:48.007069+00:00)
+2025-08-15 13:31:48,010 | INFO | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:31:48.010016"}
+2025-08-15 13:31:48,009 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:32:48 UTC)" (scheduled at 2025-08-15 13:31:48.007806+00:00)
+2025-08-15 13:31:48,010 | INFO | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:31:48.010584"}
+2025-08-15 13:31:48,010 | INFO | hids-scheduler | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:31:48.010016"}
+2025-08-15 13:31:48,010 | INFO | hids-scheduler | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:31:48.010584"}
+2025-08-15 13:31:48,011 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:32:48 UTC)" executed successfully
+2025-08-15 13:31:48,011 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:32:48 UTC)" executed successfully
+2025-08-15 13:31:48,016 | INFO | apscheduler.executors.default | Running job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:32:48 UTC)" (scheduled at 2025-08-15 13:31:48.015820+00:00)
+2025-08-15 13:31:48,017 | INFO | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:31:48.017034"}
+2025-08-15 13:31:48,017 | INFO | hids-scheduler | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:31:48.017034"}
+2025-08-15 13:31:48,017 | INFO | apscheduler.executors.default | Job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:32:48 UTC)" executed successfully
+2025-08-15 13:32:48,011 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:33:48 UTC)" (scheduled at 2025-08-15 13:32:48.007069+00:00)
+2025-08-15 13:32:48,012 | INFO | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:32:48.012720"}
+2025-08-15 13:32:48,011 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:33:48 UTC)" (scheduled at 2025-08-15 13:32:48.007806+00:00)
+2025-08-15 13:32:48,013 | INFO | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:32:48.013383"}
+2025-08-15 13:32:48,012 | INFO | hids-scheduler | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:32:48.012720"}
+2025-08-15 13:32:48,013 | INFO | hids-scheduler | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:32:48.013383"}
+2025-08-15 13:32:48,013 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:33:48 UTC)" executed successfully
+2025-08-15 13:32:48,014 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:33:48 UTC)" executed successfully
+2025-08-15 13:32:48,016 | INFO | apscheduler.executors.default | Running job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:33:48 UTC)" (scheduled at 2025-08-15 13:32:48.015820+00:00)
+2025-08-15 13:32:48,016 | INFO | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:32:48.016590"}
+2025-08-15 13:32:48,016 | INFO | hids-scheduler | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:32:48.016590"}
+2025-08-15 13:32:48,017 | INFO | apscheduler.executors.default | Job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:33:48 UTC)" executed successfully
+2025-08-15 13:33:48,007 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:34:48 UTC)" (scheduled at 2025-08-15 13:33:48.007069+00:00)
+2025-08-15 13:33:48,008 | INFO | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:33:48.008602"}
+2025-08-15 13:33:48,008 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:34:48 UTC)" (scheduled at 2025-08-15 13:33:48.007806+00:00)
+2025-08-15 13:33:48,009 | INFO | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:33:48.009161"}
+2025-08-15 13:33:48,008 | INFO | hids-scheduler | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:33:48.008602"}
+2025-08-15 13:33:48,009 | INFO | hids-scheduler | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:33:48.009161"}
+2025-08-15 13:33:48,009 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:34:48 UTC)" executed successfully
+2025-08-15 13:33:48,009 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:34:48 UTC)" executed successfully
+2025-08-15 13:33:48,016 | INFO | apscheduler.executors.default | Running job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:34:48 UTC)" (scheduled at 2025-08-15 13:33:48.015820+00:00)
+2025-08-15 13:33:48,016 | INFO | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:33:48.016880"}
+2025-08-15 13:33:48,016 | INFO | hids-scheduler | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:33:48.016880"}
+2025-08-15 13:33:48,017 | INFO | apscheduler.executors.default | Job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:34:48 UTC)" executed successfully
+2025-08-15 13:34:30,362 | INFO | hids | Shutting down application...
+2025-08-15 13:34:30,363 | INFO | apscheduler.scheduler | Scheduler has been shut down
+2025-08-15 13:34:31,174 | INFO | hids | Starting HIDS-Web API... (version: 2.0.0)
+2025-08-15 13:34:31,188 | INFO | hids | Creating database tables (if not exist)...
+2025-08-15 13:34:31,200 | INFO | hids | Database ready.
+2025-08-15 13:34:31,201 | INFO | apscheduler.scheduler | Scheduler started
+2025-08-15 13:34:31,211 | INFO | apscheduler.scheduler | Added job "scan_file" to job store "default"
+2025-08-15 13:34:31,212 | INFO | apscheduler.scheduler | Added job "scan_file" to job store "default"
+2025-08-15 13:34:31,213 | INFO | apscheduler.scheduler | Added job "scan_file" to job store "default"
+2025-08-15 13:34:31,219 | INFO | apscheduler.scheduler | Added job "scan_ip" to job store "default"
+2025-08-15 13:34:31,220 | INFO | apscheduler.scheduler | Added job "scan_ip" to job store "default"
+2025-08-15 13:34:31,221 | INFO | apscheduler.scheduler | Added job "scan_ip" to job store "default"
+2025-08-15 13:34:35,235 | INFO | hids | Shutting down application...
+2025-08-15 13:34:35,236 | INFO | apscheduler.scheduler | Scheduler has been shut down
+2025-08-15 13:34:43,957 | INFO | hids | Starting HIDS-Web API... (version: 2.0.0)
+2025-08-15 13:34:43,976 | INFO | hids | Creating database tables (if not exist)...
+2025-08-15 13:34:43,986 | INFO | hids | Database ready.
+2025-08-15 13:34:44,017 | INFO | apscheduler.scheduler | Scheduler started
+2025-08-15 13:34:44,045 | INFO | apscheduler.scheduler | Added job "scan_file" to job store "default"
+2025-08-15 13:34:44,062 | INFO | apscheduler.scheduler | Added job "scan_file" to job store "default"
+2025-08-15 13:34:44,079 | INFO | apscheduler.scheduler | Added job "scan_file" to job store "default"
+2025-08-15 13:34:44,100 | INFO | apscheduler.scheduler | Added job "scan_ip" to job store "default"
+2025-08-15 13:34:44,117 | INFO | apscheduler.scheduler | Added job "scan_ip" to job store "default"
+2025-08-15 13:34:44,134 | INFO | apscheduler.scheduler | Added job "scan_ip" to job store "default"
+2025-08-15 13:35:21,809 | WARNING | passlib.handlers.bcrypt | (trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.10/site-packages/passlib/handlers/bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+AttributeError: module 'bcrypt' has no attribute '__about__'
+2025-08-15 13:35:22,068 | INFO | apscheduler.scheduler | Added job "scan_file" to job store "default"
+2025-08-15 13:35:22,116 | INFO | apscheduler.scheduler | Added job "scan_ip" to job store "default"
+2025-08-15 13:35:44,051 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:36:44 UTC)" (scheduled at 2025-08-15 13:35:44.047516+00:00)
+2025-08-15 13:35:44,053 | INFO | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:35:44.053262"}
+2025-08-15 13:35:44,053 | INFO | hids-scheduler | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:35:44.053262"}
+2025-08-15 13:35:44,054 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:36:44 UTC)" executed successfully
+2025-08-15 13:35:44,067 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:36:44 UTC)" (scheduled at 2025-08-15 13:35:44.065176+00:00)
+2025-08-15 13:35:44,068 | INFO | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:35:44.068106"}
+2025-08-15 13:35:44,068 | INFO | hids-scheduler | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:35:44.068106"}
+2025-08-15 13:35:44,068 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:36:44 UTC)" executed successfully
+2025-08-15 13:35:44,123 | INFO | apscheduler.executors.default | Running job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:36:44 UTC)" (scheduled at 2025-08-15 13:35:44.119615+00:00)
+2025-08-15 13:35:44,124 | INFO | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:35:44.124402"}
+2025-08-15 13:35:44,124 | INFO | hids-scheduler | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:35:44.124402"}
+2025-08-15 13:35:44,125 | INFO | apscheduler.executors.default | Job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:36:44 UTC)" executed successfully
+2025-08-15 13:36:22,061 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:37:22 UTC)" (scheduled at 2025-08-15 13:36:22.056859+00:00)
+2025-08-15 13:36:22,062 | INFO | {"type": "file_scan", "id": 5, "path": "/etc/hosts", "result": "OK", "ts": "2025-08-15T13:36:22.061982"}
+2025-08-15 13:36:22,062 | INFO | hids-scheduler | {"type": "file_scan", "id": 5, "path": "/etc/hosts", "result": "OK", "ts": "2025-08-15T13:36:22.061982"}
+2025-08-15 13:36:22,062 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:37:22 UTC)" executed successfully
+2025-08-15 13:36:22,106 | INFO | apscheduler.executors.default | Running job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:37:22 UTC)" (scheduled at 2025-08-15 13:36:22.103150+00:00)
+2025-08-15 13:36:22,107 | INFO | {"type": "ip_scan", "id": 5, "ip": "10.0.0.2", "hostname": "lab2", "result": "OK", "ts": "2025-08-15T13:36:22.107103"}
+2025-08-15 13:36:22,107 | INFO | hids-scheduler | {"type": "ip_scan", "id": 5, "ip": "10.0.0.2", "hostname": "lab2", "result": "OK", "ts": "2025-08-15T13:36:22.107103"}
+2025-08-15 13:36:22,107 | INFO | apscheduler.executors.default | Job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:37:22 UTC)" executed successfully
+2025-08-15 13:36:44,051 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:37:44 UTC)" (scheduled at 2025-08-15 13:36:44.047516+00:00)
+2025-08-15 13:36:44,052 | INFO | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:36:44.052602"}
+2025-08-15 13:36:44,052 | INFO | hids-scheduler | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:36:44.052602"}
+2025-08-15 13:36:44,053 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:37:44 UTC)" executed successfully
+2025-08-15 13:36:44,067 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:37:44 UTC)" (scheduled at 2025-08-15 13:36:44.065176+00:00)
+2025-08-15 13:36:44,069 | INFO | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:36:44.068919"}
+2025-08-15 13:36:44,069 | INFO | hids-scheduler | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:36:44.068919"}
+2025-08-15 13:36:44,070 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:37:44 UTC)" executed successfully
+2025-08-15 13:36:44,121 | INFO | apscheduler.executors.default | Running job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:37:44 UTC)" (scheduled at 2025-08-15 13:36:44.119615+00:00)
+2025-08-15 13:36:44,122 | INFO | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:36:44.122628"}
+2025-08-15 13:36:44,122 | INFO | hids-scheduler | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:36:44.122628"}
+2025-08-15 13:36:44,123 | INFO | apscheduler.executors.default | Job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:37:44 UTC)" executed successfully
+2025-08-15 13:37:22,061 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:38:22 UTC)" (scheduled at 2025-08-15 13:37:22.056859+00:00)
+2025-08-15 13:37:22,061 | INFO | {"type": "file_scan", "id": 5, "path": "/etc/hosts", "result": "OK", "ts": "2025-08-15T13:37:22.061702"}
+2025-08-15 13:37:22,061 | INFO | hids-scheduler | {"type": "file_scan", "id": 5, "path": "/etc/hosts", "result": "OK", "ts": "2025-08-15T13:37:22.061702"}
+2025-08-15 13:37:22,062 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:38:22 UTC)" executed successfully
+2025-08-15 13:37:22,105 | INFO | apscheduler.executors.default | Running job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:38:22 UTC)" (scheduled at 2025-08-15 13:37:22.103150+00:00)
+2025-08-15 13:37:22,106 | INFO | {"type": "ip_scan", "id": 5, "ip": "10.0.0.2", "hostname": "lab2", "result": "OK", "ts": "2025-08-15T13:37:22.106498"}
+2025-08-15 13:37:22,106 | INFO | hids-scheduler | {"type": "ip_scan", "id": 5, "ip": "10.0.0.2", "hostname": "lab2", "result": "OK", "ts": "2025-08-15T13:37:22.106498"}
+2025-08-15 13:37:22,107 | INFO | apscheduler.executors.default | Job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:38:22 UTC)" executed successfully
+2025-08-15 13:37:37,816 | INFO | hids | Shutting down application...
+2025-08-15 13:37:37,820 | INFO | apscheduler.scheduler | Scheduler has been shut down
+2025-08-15 13:37:40,220 | INFO | hids | Starting HIDS-Web API... (version: 2.0.0)
+2025-08-15 13:37:40,232 | INFO | hids | Creating database tables (if not exist)...
+2025-08-15 13:37:40,242 | INFO | hids | Database ready.
+2025-08-15 13:37:40,248 | INFO | apscheduler.scheduler | Scheduler started
+2025-08-15 13:37:40,269 | INFO | apscheduler.scheduler | Removed job file:2
+2025-08-15 13:37:40,284 | INFO | apscheduler.scheduler | Added job "scan_file" to job store "default"
+2025-08-15 13:37:40,295 | INFO | apscheduler.scheduler | Removed job file:3
+2025-08-15 13:37:40,309 | INFO | apscheduler.scheduler | Added job "scan_file" to job store "default"
+2025-08-15 13:37:40,321 | INFO | apscheduler.scheduler | Removed job file:4
+2025-08-15 13:37:40,335 | INFO | apscheduler.scheduler | Added job "scan_file" to job store "default"
+2025-08-15 13:37:40,347 | INFO | apscheduler.scheduler | Removed job file:5
+2025-08-15 13:37:40,361 | INFO | apscheduler.scheduler | Added job "scan_file" to job store "default"
+2025-08-15 13:37:40,379 | INFO | apscheduler.scheduler | Removed job ip:2
+2025-08-15 13:37:40,390 | INFO | apscheduler.scheduler | Added job "scan_ip" to job store "default"
+2025-08-15 13:37:40,403 | INFO | apscheduler.scheduler | Removed job ip:3
+2025-08-15 13:37:40,417 | INFO | apscheduler.scheduler | Added job "scan_ip" to job store "default"
+2025-08-15 13:37:40,428 | INFO | apscheduler.scheduler | Removed job ip:4
+2025-08-15 13:37:40,442 | INFO | apscheduler.scheduler | Added job "scan_ip" to job store "default"
+2025-08-15 13:37:40,454 | INFO | apscheduler.scheduler | Removed job ip:5
+2025-08-15 13:37:40,468 | INFO | apscheduler.scheduler | Added job "scan_ip" to job store "default"
+2025-08-15 13:38:40,302 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:39:40 UTC)" (scheduled at 2025-08-15 13:38:40.296648+00:00)
+2025-08-15 13:38:40,304 | INFO | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:38:40.304540"}
+2025-08-15 13:38:40,304 | INFO | hids-scheduler | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:38:40.304540"}
+2025-08-15 13:38:40,305 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:39:40 UTC)" executed successfully
+2025-08-15 13:38:40,325 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:39:40 UTC)" (scheduled at 2025-08-15 13:38:40.322308+00:00)
+2025-08-15 13:38:40,326 | INFO | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:38:40.326177"}
+2025-08-15 13:38:40,326 | INFO | hids-scheduler | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:38:40.326177"}
+2025-08-15 13:38:40,326 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:39:40 UTC)" executed successfully
+2025-08-15 13:38:40,352 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:39:40 UTC)" (scheduled at 2025-08-15 13:38:40.348594+00:00)
+2025-08-15 13:38:40,353 | INFO | {"type": "file_scan", "id": 5, "path": "/etc/hosts", "result": "OK", "ts": "2025-08-15T13:38:40.353876"}
+2025-08-15 13:38:40,353 | INFO | hids-scheduler | {"type": "file_scan", "id": 5, "path": "/etc/hosts", "result": "OK", "ts": "2025-08-15T13:38:40.353876"}
+2025-08-15 13:38:40,354 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:39:40 UTC)" executed successfully
+2025-08-15 13:38:40,432 | INFO | apscheduler.executors.default | Running job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:39:40 UTC)" (scheduled at 2025-08-15 13:38:40.429478+00:00)
+2025-08-15 13:38:40,433 | INFO | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:38:40.433128"}
+2025-08-15 13:38:40,433 | INFO | hids-scheduler | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:38:40.433128"}
+2025-08-15 13:38:40,433 | INFO | apscheduler.executors.default | Job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:39:40 UTC)" executed successfully
+2025-08-15 13:38:40,459 | INFO | apscheduler.executors.default | Running job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:39:40 UTC)" (scheduled at 2025-08-15 13:38:40.455804+00:00)
+2025-08-15 13:38:40,459 | INFO | {"type": "ip_scan", "id": 5, "ip": "10.0.0.2", "hostname": "lab2", "result": "OK", "ts": "2025-08-15T13:38:40.459872"}
+2025-08-15 13:38:40,459 | INFO | hids-scheduler | {"type": "ip_scan", "id": 5, "ip": "10.0.0.2", "hostname": "lab2", "result": "OK", "ts": "2025-08-15T13:38:40.459872"}
+2025-08-15 13:38:40,460 | INFO | apscheduler.executors.default | Job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:39:40 UTC)" executed successfully
+2025-08-15 13:39:40,299 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:40:40 UTC)" (scheduled at 2025-08-15 13:39:40.296648+00:00)
+2025-08-15 13:39:40,300 | INFO | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:39:40.300614"}
+2025-08-15 13:39:40,300 | INFO | hids-scheduler | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:39:40.300614"}
+2025-08-15 13:39:40,301 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:40:40 UTC)" executed successfully
+2025-08-15 13:39:40,325 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:40:40 UTC)" (scheduled at 2025-08-15 13:39:40.322308+00:00)
+2025-08-15 13:39:40,326 | INFO | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:39:40.325965"}
+2025-08-15 13:39:40,326 | INFO | hids-scheduler | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:39:40.325965"}
+2025-08-15 13:39:40,326 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:40:40 UTC)" executed successfully
+2025-08-15 13:39:40,351 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:40:40 UTC)" (scheduled at 2025-08-15 13:39:40.348594+00:00)
+2025-08-15 13:39:40,351 | INFO | {"type": "file_scan", "id": 5, "path": "/etc/hosts", "result": "OK", "ts": "2025-08-15T13:39:40.351795"}
+2025-08-15 13:39:40,351 | INFO | hids-scheduler | {"type": "file_scan", "id": 5, "path": "/etc/hosts", "result": "OK", "ts": "2025-08-15T13:39:40.351795"}
+2025-08-15 13:39:40,352 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:40:40 UTC)" executed successfully
+2025-08-15 13:39:40,433 | INFO | apscheduler.executors.default | Running job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:40:40 UTC)" (scheduled at 2025-08-15 13:39:40.429478+00:00)
+2025-08-15 13:39:40,434 | INFO | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:39:40.434500"}
+2025-08-15 13:39:40,434 | INFO | hids-scheduler | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:39:40.434500"}
+2025-08-15 13:39:40,435 | INFO | apscheduler.executors.default | Job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:40:40 UTC)" executed successfully
+2025-08-15 13:39:40,457 | INFO | apscheduler.executors.default | Running job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:40:40 UTC)" (scheduled at 2025-08-15 13:39:40.455804+00:00)
+2025-08-15 13:39:40,458 | INFO | {"type": "ip_scan", "id": 5, "ip": "10.0.0.2", "hostname": "lab2", "result": "OK", "ts": "2025-08-15T13:39:40.458501"}
+2025-08-15 13:39:40,458 | INFO | hids-scheduler | {"type": "ip_scan", "id": 5, "ip": "10.0.0.2", "hostname": "lab2", "result": "OK", "ts": "2025-08-15T13:39:40.458501"}
+2025-08-15 13:39:40,459 | INFO | apscheduler.executors.default | Job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:40:40 UTC)" executed successfully
+2025-08-15 13:40:40,302 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:41:40 UTC)" (scheduled at 2025-08-15 13:40:40.296648+00:00)
+2025-08-15 13:40:40,303 | INFO | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:40:40.303646"}
+2025-08-15 13:40:40,303 | INFO | hids-scheduler | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:40:40.303646"}
+2025-08-15 13:40:40,304 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:41:40 UTC)" executed successfully
+2025-08-15 13:40:40,325 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:41:40 UTC)" (scheduled at 2025-08-15 13:40:40.322308+00:00)
+2025-08-15 13:40:40,325 | INFO | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:40:40.325686"}
+2025-08-15 13:40:40,325 | INFO | hids-scheduler | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:40:40.325686"}
+2025-08-15 13:40:40,326 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:41:40 UTC)" executed successfully
+2025-08-15 13:40:40,350 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:41:40 UTC)" (scheduled at 2025-08-15 13:40:40.348594+00:00)
+2025-08-15 13:40:40,351 | INFO | {"type": "file_scan", "id": 5, "path": "/etc/hosts", "result": "OK", "ts": "2025-08-15T13:40:40.351601"}
+2025-08-15 13:40:40,351 | INFO | hids-scheduler | {"type": "file_scan", "id": 5, "path": "/etc/hosts", "result": "OK", "ts": "2025-08-15T13:40:40.351601"}
+2025-08-15 13:40:40,352 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:41:40 UTC)" executed successfully
+2025-08-15 13:40:40,432 | INFO | apscheduler.executors.default | Running job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:41:40 UTC)" (scheduled at 2025-08-15 13:40:40.429478+00:00)
+2025-08-15 13:40:40,433 | INFO | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:40:40.433066"}
+2025-08-15 13:40:40,433 | INFO | hids-scheduler | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:40:40.433066"}
+2025-08-15 13:40:40,433 | INFO | apscheduler.executors.default | Job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:41:40 UTC)" executed successfully
+2025-08-15 13:40:40,458 | INFO | apscheduler.executors.default | Running job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:41:40 UTC)" (scheduled at 2025-08-15 13:40:40.455804+00:00)
+2025-08-15 13:40:40,458 | INFO | {"type": "ip_scan", "id": 5, "ip": "10.0.0.2", "hostname": "lab2", "result": "OK", "ts": "2025-08-15T13:40:40.458679"}
+2025-08-15 13:40:40,458 | INFO | hids-scheduler | {"type": "ip_scan", "id": 5, "ip": "10.0.0.2", "hostname": "lab2", "result": "OK", "ts": "2025-08-15T13:40:40.458679"}
+2025-08-15 13:40:40,459 | INFO | apscheduler.executors.default | Job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:41:40 UTC)" executed successfully
+2025-08-15 13:41:40,302 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:42:40 UTC)" (scheduled at 2025-08-15 13:41:40.296648+00:00)
+2025-08-15 13:41:40,303 | INFO | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:41:40.303055"}
+2025-08-15 13:41:40,303 | INFO | hids-scheduler | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:41:40.303055"}
+2025-08-15 13:41:40,303 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:42:40 UTC)" executed successfully
+2025-08-15 13:41:40,324 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:42:40 UTC)" (scheduled at 2025-08-15 13:41:40.322308+00:00)
+2025-08-15 13:41:40,325 | INFO | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:41:40.325618"}
+2025-08-15 13:41:40,325 | INFO | hids-scheduler | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:41:40.325618"}
+2025-08-15 13:41:40,326 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:42:40 UTC)" executed successfully
+2025-08-15 13:41:40,351 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:42:40 UTC)" (scheduled at 2025-08-15 13:41:40.348594+00:00)
+2025-08-15 13:41:40,352 | INFO | {"type": "file_scan", "id": 5, "path": "/etc/hosts", "result": "OK", "ts": "2025-08-15T13:41:40.352339"}
+2025-08-15 13:41:40,352 | INFO | hids-scheduler | {"type": "file_scan", "id": 5, "path": "/etc/hosts", "result": "OK", "ts": "2025-08-15T13:41:40.352339"}
+2025-08-15 13:41:40,353 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:42:40 UTC)" executed successfully
+2025-08-15 13:41:40,432 | INFO | apscheduler.executors.default | Running job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:42:40 UTC)" (scheduled at 2025-08-15 13:41:40.429478+00:00)
+2025-08-15 13:41:40,433 | INFO | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:41:40.433017"}
+2025-08-15 13:41:40,433 | INFO | hids-scheduler | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:41:40.433017"}
+2025-08-15 13:41:40,433 | INFO | apscheduler.executors.default | Job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:42:40 UTC)" executed successfully
+2025-08-15 13:41:40,458 | INFO | apscheduler.executors.default | Running job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:42:40 UTC)" (scheduled at 2025-08-15 13:41:40.455804+00:00)
+2025-08-15 13:41:40,458 | INFO | {"type": "ip_scan", "id": 5, "ip": "10.0.0.2", "hostname": "lab2", "result": "OK", "ts": "2025-08-15T13:41:40.458822"}
+2025-08-15 13:41:40,458 | INFO | hids-scheduler | {"type": "ip_scan", "id": 5, "ip": "10.0.0.2", "hostname": "lab2", "result": "OK", "ts": "2025-08-15T13:41:40.458822"}
+2025-08-15 13:41:40,459 | INFO | apscheduler.executors.default | Job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:42:40 UTC)" executed successfully
+2025-08-15 13:42:40,299 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:43:40 UTC)" (scheduled at 2025-08-15 13:42:40.296648+00:00)
+2025-08-15 13:42:40,300 | INFO | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:42:40.300445"}
+2025-08-15 13:42:40,300 | INFO | hids-scheduler | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:42:40.300445"}
+2025-08-15 13:42:40,301 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:43:40 UTC)" executed successfully
+2025-08-15 13:42:40,324 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:43:40 UTC)" (scheduled at 2025-08-15 13:42:40.322308+00:00)
+2025-08-15 13:42:40,325 | INFO | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:42:40.325051"}
+2025-08-15 13:42:40,325 | INFO | hids-scheduler | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:42:40.325051"}
+2025-08-15 13:42:40,325 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:43:40 UTC)" executed successfully
+2025-08-15 13:42:40,350 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:43:40 UTC)" (scheduled at 2025-08-15 13:42:40.348594+00:00)
+2025-08-15 13:42:40,351 | INFO | {"type": "file_scan", "id": 5, "path": "/etc/hosts", "result": "OK", "ts": "2025-08-15T13:42:40.351575"}
+2025-08-15 13:42:40,351 | INFO | hids-scheduler | {"type": "file_scan", "id": 5, "path": "/etc/hosts", "result": "OK", "ts": "2025-08-15T13:42:40.351575"}
+2025-08-15 13:42:40,352 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:43:40 UTC)" executed successfully
+2025-08-15 13:42:40,432 | INFO | apscheduler.executors.default | Running job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:43:40 UTC)" (scheduled at 2025-08-15 13:42:40.429478+00:00)
+2025-08-15 13:42:40,433 | INFO | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:42:40.433669"}
+2025-08-15 13:42:40,433 | INFO | hids-scheduler | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:42:40.433669"}
+2025-08-15 13:42:40,434 | INFO | apscheduler.executors.default | Job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:43:40 UTC)" executed successfully
+2025-08-15 13:42:40,458 | INFO | apscheduler.executors.default | Running job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:43:40 UTC)" (scheduled at 2025-08-15 13:42:40.455804+00:00)
+2025-08-15 13:42:40,458 | INFO | {"type": "ip_scan", "id": 5, "ip": "10.0.0.2", "hostname": "lab2", "result": "OK", "ts": "2025-08-15T13:42:40.458923"}
+2025-08-15 13:42:40,458 | INFO | hids-scheduler | {"type": "ip_scan", "id": 5, "ip": "10.0.0.2", "hostname": "lab2", "result": "OK", "ts": "2025-08-15T13:42:40.458923"}
+2025-08-15 13:42:40,459 | INFO | apscheduler.executors.default | Job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:43:40 UTC)" executed successfully
+2025-08-15 13:43:40,300 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:44:40 UTC)" (scheduled at 2025-08-15 13:43:40.296648+00:00)
+2025-08-15 13:43:40,301 | INFO | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:43:40.301262"}
+2025-08-15 13:43:40,301 | INFO | hids-scheduler | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:43:40.301262"}
+2025-08-15 13:43:40,301 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:44:40 UTC)" executed successfully
+2025-08-15 13:43:40,325 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:44:40 UTC)" (scheduled at 2025-08-15 13:43:40.322308+00:00)
+2025-08-15 13:43:40,325 | INFO | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:43:40.325628"}
+2025-08-15 13:43:40,325 | INFO | hids-scheduler | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:43:40.325628"}
+2025-08-15 13:43:40,326 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:44:40 UTC)" executed successfully
+2025-08-15 13:43:40,351 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:44:40 UTC)" (scheduled at 2025-08-15 13:43:40.348594+00:00)
+2025-08-15 13:43:40,352 | INFO | {"type": "file_scan", "id": 5, "path": "/etc/hosts", "result": "OK", "ts": "2025-08-15T13:43:40.352258"}
+2025-08-15 13:43:40,352 | INFO | hids-scheduler | {"type": "file_scan", "id": 5, "path": "/etc/hosts", "result": "OK", "ts": "2025-08-15T13:43:40.352258"}
+2025-08-15 13:43:40,352 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:44:40 UTC)" executed successfully
+2025-08-15 13:43:40,432 | INFO | apscheduler.executors.default | Running job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:44:40 UTC)" (scheduled at 2025-08-15 13:43:40.429478+00:00)
+2025-08-15 13:43:40,433 | INFO | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:43:40.433081"}
+2025-08-15 13:43:40,433 | INFO | hids-scheduler | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:43:40.433081"}
+2025-08-15 13:43:40,433 | INFO | apscheduler.executors.default | Job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:44:40 UTC)" executed successfully
+2025-08-15 13:43:40,458 | INFO | apscheduler.executors.default | Running job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:44:40 UTC)" (scheduled at 2025-08-15 13:43:40.455804+00:00)
+2025-08-15 13:43:40,459 | INFO | {"type": "ip_scan", "id": 5, "ip": "10.0.0.2", "hostname": "lab2", "result": "OK", "ts": "2025-08-15T13:43:40.459034"}
+2025-08-15 13:43:40,459 | INFO | hids-scheduler | {"type": "ip_scan", "id": 5, "ip": "10.0.0.2", "hostname": "lab2", "result": "OK", "ts": "2025-08-15T13:43:40.459034"}
+2025-08-15 13:43:40,459 | INFO | apscheduler.executors.default | Job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:44:40 UTC)" executed successfully
+2025-08-15 13:44:40,302 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:45:40 UTC)" (scheduled at 2025-08-15 13:44:40.296648+00:00)
+2025-08-15 13:44:40,303 | INFO | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:44:40.303431"}
+2025-08-15 13:44:40,303 | INFO | hids-scheduler | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:44:40.303431"}
+2025-08-15 13:44:40,304 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:45:40 UTC)" executed successfully
+2025-08-15 13:44:40,325 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:45:40 UTC)" (scheduled at 2025-08-15 13:44:40.322308+00:00)
+2025-08-15 13:44:40,325 | INFO | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:44:40.325804"}
+2025-08-15 13:44:40,325 | INFO | hids-scheduler | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:44:40.325804"}
+2025-08-15 13:44:40,326 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:45:40 UTC)" executed successfully
+2025-08-15 13:44:40,350 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:45:40 UTC)" (scheduled at 2025-08-15 13:44:40.348594+00:00)
+2025-08-15 13:44:40,351 | INFO | {"type": "file_scan", "id": 5, "path": "/etc/hosts", "result": "OK", "ts": "2025-08-15T13:44:40.351384"}
+2025-08-15 13:44:40,351 | INFO | hids-scheduler | {"type": "file_scan", "id": 5, "path": "/etc/hosts", "result": "OK", "ts": "2025-08-15T13:44:40.351384"}
+2025-08-15 13:44:40,351 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:45:40 UTC)" executed successfully
+2025-08-15 13:44:40,432 | INFO | apscheduler.executors.default | Running job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:45:40 UTC)" (scheduled at 2025-08-15 13:44:40.429478+00:00)
+2025-08-15 13:44:40,433 | INFO | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:44:40.432984"}
+2025-08-15 13:44:40,433 | INFO | hids-scheduler | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:44:40.432984"}
+2025-08-15 13:44:40,433 | INFO | apscheduler.executors.default | Job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:45:40 UTC)" executed successfully
+2025-08-15 13:44:40,458 | INFO | apscheduler.executors.default | Running job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:45:40 UTC)" (scheduled at 2025-08-15 13:44:40.455804+00:00)
+2025-08-15 13:44:40,459 | INFO | {"type": "ip_scan", "id": 5, "ip": "10.0.0.2", "hostname": "lab2", "result": "OK", "ts": "2025-08-15T13:44:40.459113"}
+2025-08-15 13:44:40,459 | INFO | hids-scheduler | {"type": "ip_scan", "id": 5, "ip": "10.0.0.2", "hostname": "lab2", "result": "OK", "ts": "2025-08-15T13:44:40.459113"}
+2025-08-15 13:44:40,459 | INFO | apscheduler.executors.default | Job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:45:40 UTC)" executed successfully
+2025-08-15 13:45:40,303 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:46:40 UTC)" (scheduled at 2025-08-15 13:45:40.296648+00:00)
+2025-08-15 13:45:40,304 | INFO | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:45:40.304019"}
+2025-08-15 13:45:40,304 | INFO | hids-scheduler | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:45:40.304019"}
+2025-08-15 13:45:40,304 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:46:40 UTC)" executed successfully
+2025-08-15 13:45:40,324 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:46:40 UTC)" (scheduled at 2025-08-15 13:45:40.322308+00:00)
+2025-08-15 13:45:40,325 | INFO | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:45:40.325468"}
+2025-08-15 13:45:40,325 | INFO | hids-scheduler | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:45:40.325468"}
+2025-08-15 13:45:40,326 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:46:40 UTC)" executed successfully
+2025-08-15 13:45:40,351 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:46:40 UTC)" (scheduled at 2025-08-15 13:45:40.348594+00:00)
+2025-08-15 13:45:40,352 | INFO | {"type": "file_scan", "id": 5, "path": "/etc/hosts", "result": "OK", "ts": "2025-08-15T13:45:40.352061"}
+2025-08-15 13:45:40,352 | INFO | hids-scheduler | {"type": "file_scan", "id": 5, "path": "/etc/hosts", "result": "OK", "ts": "2025-08-15T13:45:40.352061"}
+2025-08-15 13:45:40,352 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:46:40 UTC)" executed successfully
+2025-08-15 13:45:40,432 | INFO | apscheduler.executors.default | Running job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:46:40 UTC)" (scheduled at 2025-08-15 13:45:40.429478+00:00)
+2025-08-15 13:45:40,433 | INFO | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:45:40.433159"}
+2025-08-15 13:45:40,433 | INFO | hids-scheduler | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:45:40.433159"}
+2025-08-15 13:45:40,433 | INFO | apscheduler.executors.default | Job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:46:40 UTC)" executed successfully
+2025-08-15 13:45:40,458 | INFO | apscheduler.executors.default | Running job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:46:40 UTC)" (scheduled at 2025-08-15 13:45:40.455804+00:00)
+2025-08-15 13:45:40,459 | INFO | {"type": "ip_scan", "id": 5, "ip": "10.0.0.2", "hostname": "lab2", "result": "OK", "ts": "2025-08-15T13:45:40.459260"}
+2025-08-15 13:45:40,459 | INFO | hids-scheduler | {"type": "ip_scan", "id": 5, "ip": "10.0.0.2", "hostname": "lab2", "result": "OK", "ts": "2025-08-15T13:45:40.459260"}
+2025-08-15 13:45:40,459 | INFO | apscheduler.executors.default | Job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:46:40 UTC)" executed successfully
+2025-08-15 13:46:40,302 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:47:40 UTC)" (scheduled at 2025-08-15 13:46:40.296648+00:00)
+2025-08-15 13:46:40,303 | INFO | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:46:40.303041"}
+2025-08-15 13:46:40,303 | INFO | hids-scheduler | {"type": "file_scan", "id": 3, "path": "/tmp/foo/test", "result": "OK", "ts": "2025-08-15T13:46:40.303041"}
+2025-08-15 13:46:40,303 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:47:40 UTC)" executed successfully
+2025-08-15 13:46:40,324 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:47:40 UTC)" (scheduled at 2025-08-15 13:46:40.322308+00:00)
+2025-08-15 13:46:40,325 | INFO | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:46:40.325086"}
+2025-08-15 13:46:40,325 | INFO | hids-scheduler | {"type": "file_scan", "id": 4, "path": "/tmp/a", "result": "OK", "ts": "2025-08-15T13:46:40.325086"}
+2025-08-15 13:46:40,325 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:47:40 UTC)" executed successfully
+2025-08-15 13:46:40,351 | INFO | apscheduler.executors.default | Running job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:47:40 UTC)" (scheduled at 2025-08-15 13:46:40.348594+00:00)
+2025-08-15 13:46:40,352 | INFO | {"type": "file_scan", "id": 5, "path": "/etc/hosts", "result": "OK", "ts": "2025-08-15T13:46:40.352035"}
+2025-08-15 13:46:40,352 | INFO | hids-scheduler | {"type": "file_scan", "id": 5, "path": "/etc/hosts", "result": "OK", "ts": "2025-08-15T13:46:40.352035"}
+2025-08-15 13:46:40,352 | INFO | apscheduler.executors.default | Job "scan_file (trigger: interval[0:01:00], next run at: 2025-08-15 13:47:40 UTC)" executed successfully
+2025-08-15 13:46:40,432 | INFO | apscheduler.executors.default | Running job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:47:40 UTC)" (scheduled at 2025-08-15 13:46:40.429478+00:00)
+2025-08-15 13:46:40,433 | INFO | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:46:40.433493"}
+2025-08-15 13:46:40,433 | INFO | hids-scheduler | {"type": "ip_scan", "id": 4, "ip": "10.0.0.1", "hostname": "lab", "result": "OK", "ts": "2025-08-15T13:46:40.433493"}
+2025-08-15 13:46:40,434 | INFO | apscheduler.executors.default | Job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:47:40 UTC)" executed successfully
+2025-08-15 13:46:40,458 | INFO | apscheduler.executors.default | Running job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:47:40 UTC)" (scheduled at 2025-08-15 13:46:40.455804+00:00)
+2025-08-15 13:46:40,459 | INFO | {"type": "ip_scan", "id": 5, "ip": "10.0.0.2", "hostname": "lab2", "result": "OK", "ts": "2025-08-15T13:46:40.459680"}
+2025-08-15 13:46:40,459 | INFO | hids-scheduler | {"type": "ip_scan", "id": 5, "ip": "10.0.0.2", "hostname": "lab2", "result": "OK", "ts": "2025-08-15T13:46:40.459680"}
+2025-08-15 13:46:40,460 | INFO | apscheduler.executors.default | Job "scan_ip (trigger: interval[0:01:00], next run at: 2025-08-15 13:47:40 UTC)" executed successfully
+2025-08-15 13:47:13,790 | INFO | hids | Shutting down application...
+2025-08-15 13:47:13,793 | INFO | apscheduler.scheduler | Scheduler has been shut down

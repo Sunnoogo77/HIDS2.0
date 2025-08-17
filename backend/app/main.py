@@ -20,6 +20,8 @@ from app.api.users import router as users_router
 from app.api.monitoring import router as monitoring_router
 
 from app.api.activity import router as activity_router
+from app.api.metrics import router as metrics_router
+from app.api.reports import router as reports_router
 
 logger.info(f"Starting {settings.APP_NAME}... (version: {settings.VERSION})")
 
@@ -72,3 +74,5 @@ app.include_router(auth_router, prefix="/api")
 app.include_router(users_router)
 app.include_router(monitoring_router)
 app.include_router(activity_router)
+app.include_router(metrics_router)
+app.include_router(reports_router)
