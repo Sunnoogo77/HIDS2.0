@@ -10,6 +10,10 @@ class Settings(BaseSettings):
     LOG_LEVEL: str      = Field("INFO", env="LOG_LEVEL")
     JWT_SECRET: str     = Field(..., env="JWT_SECRET")
 
+    ALLOWED_ORIGINS: str = Field(
+        default="http://localhost:5173,http://localhost:3000,https://localhost:5173,https://localhost:3000",
+        description="Comma-separated list of allowed CORS origins."
+    )
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"

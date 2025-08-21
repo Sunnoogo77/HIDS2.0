@@ -373,6 +373,7 @@
 from typing import List, Any
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.exc import IntegrityError
+from datetime import datetime
 
 # Scheduler + scan tasks
 from app.core.scheduler import add_interval_job, remove_job, FREQ_SECONDS
@@ -618,3 +619,39 @@ def remove_folder_item(folder_id: int):
     delete_folder_item(folder_id)
     remove_job("folder", folder_id)
     return None
+
+# -------------------------------------------------------------------------
+# Scan now endpoints
+# -------------------------------------------------------------------------
+
+@router.post("/files/{file_id}/scan-now")
+def scan_now_file(file_id: int):
+    item = get_file_item(file_id)
+    if not item:
+        raise HTTPException(status_code=404, detail="File not found")
+    # on scanne même si status=paused (action manuelle)
+    scan_file(item_id=item["id"] if isinstance(item, dict) else item.id,
+                path=item["path"] if isinstance(item, dict) else item.path)
+    return {"executed": True, "type": "file_scan", "id": item["id"] if isinstance(item, dict) else item.id,
+            "ts": datetime.utcnow().isoformat()}
+
+@router.post("/folders/{folder_id}/scan-now")
+def scan_now_folder(folder_id: int):
+    item = get_folder_item(folder_id)
+    if not item:
+        raise HTTPException(status_code=404, detail="Folder not found")
+    scan_folder(item_id=item["id"] if isinstance(item, dict) else item.id,
+                path=item["path"] if isinstance(item, dict) else item.path)
+    return {"executed": True, "type": "folder_scan", "id": item["id"] if isinstance(item, dict) else item.id,
+            "ts": datetime.utcnow().isoformat()}
+
+@router.post("/ips/{ip_id}/scan-now")
+def scan_now_ip(ip_id: int):
+    item = get_ip_item(ip_id)
+    if not item:
+        raise HTTPException(status_code=404, detail="IP not found")
+    scan_ip(item_id=item["id"] if isinstance(item, dict) else item.id,
+            ip=item["ip"] if isinstance(item, dict) else item.ip,
+            hostname=(item.get("hostname") if isinstance(item, dict) else getattr(item, "hostname", None)))
+    return {"executed": True, "type": "ip_scan", "id": item["id"] if isinstance(item, dict) else item.id,
+            "ts": datetime.utcnow().isoformat()}

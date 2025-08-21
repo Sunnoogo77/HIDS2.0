@@ -1,18 +1,65 @@
+# services:
+#   api:
+#     build: ./backend
+#     env_file:
+#       - ./.env
+#     environment:
+#       JWT_SECRET: "${JWT_SECRET:?JWT_SECRET not set}"
+#       LOG_LEVEL: "${LOG_LEVEL:-INFO}"
+#       DATABASE_URL: "${DATABASE_URL:-sqlite:///./data/hids.db}"
+#     volumes:
+#       - ./data:/app/data
+#       - ./logs:/app/logs
+#       - ./backend/app:/app/app
+#     ports:
+#       - "8000:8000"
+
+
+#   # future front-end or other services go here...
+
+# version: "3.9"
+
 services:
   api:
     build: ./backend
     env_file:
       - ./.env
     environment:
+      # --- existants ---
       JWT_SECRET: "${JWT_SECRET:?JWT_SECRET not set}"
       LOG_LEVEL: "${LOG_LEVEL:-INFO}"
       DATABASE_URL: "${DATABASE_URL:-sqlite:///./data/hids.db}"
+
+      # --- CORS (pour le front) ---
+      # Liste séparée par des virgules (http/https, ports 5173/3000/8443 par ex.)
+      ALLOWED_ORIGINS: "${ALLOWED_ORIGINS:-http://localhost:5173,http://localhost:3000,https://localhost:5173,https://localhost:3000,https://localhost:8443}"
+
+      # --- HTTPS optionnel ---
+      # Mets SSL_ENABLED=true pour lancer l'API en TLS sur 8443
+      SSL_ENABLED: "${SSL_ENABLED:-false}"
+      SSL_CERTFILE: "${SSL_CERTFILE:-/app/certs/localhost-cert.pem}"
+      SSL_KEYFILE: "${SSL_KEYFILE:-/app/certs/localhost-key.pem}"
+
     volumes:
-      - ./data:/app/data
-      - ./logs:/app/logs
-      - ./backend/app:/app/app
+      - ./backend/app:/app/app           # code
+      - ./data:/app/data                 # hids.db + jobs.db (APScheduler)
+      - ./logs:/app/logs                 # hids.log
+      - ./certs:/app/certs:ro            # certs TLS locaux (si SSL_ENABLED=true)
+
     ports:
-      - "8000:8000"
+      - "8000:8000"   # HTTP (toujours exposé, utilisé si SSL_ENABLED=false)
+      - "8443:8443"   # HTTPS (utilisé si SSL_ENABLED=true)
 
+    # Démarre en HTTPS si demandé, sinon HTTP (port unique actif selon le mode)
+    command: >
+      sh -c "
+        if [ \"$SSL_ENABLED\" = \"true\" ] && [ -f \"$SSL_CERTFILE\" ] && [ -f \"$SSL_KEYFILE\" ]; then
+          echo 'Starting API in HTTPS on :8443';
+          uvicorn app.main:app --host 0.0.0.0 --port 8443 --ssl-keyfile $SSL_KEYFILE --ssl-certfile $SSL_CERTFILE;
+        else
+          echo 'Starting API in HTTP on :8000';
+          uvicorn app.main:app --host 0.0.0.0 --port 8000;
+        fi
+      "
 
-  # future front-end or other services go here...
+    restart: unless-stopped
