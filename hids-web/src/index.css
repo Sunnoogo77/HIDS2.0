@@ -81,3 +81,34 @@ body { @apply bg-bg text-text; }
 .btn { @apply inline-flex items-center gap-2 rounded-xl px-3 py-2 bg-panel2 hover:bg-panel border border-white/10; }
 .input { @apply bg-panel2 border border-white/10 rounded-xl px-3 py-2 outline-none focus:ring-2 focus:ring-accent/40; }
 .badge { @apply px-2 py-0.5 rounded-lg text-xs border border-white/10 bg-panel2; }
+
+
+/* Scrollbars discrets et sombres */
+.soft-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.soft-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.soft-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.12);
+  border-radius: 8px;
+}
+.soft-scroll:hover::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.22);
+}
+/* Firefox */
+.soft-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.22) transparent;
+}
+
+html, body, #root { height: 100%; }
+.app-shell { height: 100%; display: flex; }
+.app-shell main { height: calc(100vh - 64px); overflow: auto; }
+
+/* Optionnel: rendre les scrollbars globalement douces
+*::-webkit-scrollbar { width: 10px; height: 10px }
+*::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 8px }
+*/

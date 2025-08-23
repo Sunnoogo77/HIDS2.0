@@ -6,8 +6,8 @@ export default {
     extend: {
       colors: {
         bg: '#0f172a',            // slate-900+
-        panel: '#111827',         // gray-900
-        panel2: '#0b1220',
+        panel: '#0f1b2f',         // gray-900
+        panel2: '#12213a',
         text: '#e5e7eb',          // gray-200
         muted: '#9ca3af',         // gray-400
         accent: '#60a5fa',        // blue-400

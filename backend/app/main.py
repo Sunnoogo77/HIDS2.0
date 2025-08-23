@@ -23,6 +23,8 @@ from app.api.monitoring import router as monitoring_router
 from app.api.activity import router as activity_router
 from app.api.metrics import router as metrics_router
 from app.api.reports import router as reports_router
+from app.api import engine
+from app.api import engine
 
 logger.info(f"Starting {settings.APP_NAME}... (version: {settings.VERSION})")
 
@@ -88,3 +90,5 @@ app.include_router(monitoring_router)
 app.include_router(activity_router)
 app.include_router(metrics_router)
 app.include_router(reports_router)
+app.include_router(engine.router)
+app.include_router(engine.router)

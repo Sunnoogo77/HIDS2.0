@@ -78,14 +78,66 @@ export default function App() {
   )
 }
 
+// function Layout({ children }) {
+//   return (
+//     <>
+//       <Sidebar />
+//       <div className="flex-1 flex flex-col">
+//         <Topbar />
+//         {/* <main className="p-6">{children}</main> */}
+//         <main className="p-6">
+//           {/* <div className="rounded-2xl bg-panel/50 p-4 border border-white/5"></div> */}
+//           <div>
+//             {children}
+//           </div>
+//         </main>
+//       </div>
+//     </>
+//   )
+// }
+
 function Layout({ children }) {
   return (
     <>
-      <Sidebar />
-      <div className="flex-1 flex flex-col">
+     {/* Sidebar fixe */}
+      <aside className="w-64 shrink-0">
+        <Sidebar />
+      </aside>
+
+      {/* Colonne principale (topbar + contenu) */}
+      <div className="flex-1 flex h-screen min-w-0 flex flex-col">
         <Topbar />
-        <main className="p-6">{children}</main>
+
+        {/* Le SEUL scroll vertical est ici */}
+        <main className="flex-1 overflow-auto p-6">
+          <div>
+            {children}
+          </div>
+        </main>
       </div>
     </>
   )
 }
+
+// function Layout({ children }) {
+//   return (
+//     <div className="flex h-screen overflow-hidden text-white">
+//       {/* Sidebar fixe */}
+//       <aside className="w-64 shrink-0">
+//         <Sidebar />
+//       </aside>
+
+//       {/* Colonne principale (topbar + contenu) */}
+//       <div className="flex-1 flex flex-col">
+//         <Topbar />
+
+//         {/* Le SEUL scroll vertical est ici */}
+//         <main className="flex-1 overflow-auto p-6">
+//           <div className="rounded-2xl  p-4">
+//             {children}
+//           </div>
+//         </main>
+//       </div>
+//     </div>
+//   );
+// }
