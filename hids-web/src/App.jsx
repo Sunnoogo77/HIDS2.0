@@ -99,7 +99,7 @@ export default function App() {
 function Layout({ children }) {
   return (
     <>
-     {/* Sidebar fixe */}
+      {/* Sidebar fixe */}
       <aside className="w-64 shrink-0">
         <Sidebar />
       </aside>
@@ -109,7 +109,7 @@ function Layout({ children }) {
         <Topbar />
 
         {/* Le SEUL scroll vertical est ici */}
-        <main className="flex-1 overflow-auto p-6">
+        <main className="flex-1 overflow-auto pt-4 px-6">
           <div>
             {children}
           </div>

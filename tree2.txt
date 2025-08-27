@@ -1,0 +1,144 @@
+HIDS2.0
+├── .env
+├── .gitattributes
+├── README.md
+├── api_logs.txt
+├── backend
+│   ├── Dockerfile
+│   ├── app
+│   │   ├── api
+│   │   │   ├── activity.py
+│   │   │   ├── alerts.py
+│   │   │   ├── auth.py
+│   │   │   ├── backend_logs.py
+│   │   │   ├── configs.py
+│   │   │   ├── engine.py
+│   │   │   ├── fs.py
+│   │   │   ├── hids_logs.py
+│   │   │   ├── integrations.py
+│   │   │   ├── metrics.py
+│   │   │   ├── monitoring.py
+│   │   │   ├── reports.py
+│   │   │   ├── status.py
+│   │   │   ├── users.py
+│   │   │   └── webhooks.py
+│   │   ├── core
+│   │   │   ├── __init__.py
+│   │   │   ├── config.py
+│   │   │   ├── logging.py
+│   │   │   ├── scheduler.py
+│   │   │   └── security.py
+│   │   ├── db
+│   │   │   ├── base.py
+│   │   │   ├── models.py
+│   │   │   └── session.py
+│   │   ├── main.py
+│   │   ├── models
+│   │   │   ├── alerts.py
+│   │   │   ├── auth.py
+│   │   │   ├── monitoring.py
+│   │   │   ├── report.py
+│   │   │   └── user.py
+│   │   ├── scripts
+│   │   │   └── seed_demo.py
+│   │   ├── seed_dummy_events.py
+│   │   └── services
+│   │       ├── alert_service.py
+│   │       ├── auth_service.py
+│   │       ├── monitoring_service.py
+│   │       ├── report_service.py
+│   │       ├── scan_tasks.py
+│   │       └── user_service.py
+│   ├── requirements.txt
+│   └── task_worker.py
+├── certs
+│   ├── localhost-cert.pem
+│   └── localhost-key.pem
+├── data
+│   ├── hids - Copie.sql
+│   ├── hids.db
+│   └── jobs.db
+├── docker-compose.yml
+├── hids-web
+│   ├── .env.local
+│   ├── .gitignore
+│   ├── .vite
+│   │   └── deps
+│   │       ├── _metadata.json
+│   │       ├── chunk-H3AANLML.js
+│   │       ├── chunk-H3AANLML.js.map
+│   │       ├── chunk-WB3YEMD6.js
+│   │       ├── chunk-WB3YEMD6.js.map
+│   │       ├── lucide-react.js
+│   │       ├── lucide-react.js.map
+│   │       ├── package.json
+│   │       ├── react-dom.js
+│   │       ├── react-dom.js.map
+│   │       ├── react-dom_client.js
+│   │       ├── react-dom_client.js.map
+│   │       ├── react-router-dom.js
+│   │       ├── react-router-dom.js.map
+│   │       ├── react.js
+│   │       ├── react.js.map
+│   │       ├── react_jsx-dev-runtime.js
+│   │       ├── react_jsx-dev-runtime.js.map
+│   │       ├── react_jsx-runtime.js
+│   │       ├── react_jsx-runtime.js.map
+│   │       ├── recharts.js
+│   │       └── recharts.js.map
+│   ├── README.md
+│   ├── eslint.config.js
+│   ├── index.html
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── postcss.config.js
+│   ├── public
+│   │   └── vite.svg
+│   ├── reset-tailwind.ps1
+│   ├── src
+│   │   ├── App.css
+│   │   ├── App.jsx
+│   │   ├── assets
+│   │   │   └── react.svg
+│   │   ├── components
+│   │   │   ├── EngineCard.jsx
+│   │   │   ├── IconButton.jsx
+│   │   │   ├── Modal.jsx
+│   │   │   ├── ServerPathPicker.jsx
+│   │   │   ├── Sidebar.jsx
+│   │   │   ├── StatCard.jsx
+│   │   │   ├── Table.jsx
+│   │   │   └── Topbar.jsx
+│   │   ├── context
+│   │   │   └── AuthProvider.jsx
+│   │   ├── index.css
+│   │   ├── lib
+│   │   │   └── api.js
+│   │   ├── main.jsx
+│   │   └── pages
+│   │       ├── AlertsLogs.jsx
+│   │       ├── Dashboard.jsx
+│   │       ├── Login.jsx
+│   │       ├── Reports.jsx
+│   │       ├── Settings.jsx
+│   │       └── Surveillance.jsx
+│   ├── tailwind.config.js
+│   └── vite.config.js
+├── img
+│   ├── Alerts&Logs.png
+│   ├── Settings.png
+│   ├── Surveillance_files_folders.png
+│   ├── Surveillance_ip.png
+│   └── dashboard.png
+├── inventaire_routes.md
+├── logs
+│   ├── alerts.log
+│   ├── hids.log
+│   └── hids.log.1
+├── models.json
+├── package-lock.json
+├── package.json
+├── postcss.config.js
+├── routes.json
+├── tailwind.config.js
+└── tree_generator.py
