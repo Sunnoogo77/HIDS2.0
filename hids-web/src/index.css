@@ -97,6 +97,10 @@ body { @apply bg-bg text-text; }
 }
 .soft-scroll:hover::-webkit-scrollbar-thumb {
   background: rgba(255,255,255,0.22);
+  border-radius: 8px;
+}
+.soft-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,.18);
 }
 /* Firefox */
 .soft-scroll {
@@ -112,3 +116,30 @@ html, body, #root { height: 100%; }
 *::-webkit-scrollbar { width: 10px; height: 10px }
 *::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 8px }
 */
+
+/* Pretty slim scrollbars for dark UI */
+.scrollbeauty {
+  scrollbar-width: thin;                 /* Firefox */
+  scrollbar-color: rgba(148,163,184,.45) rgba(255,255,255,.06);
+}
+
+.scrollbeauty::-webkit-scrollbar {       /* Chrome/Edge */
+  width: 10px;
+  height: 10px;
+}
+
+.scrollbeauty::-webkit-scrollbar-track {
+  background: rgba(255,255,255,.06);
+  border-radius: 12px;
+}
+
+.scrollbeauty::-webkit-scrollbar-thumb {
+  background: rgba(148,163,184,.45);     /* slate-400/45 */
+  border-radius: 12px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+.scrollbeauty::-webkit-scrollbar-thumb:hover {
+  background: rgba(148,163,184,.65);
+}

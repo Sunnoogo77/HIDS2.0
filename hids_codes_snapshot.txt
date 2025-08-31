@@ -1,0 +1,645 @@
+
+--- Contenu de .\backend\app\api\activity.py ---
+# backend/app/api/activity.py
+from fastapi import APIRouter, Depends, Query, HTTPException
+from app.core.security import get_current_active_user
+from pathlib import Path
+import os
+import re
+
+router = APIRouter(
+    prefix="/activity",
+    tags=["activity"],
+    dependencies=[Depends(get_current_active_user)]
+)
+
+LOG_DIR = Path(os.getenv("HIDS_LOG_DIR", "logs")).resolve()
+
+# Regex pour les logs d'activité
+HIDS_LOG_REGEX = re.compile(r"^(\d{4}-\d{2}-\d{2})\s(\d{2}:\d{2}:\d{2}),(\d{3})\s\|\s([A-Z]+)\s\|\s(.+?)\s\|\s(.+)$")
+HIDS_ALERT_REGEX = re.compile(r"^(\d{4}-\d{2}-\d{2})\s(\d{2}:\d{2}:\d{2}),(\d{3})\s\|\s([A-Z]+)\s\|\s(.+)$")
+
+def parse_log_line(line: str):
+    """Parse une ligne de log HIDS et retourne un dictionnaire."""
+    line = line.strip()
+    if not line:
+        return None
+    
+    match = HIDS_LOG_REGEX.match(line)
+    if match:
+        date, time, ms, level, source, message = match.groups()
+        return {
+            "ts": f"{date}T{time}.{ms}Z",
+            "level": level,
+            "source": source.strip(),
+            "msg": message.strip(),
+            "text": line
+        }
+    
+    match = HIDS_ALERT_REGEX.match(line)
+    if match:
+        date, time, ms, level, message = match.groups()
+        return {
+            "ts": f"{date}T{time}.{ms}Z",
+            "level": level,
+            "source": "",
+            "msg": message.strip(),
+            "text": line
+        }
+    
+    return {
+        "ts": None,
+        "level": "RAW",
+        "source": "",
+        "msg": line,
+        "text": line
+    }
+
+def read_log_file(filename: str):
+    """Lit un fichier de log et renvoie les lignes parsées."""
+    fp = (LOG_DIR / filename).resolve()
+    
+    if not str(fp).startswith(str(LOG_DIR)):
+        raise HTTPException(status_code=400, detail="Invalid path")
+
+    if not fp.exists():
+        return []
+
+    try:
+        lines = fp.read_text(encoding="utf-8", errors="ignore").splitlines()
+        parsed_lines = [parse_log_line(line) for line in lines]
+        return [l for l in parsed_lines if l is not None]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error reading file: {e}")
+
+@router.get("")
+def get_activity_logs(
+    page: int = Query(1, ge=1),
+    limit: int = Query(15, ge=1, le=500),
+    level: str | None = Query(None, description="DEBUG|INFO|WARNING|ERROR|CRITICAL"),
+    contains: str | None = Query(None),
+):
+    """
+    Endpoint pour récupérer les logs d'activité à partir du fichier hids.log.
+    """
+    all_logs = read_log_file("hids.log")
+    
+    filtered_logs = [
+        log for log in all_logs
+        if (not level or log['level'].lower() == level.lower()) and
+            (not contains or contains.lower() in log['msg'].lower())
+    ]
+    
+    filtered_logs.reverse()
+
+    total = len(filtered_logs)
+    page_count = max(1, (total + limit - 1) // limit)
+    page = min(page, page_count)
+    start_index = (page - 1) * limit
+    end_index = start_index + limit
+    paginated_logs = filtered_logs[start_index:end_index]
+    
+    return {
+        "lines": paginated_logs,
+        "total": total,
+        "page_count": page_count
+    }
+
+
+--- Contenu de .\backend\app\api\alerts.py ---
+# backend/app/api/alerts.py
+from fastapi import APIRouter, Depends, Query, HTTPException
+from app.core.security import get_current_active_user
+from pathlib import Path
+import os
+import re
+
+router = APIRouter(
+    prefix="/alerts",
+    tags=["alerts"],
+    dependencies=[Depends(get_current_active_user)]
+)
+
+LOG_DIR = Path(os.getenv("HIDS_LOG_DIR", "logs")).resolve()
+
+# Regex pour les logs d'activité et d'alerte
+HIDS_LOG_REGEX = re.compile(r"^(\d{4}-\d{2}-\d{2})\s(\d{2}:\d{2}:\d{2}),(\d{3})\s\|\s([A-Z]+)\s\|\s(.+?)\s\|\s(.+)$")
+HIDS_ALERT_REGEX = re.compile(r"^(\d{4}-\d{2}-\d{2})\s(\d{2}:\d{2}:\d{2}),(\d{3})\s\|\s([A-Z]+)\s\|\s(.+)$")
+
+def parse_log_line(line: str):
+    """Parse une ligne de log HIDS et retourne un dictionnaire."""
+    line = line.strip()
+    if not line:
+        return None
+    
+    match = HIDS_LOG_REGEX.match(line)
+    if match:
+        date, time, ms, level, source, message = match.groups()
+        return {
+            "ts": f"{date}T{time}.{ms}Z",
+            "level": level,
+            "source": source.strip(),
+            "msg": message.strip(),
+            "text": line
+        }
+    
+    match = HIDS_ALERT_REGEX.match(line)
+    if match:
+        date, time, ms, level, message = match.groups()
+        return {
+            "ts": f"{date}T{time}.{ms}Z",
+            "level": level,
+            "source": "",
+            "msg": message.strip(),
+            "text": line
+        }
+    
+    return {
+        "ts": None,
+        "level": "RAW",
+        "source": "",
+        "msg": line,
+        "text": line
+    }
+
+def read_log_file(filename: str):
+    """Lit un fichier de log et renvoie les lignes parsées."""
+    fp = (LOG_DIR / filename).resolve()
+    
+    if not str(fp).startswith(str(LOG_DIR)):
+        raise HTTPException(status_code=400, detail="Invalid path")
+
+    if not fp.exists():
+        return []
+
+    try:
+        lines = fp.read_text(encoding="utf-8", errors="ignore").splitlines()
+        parsed_lines = [parse_log_line(line) for line in lines]
+        return [l for l in parsed_lines if l is not None]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error reading file: {e}")
+
+@router.get("")
+def get_alerts(
+    page: int = Query(1, ge=1),
+    limit: int = Query(15, ge=1, le=500),
+    level: str | None = Query(None, description="DEBUG|INFO|WARNING|ERROR|CRITICAL"),
+    contains: str | None = Query(None),
+):
+    """
+    Endpoint pour récupérer les alertes à partir du fichier alerts.log.
+    """
+    all_logs = read_log_file("alerts.log")
+    
+    filtered_logs = [
+        log for log in all_logs
+        if (not level or log['level'].lower() == level.lower()) and
+            (not contains or contains.lower() in log['msg'].lower())
+    ]
+    
+    filtered_logs.reverse()
+
+    total = len(filtered_logs)
+    page_count = max(1, (total + limit - 1) // limit)
+    page = min(page, page_count)
+    start_index = (page - 1) * limit
+    end_index = start_index + limit
+    paginated_logs = filtered_logs[start_index:end_index]
+    
+    return {
+        "lines": paginated_logs,
+        "total": total,
+        "page_count": page_count
+    }
+
+
+--- Contenu de .\docker-compose.yml ---
+# services:
+#   api:
+#     build: ./backend
+#     env_file:
+#       - ./.env
+#     environment:
+#       JWT_SECRET: "${JWT_SECRET:?JWT_SECRET not set}"
+#       LOG_LEVEL: "${LOG_LEVEL:-INFO}"
+#       DATABASE_URL: "${DATABASE_URL:-sqlite:///./data/hids.db}"
+#     volumes:
+#       - ./data:/app/data
+#       - ./logs:/app/logs
+#       - ./backend/app:/app/app
+#     ports:
+#       - "8000:8000"
+
+
+#   # future front-end or other services go here...
+
+# version: "3.9"
+
+services:
+  api:
+    build: ./backend
+    env_file:
+      - ./.env
+    environment:
+      # --- existants ---
+      JWT_SECRET: "${JWT_SECRET:?JWT_SECRET not set}"
+      LOG_LEVEL: "${LOG_LEVEL:-INFO}"
+      DATABASE_URL: "${DATABASE_URL:-sqlite:///./data/hids.db}"
+
+      # --- CORS (pour le front) ---
+      # Liste séparée par des virgules (http/https, ports 5173/3000/8443 par ex.)
+      ALLOWED_ORIGINS: "${ALLOWED_ORIGINS:-http://localhost:5173,http://localhost:3000,https://localhost:5173,https://localhost:3000,https://localhost:8443}"
+
+      # --- HTTPS optionnel ---
+      # Mets SSL_ENABLED=true pour lancer l'API en TLS sur 8443
+      SSL_ENABLED: "${SSL_ENABLED:-false}"
+      SSL_CERTFILE: "${SSL_CERTFILE:-/app/certs/localhost-cert.pem}"
+      SSL_KEYFILE: "${SSL_KEYFILE:-/app/certs/localhost-key.pem}"
+
+      # Logs
+      HIDS_LOG_DIR: "${HIDS_LOG_DIR:-/app/logs}"
+      
+      # - HIDS_LOG_DIR=/app/logs
+
+    volumes:
+      - ./backend/app:/app/app           # code
+      - ./data:/app/data                 # hids.db + jobs.db (APScheduler)
+      - ./logs:/app/logs                 # hids.log
+      - ./certs:/app/certs:ro            # certs TLS locaux (si SSL_ENABLED=true)
+
+    ports:
+      - "8000:8000"   # HTTP (toujours exposé, utilisé si SSL_ENABLED=false)
+      - "8443:8443"   # HTTPS (utilisé si SSL_ENABLED=true)
+
+    # Démarre en HTTPS si demandé, sinon HTTP (port unique actif selon le mode)
+    command: >
+      sh -c "
+        if [ \"$SSL_ENABLED\" = \"true\" ] && [ -f \"$SSL_CERTFILE\" ] && [ -f \"$SSL_KEYFILE\" ]; then
+          echo 'Starting API in HTTPS on :8443';
+          uvicorn app.main:app --host 0.0.0.0 --port 8443 --ssl-keyfile $SSL_KEYFILE --ssl-certfile $SSL_CERTFILE;
+        else
+          echo 'Starting API in HTTP on :8000';
+          uvicorn app.main:app --host 0.0.0.0 --port 8000;
+        fi
+      "
+
+    restart: unless-stopped
+
+
+--- Contenu de .\backend\Dockerfile ---
+# 1. Use a lightweight Python base image
+FROM python:3.10-slim
+
+# 2. Set working directory
+WORKDIR /app
+
+# 3. Install system dependencies (if any)
+RUN apt-get update && apt-get install -y \
+    build-essential \
+ && rm -rf /var/lib/apt/lists/*
+
+# 4. Copy and install Python requirements
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# 5. Copy your backend code
+COPY . .
+
+# 6. Create directories for SQLite data and logs, and make them writable
+RUN mkdir -p /app/data /app/logs && \
+    chmod 755 /app/data /app/logs
+
+# 7. Expose the port your FastAPI app listens on
+EXPOSE 8000
+
+# 8. Default command: start Uvicorn with live reload in dev
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+
+
+--- Contenu de .\hids-web\src\pages\AlertsLogs.jsx ---
+
+// src/pages/AlertsLogs.jsx
+
+import { useEffect, useMemo, useState } from "react";
+import { api } from "../lib/api";
+import { useAuth } from "../context/AuthProvider";
+
+const PAGE_SIZE = 7;
+
+// ── UI bits ────────────────────────────────────────────────────────────────────
+function Badge({ children, className = "" }) {
+  return (
+    <span className={`px-2 py-1 rounded-full text-xs font-bold inline-flex items-center ${className}`}>
+      {children}
+    </span>
+  );
+}
+
+// Composant LevelBadge mis à jour pour correspondre aux couleurs de l'exemple
+const LevelBadge = ({ level }) => {
+  const L = String(level || "").toUpperCase();
+  const cls =
+    L === "CRITICAL" ? "bg-red-500 text-white" :
+    L === "HIGH"     ? "bg-red-500/30 text-red-300" :
+    L === "MEDIUM"   ? "bg-yellow-500/30 text-yellow-300" :
+    L === "LOW"      ? "bg-blue-500/30 text-blue-300" :
+    L === "WARNING"  ? "bg-yellow-500 text-white" :
+    L === "INFO"     ? "bg-gray-600 text-gray-200" :
+                       "bg-white/5 text-muted";
+  return <Badge className={cls}>{L || "—"}</Badge>;
+};
+
+function TableShell({ headers, children }) {
+  return (
+    <div className="card p-0 overflow-hidden">
+      <table className="w-full text-sm">
+        <thead className="bg-white/5 text-muted sticky top-0">
+          <tr>
+            {headers.map((h, i) => (
+              <th key={i} className={`px-4 py-3 ${i === headers.length - 1 ? "text-right" : "text-left"}`}>{h}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>{children}</tbody>
+      </table>
+    </div>
+  );
+}
+
+function Pager({ page, pageCount, onPage }) {
+  return (
+    <div className="flex items-center justify-between gap-2">
+      <div className="text-xs text-muted">Page {Math.min(page, pageCount) || 1} / {pageCount || 1}</div>
+      <div className="flex gap-2">
+        <button
+          className="px-3 py-1.5 rounded-md border border-white/10 bg-panel/50 disabled:opacity-50"
+          onClick={() => onPage(Math.max(1, page - 1))}
+          disabled={page <= 1}
+        >← Prev</button>
+        <button
+          className="px-3 py-1.5 rounded-md border border-white/10 bg-panel/50 disabled:opacity-50"
+          onClick={() => onPage(Math.min(pageCount || 1, page + 1))}
+          disabled={page >= (pageCount || 1)}
+        >Next →</button>
+      </div>
+    </div>
+  );
+}
+
+// ── Parsing (tolérant) ─────────────────────────────────────────────────────────
+// (Le code de parsing reste inchangé car il est déjà bien écrit pour gérer les différents formats)
+
+const REG_FULL   = /^(\d{4}-\d{2}-\d{2})\s(\d{2}:\d{2}:\d{2}),(\d{3})\s\|\s([A-Z]+)\s\|\s([^|]+?)\s\|\s([\s\S]+)$/;
+const REG_NOSRC  = /^(\d{4}-\d{2}-\d{2})\s(\d{2}:\d{2}:\d{2}),(\d{3})\s\|\s([A-Z]+)\s\|\s([\s\S]+)$/;
+
+function parseLine(line) {
+  // ... (code inchangé)
+}
+
+function normaliseRows(rows) {
+  // ... (code inchangé)
+}
+
+// ── Page ──────────────────────────────────────────────────────────────────────
+export default function AlertsLogs() {
+  const { token } = useAuth();
+
+  const [tab, setTab] = useState("alerts"); // "alerts" | "activity"
+  const [page, setPage] = useState(1);
+
+  // filtres
+  const [level, setLevel] = useState("");              // INFO/WARNING/ERROR/CRITICAL/LOW/HIGH/MEDIUM
+  const [contains, setContains] = useState("");        // recherche plein-texte
+
+  // données
+  const [items, setItems] = useState([]);
+  const [pageCount, setPageCount] = useState(1);
+  const [loading, setLoading] = useState(false);
+
+  // reset pagination si on change d’onglet
+  useEffect(() => {
+    setPage(1);
+    setLevel(""); // Réinitialiser le filtre de niveau
+    setContains(""); // Réinitialiser le filtre de recherche
+  }, [tab]);
+
+  // charge une page depuis le backend (file-first)
+  useEffect(() => {
+    let stopped = false;
+    (async () => {
+      setLoading(true);
+      try {
+        const r = await api.listHidsLog(token, {
+          type: tab, page, limit: PAGE_SIZE, level, contains
+        });
+        if (stopped) return;
+        setItems(normaliseRows(r.lines || []));
+        setPageCount(r.page_count || 1);
+      } finally {
+        if (!stopped) setLoading(false);
+      }
+    })();
+    return () => { stopped = true; };
+  }, [token, tab, page, level, contains]);
+
+  const onClear = async () => {
+    if (!confirm(`⚠️ This will permanently clear ${tab} logs. Continue?`)) return;
+    try {
+      await api.clearHidsLog(token, tab);
+      setPage(1);
+    } catch (e) {
+      alert("Clear failed: " + (e?.body?.detail || e.message));
+    }
+  };
+
+  const headers = ["Date", "Time", "Level", "Source", "Message"];
+
+  // Déterminer les niveaux de filtre en fonction de l'onglet actif
+  const levels = tab === "alerts"
+    ? ["CRITICAL", "HIGH", "MEDIUM", "LOW", "INFO"]
+    : ["INFO", "WARNING", "ERROR"];
+
+  return (
+    <div className="space-y-6">
+      {/* Tabs + Clear */}
+      <div className="flex items-center justify-between">
+        <div className="flex gap-2">
+          {["alerts", "activity"].map(t => (
+            <button
+              key={t}
+              onClick={() => setTab(t)}
+              className={`px-3 py-1.5 rounded-md border capitalize ${tab===t ? "bg-panel2 border-white/10" : "bg-panel/50 border-white/5"}`}
+            >{t}</button>
+          ))}
+        </div>
+
+        <button
+          onClick={onClear}
+          className="px-3 py-1.5 rounded-md border border-red-500/40 bg-red-500/10 hover:bg-red-500/20 text-red-300"
+          title={`Clear ${tab} logs (admin only server-side)`}
+        >
+          Clear logs
+        </button>
+      </div>
+
+      {/* Filtres */}
+      <div className="card p-3">
+        <div className="flex flex-wrap gap-3">
+          <select
+            className="bg-panel2 border border-white/10 rounded-md text-sm px-2 py-1"
+            value={level}
+            onChange={e=>{ setLevel(e.target.value); setPage(1); }}
+          >
+            <option value="">Level: any</option>
+            {levels.map(l => (
+              <option key={l} value={l}>{l}</option>
+            ))}
+          </select>
+
+          <input
+            className="bg-panel2 border border-white/10 rounded-md text-sm px-2 py-1"
+            placeholder="Search message…"
+            value={contains}
+            onChange={e=>{ setContains(e.target.value); setPage(1); }}
+          />
+        </div>
+      </div>
+
+      {/* Tableau */}
+      <TableShell headers={headers}>
+        {loading && (<tr><td colSpan={headers.length} className="px-4 py-6 text-muted">Loading…</td></tr>)}
+        {!loading && items.length === 0 && (
+          <tr><td colSpan={headers.length} className="px-4 py-6 text-muted">No log lines</td></tr>
+        )}
+        {!loading && items.map((ln, i)=>(
+          <tr key={`${ln.date}-${ln.time}-${i}`} className="border-t border-white/5">
+            <td className="px-4 py-2">{ln.date || "—"}</td>
+            <td className="px-4 py-2 text-muted">{ln.time || "—"}</td>
+            <td className="px-4 py-2"><LevelBadge level={ln.level} /></td>
+            <td className="px-4 py-2">{ln.source || "—"}</td>
+            <td className="px-4 py-2 text-right font-mono">{ln.message || "—"}</td>
+          </tr>
+        ))}
+      </TableShell>
+
+      <Pager page={page} pageCount={pageCount} onPage={setPage}/>
+    </div>
+  );
+}
+
+
+--- Contenu de .\hids-web\src\lib\api.js ---
+// src/lib/api.js
+const BASE = import.meta.env.VITE_API_BASE || "";
+console.log("API base:", BASE);
+
+async function fetchJson(path, { method = "GET", token, body, form } = {}) {
+    const url = `${BASE}${path}`;
+    const headers = {};
+    if (token) headers["Authorization"] = `Bearer ${token}`;
+    if (!form) headers["Content-Type"] = "application/json";
+
+    const res = await fetch(url, {
+        method,
+        headers,
+        body: form ? body : body ? JSON.stringify(body) : undefined,
+    });
+
+    const ct = res.headers.get("content-type") || "";
+    const txt = await res.text();
+
+    if (!res.ok) {
+        let data = null;
+        try { if (ct.includes("application/json")) data = JSON.parse(txt); } catch {}
+        const err = new Error(`HTTP ${res.status} ${res.statusText}`);
+        err.status = res.status;
+        err.body = data ?? txt;
+        throw err;
+    }
+    try { return ct.includes("application/json") ? JSON.parse(txt) : txt; }
+    catch { return txt; }
+}
+
+/* -------------------------------- Utilities -------------------------------- */
+const qs = (obj = {}) =>
+    Object.entries(obj)
+        .filter(([, v]) => v !== undefined && v !== null && v !== "")
+        .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
+        .join("&");
+
+/* ------------------------------ Public API --------------------------------- */
+export const api = {
+    /* ------------------ Auth ------------------ */
+    login: (username, password) =>
+        fetchJson("/auth/login", {
+        method: "POST",
+        form: true,
+        body: new URLSearchParams({ username, password }),
+        }),
+    me: (t) => fetchJson("/users/me", { token: t }),
+
+    /* -------------- Monitoring --------------- */
+    listFiles:   (t)        => fetchJson("/monitoring/files", { token: t }),
+    createFile:  (t, d)     => fetchJson("/monitoring/files", { method: "POST", token: t, body: d }),
+    updateFile:  (t, id, d) => fetchJson(`/monitoring/files/${id}`, { method: "PUT", token: t, body: d }),
+    deleteFile:  (t, id)    => fetchJson(`/monitoring/files/${id}`, { method: "DELETE", token: t }),
+    scanNowFile: (t, id)    => fetchJson(`/monitoring/files/${id}/scan-now`, { method: "POST", token: t }),
+
+    listFolders: (t)        => fetchJson("/monitoring/folders", { token: t }),
+    createFolder:(t, d)     => fetchJson("/monitoring/folders", { method: "POST", token: t, body: d }),
+    updateFolder:(t, id, d) => fetchJson(`/monitoring/folders/${id}`, { method: "PUT", token: t, body: d }),
+    deleteFolder:(t, id)    => fetchJson(`/monitoring/folders/${id}`, { method: "DELETE", token: t }),
+    scanNowFolder:(t, id)   => fetchJson(`/monitoring/folders/${id}/scan-now`, { method: "POST", token: t }),
+
+    listIps:     (t)        => fetchJson("/monitoring/ips", { token: t }),
+    createIp:    (t, d)     => fetchJson("/monitoring/ips", { method: "POST", token: t, body: d }),
+    updateIp:    (t, id, d) => fetchJson(`/monitoring/ips/${id}`, { method: "PUT", token: t, body: d }),
+    deleteIp:    (t, id)    => fetchJson(`/monitoring/ips/${id}`, { method: "DELETE", token: t }),
+    scanNowIp:   (t, id)    => fetchJson(`/monitoring/ips/${id}/scan-now`, { method: "POST", token: t }),
+
+    setFileFreq:   (t, id, frequency) => fetchJson(`/monitoring/files/${id}`,   { method: "PUT", token: t, body: { frequency } }),
+    setFolderFreq: (t, id, frequency) => fetchJson(`/monitoring/folders/${id}`, { method: "PUT", token: t, body: { frequency } }),
+    setIpFreq:     (t, id, frequency) => fetchJson(`/monitoring/ips/${id}`,     { method: "PUT", token: t, body: { frequency } }),
+
+    /* ----------------- Metrics/Reports ---------------- */
+    metrics: (t) => fetchJson("/metrics?limit_events=10", { token: t }),
+    reports: (t) => fetchJson("/reports?limit_events=50", { token: t }),
+
+    /* ---------------- Alerts & Activity (LOG FILE FIRST) --------------- */
+    listHidsLog: async (t, { type = "activity", page = 1, limit = 10, level = "", contains = "" } = {}) => {
+        try {
+            // Utilisez le nouvel endpoint unifié et le paramètre 'log_type'
+            const r = await fetchJson(`/logs/hids?${qs({ log_type: type, page, limit, level, contains })}`, { token: t });
+            return {
+            lines: r.lines,
+            page_count: r.page_count,
+            total: r.total,
+            };
+        } catch (e) {
+            checkError(e);
+            return { lines: [], page_count: 1, total: 0 };
+        }
+    },
+    // ...
+
+    clearHidsLog: (t, type) =>
+        fetchJson("/logs/hids/clear", { method: "POST", token: t, body: { type } }),
+
+    // Compat: tes endpoints actuels (gardés pour le Dashboard time-series si besoin)
+    listAlerts: (t, { limit, offset, severity, entity_type } = {}) =>
+        fetchJson(`/alerts?${qs({ limit, offset, severity, entity_type })}`, { token: t })
+        .then((res) => Array.isArray(res) ? ({ items: res, total: res.length }) :
+            ({ items: res.items || [], total: res.total ?? res.count ?? (res.items || []).length })),
+
+    listActivity: (t, { limit, offset, kind, entity_type } = {}) =>
+        fetchJson(`/activity?${qs({ limit, offset, kind, entity_type })}`, { token: t })
+        .then((res) => Array.isArray(res) ? ({ items: res, total: res.length }) :
+            ({ items: res.items || [], total: res.total ?? res.count ?? (res.items || []).length })),
+
+    /* utilitaire */
+    fetchJson,
+};
+
+export default api;
+
+
