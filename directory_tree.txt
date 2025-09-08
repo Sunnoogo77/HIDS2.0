@@ -1,0 +1,118 @@
+
+📄 README.md
+📄 api_logs.txt
+📁 backend/
+    📄 Dockerfile
+    📁 app/
+        📁 api/
+            📄 activity.py
+            📄 alerts.py
+            📄 auth.py
+            📄 backend_logs.py
+            📄 configs.py
+            📄 engine.py
+            📄 fs.py
+            📄 hids_logs.py
+            📄 integrations.py
+            📄 logs.py
+            📄 metrics.py
+            📄 monitoring.py
+            📄 reports.py
+            📄 status.py
+            📄 users.py
+            📄 webhooks.py
+        📁 core/
+            📄 __init__.py
+            📄 config.py
+            📄 logging.py
+            📄 scheduler.py
+            📄 security.py
+        📁 db/
+            📄 base.py
+            📄 models.py
+            📄 session.py
+        📄 main.py
+        📁 models/
+            📄 alerts.py
+            📄 auth.py
+            📄 monitoring.py
+            📄 report.py
+            📄 user.py
+        📁 scripts/
+            📄 seed_demo.py
+        📄 seed_dummy_events.py
+        📁 services/
+            📄 alert_service.py
+            📄 auth_service.py
+            📄 monitoring_service.py
+            📄 report_service.py
+            📄 scan_tasks.py
+            📄 user_service.py
+    📄 requirements.txt
+    📄 task_worker.py
+📄 backend_to_review.py
+📄 backend_to_review.txt
+📁 certs/
+    📄 localhost-cert.pem
+    📄 localhost-key.pem
+📁 data/
+    📄 hids - Copie.sql
+    📄 hids.db
+    📄 jobs.db
+📄 directory_tree.txt
+📄 directoy.txt
+📄 docker-compose.yml
+📄 get_code.ps1
+📁 hids-web/
+    📄 .env.local
+    📄 .gitignore
+    📄 README.md
+    📄 backend_to_review.txt
+    📄 eslint.config.js
+    📄 index.html
+    📁 public/
+        📄 vite.svg
+    📄 reset-tailwind.ps1
+    📁 src/
+        📄 App.css
+        📄 App.jsx
+        📁 assets/
+            📄 react.svg
+        📁 components/
+            📄 EngineCard.jsx
+            📄 IconButton.jsx
+            📄 Modal.jsx
+            📄 ServerPathPicker.jsx
+            📄 Sidebar.jsx
+            📄 StatCard.jsx
+            📄 Table.jsx
+            📄 Topbar.jsx
+        📁 context/
+            📄 AuthProvider.jsx
+        📄 index.css
+        📁 lib/
+            📄 api.js
+        📄 main.jsx
+        📁 pages/
+            📄 AlertsLogs.jsx
+            📄 Dashboard.jsx
+            📄 Login.jsx
+            📄 Reports.jsx
+            📄 Settings.jsx
+            📄 Surveillance.jsx
+    📄 tailwind.config.js
+    📄 vite.config.js
+📄 hids_codes_snapshot.txt
+📁 img/
+    📄 Alerts&Logs.png
+    📄 Settings.png
+    📄 Surveillance_files_folders.png
+    📄 Surveillance_ip.png
+    📄 dashboard.png
+📄 inventaire_routes.md
+📁 logs/
+    📄 alerts.log
+    📄 hids.log
+    📄 hids.log.1
+    📄 hids.log.2
+📄 models.json

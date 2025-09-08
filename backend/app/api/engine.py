@@ -8,6 +8,14 @@ from app.services.monitoring_service import (
 )
 from app.core.scheduler import add_interval_job, remove_job, FREQ_SECONDS
 from app.services.scan_tasks import scan_file, scan_folder, scan_ip
+from app.core.security import get_current_active_user
+
+
+# Helper admin:
+def require_admin(user: ORMUser = Depends(get_current_active_user)):
+    if not getattr(user, "is_admin", False):
+        raise HTTPException(status_code=403, detail="Admin privileges required")
+    return user
 
 router = APIRouter(
     prefix="/api/engine",
@@ -75,4 +83,19 @@ def stop_all(kind: str):
         remove_job(tag, it.id)
         if getattr(it, "status", "active") == "active":
             updater(it.id, type(it)(**{**it.dict(), "status": "paused"}))
+    return {"ok": True}
+
+
+@router.post("/all/start", dependencies=[Depends(require_admin)])
+def start_all():
+    resume_all("file")
+    resume_all("folder")
+    resume_all("ip")
+    return {"ok": True}
+
+@router.post("/all/stop", dependencies=[Depends(require_admin)])
+def hard_stop_all():
+    stop_all("file")
+    stop_all("folder")
+    stop_all("ip")
     return {"ok": True}
