@@ -1,6 +1,6 @@
 # File: backend/app/db/models.py
 import enum
-from sqlalchemy import Column, String, Boolean, Integer, DateTime, Enum
+from sqlalchemy import Column, String, Boolean, Integer, DateTime, Enum, JSON
 from sqlalchemy.sql import func
 from app.db.base import Base
 
