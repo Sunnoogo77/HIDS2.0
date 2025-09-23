@@ -1,11 +1,16 @@
-# app/services/scan_tasks.py
-import os, json, logging
+import os, json, logging, hashlib
 from datetime import datetime
+from sqlalchemy.orm import Session
 
+from app.db.session import SessionLocal
+from app.db.models import MonitoredFile, MonitoredFolder
+from .hash_service import calculate_file_hash, calculate_folder_fingerprint, check_ip_activity
+
+# Configuration logging
 LOG_PATH = os.getenv("HIDS_LOG_PATH", "logs/hids.log")
 os.makedirs(os.path.dirname(LOG_PATH), exist_ok=True)
 
-logger = logging.getLogger("hids-scheduler")
+logger = logging.getLogger("hids-scanner")
 logger.setLevel(logging.INFO)
 if not logger.handlers:
     fh = logging.FileHandler(LOG_PATH)
@@ -13,15 +18,193 @@ if not logger.handlers:
     fh.setFormatter(fmt)
     logger.addHandler(fh)
 
-def _write_event(event: dict):
-    # log + ligne JSON (facile à parser)
+def _write_alert(event_type: str, item_id: int, details: dict):
+    """Écrit une alerte dans les logs"""
+    event = {
+        "type": "alert",
+        "alert_type": event_type,
+        "item_id": item_id,
+        "timestamp": datetime.utcnow().isoformat(),
+        **details
+    }
+    logger.warning(json.dumps(event, ensure_ascii=False))
+
+def _write_activity(event_type: str, item_id: int, details: dict):
+    """Écrit une activité normale dans les logs"""
+    event = {
+        "type": "activity",
+        "activity_type": event_type,
+        "item_id": item_id,
+        "timestamp": datetime.utcnow().isoformat(),
+        **details
+    }
     logger.info(json.dumps(event, ensure_ascii=False))
 
 def scan_file(item_id: int, path: str):
-    _write_event({"type":"file_scan","id":item_id,"path":path,"result":"OK","ts":datetime.utcnow().isoformat()})
+    """Scan réel d'un fichier avec comparaison de hash"""
+    db: Session = SessionLocal()
+    
+    try:
+        # Récupérer l'item depuis la base
+        item = db.query(MonitoredFile).filter(MonitoredFile.id == item_id).first()
+        if not item:
+            _write_alert("file_error", item_id, {"error": "Item not found in database", "path": path})
+            return
+
+        # Vérifier si le fichier existe
+        if not os.path.exists(path):
+            _write_alert("file_not_found", item_id, {"path": path})
+            # Mettre à jour le statut
+            item.current_hash = None
+            item.last_scan = datetime.utcnow()
+            db.commit()
+            return
+
+        # Calculer le hash actuel
+        current_hash = calculate_file_hash(path)
+        if not current_hash:
+            _write_alert("file_hash_error", item_id, {"path": path})
+            return
+
+        # Premier scan : établir la baseline
+        if not item.baseline_hash:
+            item.baseline_hash = current_hash
+            item.current_hash = current_hash
+            item.last_scan = datetime.utcnow()
+            db.commit()
+            _write_activity("file_baseline_established", item_id, {
+                "path": path, 
+                "baseline_hash": current_hash
+            })
+            return
+
+        # Scans suivants : comparer avec la baseline
+        item.current_hash = current_hash
+        item.last_scan = datetime.utcnow()
+        db.commit()
+
+        if current_hash != item.baseline_hash:
+            _write_alert("file_modified", item_id, {
+                "path": path,
+                "previous_hash": item.baseline_hash,
+                "current_hash": current_hash
+            })
+        else:
+            _write_activity("file_unchanged", item_id, {"path": path})
+
+    except Exception as e:
+        _write_alert("file_scan_error", item_id, {"path": path, "error": str(e)})
+    finally:
+        db.close()
 
 def scan_folder(item_id: int, path: str):
-    _write_event({"type":"folder_scan","id":item_id,"path":path,"result":"OK","ts":datetime.utcnow().isoformat()})
+    """Scan réel d'un dossier"""
+    db: Session = SessionLocal()
+    
+    try:
+        item = db.query(MonitoredFolder).filter(MonitoredFolder.id == item_id).first()
+        if not item:
+            _write_alert("folder_error", item_id, {"error": "Item not found in database", "path": path})
+            return
 
-def scan_ip(item_id: int, ip: str, hostname: str|None=None):
-    _write_event({"type":"ip_scan","id":item_id,"ip":ip,"hostname":hostname,"result":"OK","ts":datetime.utcnow().isoformat()})
+        if not os.path.exists(path) or not os.path.isdir(path):
+            _write_alert("folder_not_found", item_id, {"path": path})
+            item.folder_hash = None
+            item.file_count = 0
+            item.last_scan = datetime.utcnow()
+            db.commit()
+            return
+
+        # Calculer l'empreinte du dossier
+        fingerprint = calculate_folder_fingerprint(path)
+        if not fingerprint:
+            _write_alert("folder_scan_error", item_id, {"path": path})
+            return
+
+        current_hash, file_count = fingerprint
+
+        # Premier scan
+        if not item.folder_hash:
+            item.folder_hash = current_hash
+            item.file_count = file_count
+            item.last_scan = datetime.utcnow()
+            db.commit()
+            _write_activity("folder_baseline_established", item_id, {
+                "path": path,
+                "baseline_hash": current_hash,
+                "file_count": file_count
+            })
+            return
+
+        # Scans suivants
+        previous_file_count = item.file_count
+        item.file_count = file_count
+        item.last_scan = datetime.utcnow()
+        db.commit()
+
+        if current_hash != item.folder_hash:
+            _write_alert("folder_modified", item_id, {
+                "path": path,
+                "previous_hash": item.folder_hash,
+                "current_hash": current_hash,
+                "previous_file_count": previous_file_count,
+                "current_file_count": file_count
+            })
+            
+            # Mettre à jour la baseline pour les prochains scans
+            item.folder_hash = current_hash
+            db.commit()
+        else:
+            _write_activity("folder_unchanged", item_id, {
+                "path": path, 
+                "file_count": file_count
+            })
+
+    except Exception as e:
+        _write_alert("folder_scan_error", item_id, {"path": path, "error": str(e)})
+    finally:
+        db.close()
+
+def scan_ip(item_id: int, ip: str, hostname: str = None):
+    """Scan réel d'une IP"""
+    db: Session = SessionLocal()
+    
+    try:
+        item = db.query(MonitoredIP).filter(MonitoredIP.id == item_id).first()
+        if not item:
+            _write_alert("ip_error", item_id, {"error": "Item not found in database", "ip": ip})
+            return
+
+        # Vérifier l'activité de l'IP
+        ip_status = check_ip_activity(ip)
+        
+        # Premier scan
+        if not hasattr(item, 'last_status') or not item.last_status:
+            item.last_status = json.dumps(ip_status)
+            item.last_scan = datetime.utcnow()
+            db.commit()
+            _write_activity("ip_baseline_established", item_id, {
+                "ip": ip,
+                "status": ip_status
+            })
+            return
+
+        # Comparaison avec le statut précédent
+        previous_status = json.loads(item.last_status)
+        item.last_status = json.dumps(ip_status)
+        item.last_scan = datetime.utcnow()
+        db.commit()
+
+        # Détection des changements
+        if previous_status.get('is_active') != ip_status.get('is_active'):
+            _write_alert("ip_status_changed", item_id, {
+                "ip": ip,
+                "previous_active": previous_status.get('is_active'),
+                "current_active": ip_status.get('is_active'),
+                "connections": ip_status.get('connections', [])
+            })
+
+    except Exception as e:
+        _write_alert("ip_scan_error", item_id, {"ip": ip, "error": str(e)})
+    finally:
+        db.close()
