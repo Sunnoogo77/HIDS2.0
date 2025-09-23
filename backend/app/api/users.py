@@ -19,7 +19,7 @@ class PasswordChange(BaseModel):
     new_password: str
 
 
-router = APIRouter(prefix="", tags=["users"])
+router = APIRouter(prefix="/api", tags=["users"])
 
 # Admin-only decorator
 def admin_only(current_user=Depends(get_current_active_user)):
@@ -73,22 +73,6 @@ def update_user_endpoint(user_id: int, user_in: UserCreate):
         raise HTTPException(status_code=404, detail="User not found")
     return user
 
-# @router.put(
-#     "/users/{user_id}/password",
-#     status_code=status.HTTP_204_NO_CONTENT,
-#     dependencies=[Depends(get_current_active_user)]
-# )
-# def change_password_endpoint(user_id: int, new_password: str):
-#     """
-#     Change a user’s password.
-#     - Admins can change anyone’s password.
-#     - Users can only change their own.
-#     """
-#     current = get_current_active_user()
-#     if not (current.is_admin or current.id == user_id):
-#         raise HTTPException(status_code=403, detail="Not allowed")
-#     if not change_user_password(user_id, new_password):
-#         raise HTTPException(status_code=404, detail="User not found")
 @router.put(
     "/users/{user_id}/password", 
     status_code=status.HTTP_204_NO_CONTENT,

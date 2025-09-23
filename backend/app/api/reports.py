@@ -15,24 +15,6 @@ router = APIRouter(
     dependencies=[Depends(get_current_active_user)]
 )
 
-# def _read_recent_events(limit: int = 50) -> List[dict]:
-#     if not os.path.exists(LOG_PATH):
-#         return []
-#     try:
-#         # lecture simple (texte) puis parse JSON de la partie payload
-#         with open(LOG_PATH, "r", encoding="utf-8", errors="ignore") as f:
-#             lines = f.readlines()[-limit:]
-#         events = []
-#         for line in lines:
-#             payload = line.split("|", 2)[2].strip() if "|" in line else line.strip()
-#             try:
-#                 events.append(json.loads(payload))
-#             except Exception:
-#                 events.append({"raw": payload})
-#         return events
-#     except Exception:
-#         return []
-
 def _read_recent_events(limit: int = 50) -> list[dict]:
     if not os.path.exists(LOG_PATH):
         return []
@@ -56,9 +38,9 @@ def _read_recent_events(limit: int = 50) -> list[dict]:
 def get_report(limit_events: int = Query(50, ge=0, le=1000)) -> Dict[str, Any]:
     """
     Rapport JSON consolidé:
-      - métriques globales
-      - inventaire des items (actifs uniquement par défaut)
-      - derniers événements (logs d'activité)
+        - métriques globales
+        - inventaire des items (actifs uniquement par défaut)
+        - derniers événements (logs d'activité)
     """
     db = SessionLocal()
     try:
