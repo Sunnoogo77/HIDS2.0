@@ -33,6 +33,8 @@ def authenticate_user(username: str, password: str):
 
 
 def generate_user_token(user, expires_minutes: Optional[int] = None) -> str:
-    data = {"sub": user.username}
+    # Correction: Ajoutez le statut is_admin au dictionnaire 'data'
+    data = {"sub": user.username, "is_admin": user.is_admin}
+    # print(data)  # Debug: Affichez les données du token
     expire_delta = timedelta(minutes=expires_minutes) if expires_minutes else None
     return create_access_token(data=data, expires_delta=expire_delta)

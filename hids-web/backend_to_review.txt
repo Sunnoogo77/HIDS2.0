@@ -1,0 +1,77 @@
+---------- START OF FILE: backend/app/api/auth.py ----------
+
+Error: The file backend/app/api/auth.py was not found.
+
+---------- END OF FILE: backend/app/api/auth.py ----------
+
+
+---------- START OF FILE: backend/app/core/security.py ----------
+
+Error: The file backend/app/core/security.py was not found.
+
+---------- END OF FILE: backend/app/core/security.py ----------
+
+
+---------- START OF FILE: backend/app/api/users.py ----------
+
+Error: The file backend/app/api/users.py was not found.
+
+---------- END OF FILE: backend/app/api/users.py ----------
+
+
+---------- START OF FILE: backend/app/services/auth_service.py ----------
+
+Error: The file backend/app/services/auth_service.py was not found.
+
+---------- END OF FILE: backend/app/services/auth_service.py ----------
+
+
+---------- START OF FILE: backend/app/services/user_service.py ----------
+
+Error: The file backend/app/services/user_service.py was not found.
+
+---------- END OF FILE: backend/app/services/user_service.py ----------
+
+
+---------- START OF FILE: hids-web/src/lib/api.js ----------
+
+Error: The file hids-web/src/lib/api.js was not found.
+
+---------- END OF FILE: hids-web/src/lib/api.js ----------
+
+
+---------- START OF FILE: backend/app/services/user_service.py ----------
+
+Error: The file backend/app/services/user_service.py was not found.
+
+---------- END OF FILE: backend/app/services/user_service.py ----------
+
+
+---------- START OF FILE: hids-web/src/context/AuthProvider.jsx ----------
+
+Error: The file hids-web/src/context/AuthProvider.jsx was not found.
+
+---------- END OF FILE: hids-web/src/context/AuthProvider.jsx ----------
+
+
+---------- START OF FILE: hids-web/src/App.jsx ----------
+
+Error: The file hids-web/src/App.jsx was not found.
+
+---------- END OF FILE: hids-web/src/App.jsx ----------
+
+
+---------- START OF FILE: hids-web/src/pages/Login.jsx ----------
+
+Error: The file hids-web/src/pages/Login.jsx was not found.
+
+---------- END OF FILE: hids-web/src/pages/Login.jsx ----------
+
+
+---------- START OF FILE: hids-web/src/components/Sidebar.jsx ----------
+
+Error: The file hids-web/src/components/Sidebar.jsx was not found.
+
+---------- END OF FILE: hids-web/src/components/Sidebar.jsx ----------
+
+

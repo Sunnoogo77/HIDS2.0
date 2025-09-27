@@ -142,3 +142,8 @@ HIDS2.0
 ├── routes.json
 ├── tailwind.config.js
 └── tree_generator.py
+
+curl -X POST "http://localhost:8000/api/users" `
+>>   -H "Authorization: Bearer $TOKEN" `
+>>   -H "Content-Type: application/json" `
+>>   -d '{ "username":"Hids_portal2.0", "email":"hids_portal2.0@example.com", "password":"Pass@21!!Mpo", "is_admin": true }'

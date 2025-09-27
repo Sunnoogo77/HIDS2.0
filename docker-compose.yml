@@ -40,6 +40,11 @@ services:
       SSL_CERTFILE: "${SSL_CERTFILE:-/app/certs/localhost-cert.pem}"
       SSL_KEYFILE: "${SSL_KEYFILE:-/app/certs/localhost-key.pem}"
 
+      # Logs
+      HIDS_LOG_DIR: "${HIDS_LOG_DIR:-/app/logs}"
+      
+      # - HIDS_LOG_DIR=/app/logs
+
     volumes:
       - ./backend/app:/app/app           # code
       - ./data:/app/data                 # hids.db + jobs.db (APScheduler)

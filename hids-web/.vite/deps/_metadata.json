@@ -1,64 +1,79 @@
 {
-  "hash": "6e18e254",
+  "hash": "164e5fcb",
   "configHash": "1de1b1c2",
-  "lockfileHash": "5e150b41",
-  "browserHash": "e79ee3b1",
+  "lockfileHash": "1c6d6bc7",
+  "browserHash": "8fa890e1",
   "optimized": {
     "react": {
       "src": "../../node_modules/react/index.js",
       "file": "react.js",
-      "fileHash": "469e0ee5",
+      "fileHash": "0af5d114",
       "needsInterop": true
     },
     "react-dom": {
       "src": "../../node_modules/react-dom/index.js",
       "file": "react-dom.js",
-      "fileHash": "0de7b07b",
+      "fileHash": "04e32977",
       "needsInterop": true
     },
     "react/jsx-dev-runtime": {
       "src": "../../node_modules/react/jsx-dev-runtime.js",
       "file": "react_jsx-dev-runtime.js",
-      "fileHash": "6ff6c160",
+      "fileHash": "0e0251b7",
       "needsInterop": true
     },
     "react/jsx-runtime": {
       "src": "../../node_modules/react/jsx-runtime.js",
       "file": "react_jsx-runtime.js",
-      "fileHash": "c4e4f7d6",
+      "fileHash": "ca10a11b",
       "needsInterop": true
     },
     "lucide-react": {
       "src": "../../node_modules/lucide-react/dist/esm/lucide-react.js",
       "file": "lucide-react.js",
-      "fileHash": "f71cb934",
+      "fileHash": "158b16a8",
       "needsInterop": false
     },
     "react-dom/client": {
       "src": "../../node_modules/react-dom/client.js",
       "file": "react-dom_client.js",
-      "fileHash": "e59dd625",
+      "fileHash": "f2c25cf7",
       "needsInterop": true
     },
     "react-router-dom": {
       "src": "../../node_modules/react-router-dom/dist/index.mjs",
       "file": "react-router-dom.js",
-      "fileHash": "3c5cf46a",
+      "fileHash": "ac73922e",
       "needsInterop": false
     },
     "recharts": {
       "src": "../../node_modules/recharts/es6/index.js",
       "file": "recharts.js",
-      "fileHash": "50f41e05",
+      "fileHash": "0d8086fc",
+      "needsInterop": false
+    },
+    "jwt-decode": {
+      "src": "../../node_modules/jwt-decode/build/esm/index.js",
+      "file": "jwt-decode.js",
+      "fileHash": "d31c920b",
+      "needsInterop": false
+    },
+    "react-hot-toast": {
+      "src": "../../node_modules/react-hot-toast/dist/index.mjs",
+      "file": "react-hot-toast.js",
+      "fileHash": "eea6d5fe",
       "needsInterop": false
     }
   },
   "chunks": {
-    "chunk-WB3YEMD6": {
-      "file": "chunk-WB3YEMD6.js"
+    "chunk-PFG2UKEP": {
+      "file": "chunk-PFG2UKEP.js"
     },
-    "chunk-H3AANLML": {
-      "file": "chunk-H3AANLML.js"
+    "chunk-32EALFBN": {
+      "file": "chunk-32EALFBN.js"
+    },
+    "chunk-G3PMV62Z": {
+      "file": "chunk-G3PMV62Z.js"
     }
   }
 }

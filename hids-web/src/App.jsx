@@ -1,39 +1,3 @@
-// import { useState } from 'react'
-// import reactLogo from './assets/react.svg'
-// import viteLogo from '/vite.svg'
-// import './App.css'
-
-// function App() {
-//   const [count, setCount] = useState(0)
-
-//   return (
-//     <>
-//       <div>
-//         <a href="https://vite.dev" target="_blank">
-//           <img src={viteLogo} className="logo" alt="Vite logo" />
-//         </a>
-//         <a href="https://react.dev" target="_blank">
-//           <img src={reactLogo} className="logo react" alt="React logo" />
-//         </a>
-//       </div>
-//       <h1>Vite + React</h1>
-//       <div className="card">
-//         <button onClick={() => setCount((count) => count + 1)}>
-//           count is {count}
-//         </button>
-//         <p>
-//           Edit <code>src/App.jsx</code> and save to test HMR
-//         </p>
-//       </div>
-//       <p className="read-the-docs">
-//         Click on the Vite and React logos to learn more
-//       </p>
-//     </>
-//   )
-// }
-
-// export default App
-
 import { Routes, Route, Navigate } from 'react-router-dom'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
@@ -78,24 +42,6 @@ export default function App() {
   )
 }
 
-// function Layout({ children }) {
-//   return (
-//     <>
-//       <Sidebar />
-//       <div className="flex-1 flex flex-col">
-//         <Topbar />
-//         {/* <main className="p-6">{children}</main> */}
-//         <main className="p-6">
-//           {/* <div className="rounded-2xl bg-panel/50 p-4 border border-white/5"></div> */}
-//           <div>
-//             {children}
-//           </div>
-//         </main>
-//       </div>
-//     </>
-//   )
-// }
-
 function Layout({ children }) {
   return (
     <>
@@ -118,26 +64,3 @@ function Layout({ children }) {
     </>
   )
 }
-
-// function Layout({ children }) {
-//   return (
-//     <div className="flex h-screen overflow-hidden text-white">
-//       {/* Sidebar fixe */}
-//       <aside className="w-64 shrink-0">
-//         <Sidebar />
-//       </aside>
-
-//       {/* Colonne principale (topbar + contenu) */}
-//       <div className="flex-1 flex flex-col">
-//         <Topbar />
-
-//         {/* Le SEUL scroll vertical est ici */}
-//         <main className="flex-1 overflow-auto p-6">
-//           <div className="rounded-2xl  p-4">
-//             {children}
-//           </div>
-//         </main>
-//       </div>
-//     </div>
-//   );
-// }
