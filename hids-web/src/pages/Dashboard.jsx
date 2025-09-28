@@ -90,11 +90,23 @@ export default function Dashboard() {
             const f = mm.files ?? { total: 0, active: 0 };
             const d = mm.folders ?? { total: 0, active: 0 };
             const ip = mm.ips ?? { total: 0, active: 0 };
+            const derived = (base) => ({
+            total: base.total,
+            active: base.active,
+            paused: Math.max(0, base.total - base.active),
+            stopped: 0,
+            });
+            const fileCounts = derived(f);
+            const folderCounts = derived(d);
+            const ipCounts = derived(ip);
+            const totalActive = fileCounts.active + folderCounts.active + ipCounts.active;
+            const totalPaused = fileCounts.paused + folderCounts.paused + ipCounts.paused;
+            const engineStatus = totalActive > 0 ? "running" : totalPaused > 0 ? "paused" : "stopped";
             s = {
-            engine: "running",
-            file: { total: f.total, active: f.active, paused: Math.max(0, f.total - f.active) },
-            folder: { total: d.total, active: d.active, paused: Math.max(0, d.total - d.active) },
-            ip: { total: ip.total, active: ip.active, paused: Math.max(0, ip.total - ip.active) },
+            engine: engineStatus,
+            file: fileCounts,
+            folder: folderCounts,
+            ip: ipCounts,
             };
         }
         setMetrics(m);

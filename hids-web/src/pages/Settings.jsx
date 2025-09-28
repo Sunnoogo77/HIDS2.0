@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "../context/AuthProvider";
 import { api } from "../lib/api";
-import { Pencil, Trash2, Check, X, Play, Pause } from "lucide-react";
+import { Pencil, Trash2, Check, X, Play, Pause, Square } from "lucide-react";
 
 /* ---------- UI helpers ---------- */
 const Badge = ({ children, tone = "muted" }) => {
@@ -245,9 +245,14 @@ export default function Settings() {
         try {
         const [state, m] = await Promise.all([api.engineState(token), api.metrics(token)]);
         setMetrics(m?.monitored || null);
-        const anyActive =
-            (state?.file?.active||0) + (state?.folder?.active||0) + (state?.ip?.active||0) > 0;
-        setMState(anyActive ? "running" : "stopped");
+
+        const aggregates = ["file", "folder", "ip"].map((key) => state?.[key] || {});
+        const totalActive = aggregates.reduce((acc, cur) => acc + (cur.active || 0), 0);
+        const totalPaused = aggregates.reduce((acc, cur) => acc + (cur.paused || 0), 0);
+        const totalStopped = aggregates.reduce((acc, cur) => acc + (cur.stopped || 0), 0);
+
+        const nextState = totalActive > 0 ? "running" : totalStopped > 0 ? "stopped" : totalPaused > 0 ? "paused" : "stopped";
+        setMState(nextState);
         } catch { /* ignore */ }
     };
     useEffect(() => { if (tab==="machines") refreshMachines(); }, [tab]); // eslint-disable-line
@@ -320,14 +325,24 @@ export default function Settings() {
     const [to, setTo] = useState("");
     const [lMsg, setLMsg] = useState(null);
     const purge = async () => {
+        if (!window.confirm("Are you sure you want to purge logs with the selected filters? This action cannot be undone.")) {
+            return;
+        }
         setLMsg(null);
         try { await api.purgeHidsLog(token, { type: logType, level: level || undefined, from: from || undefined, to: to || undefined }); setLMsg({ type:"success", text:"Logs purged" }); }
         catch (e) { setLMsg({ type:"error", text: e?.body?.detail || "Purge failed" }); }
     };
     const clearAllOfType = async () => {
+        if (!window.confirm(`Are you sure you want to clear ALL ${logType} logs? This action cannot be undone.`)) {
+            return;
+        }
         setLMsg(null);
-        try { await api.clearHidsLog(token, logType); setLMsg({ type:"success", text:"Logs cleared" }); }
-        catch (e) { setLMsg({ type:"error", text: e?.body?.detail || "Clear failed" }); }
+        try {
+            await api.clearHidsLog(token, { type: logType });
+            setLMsg({ type:"success", text:`All ${logType} logs cleared.` });
+        } catch (e) {
+            setLMsg({ type:"error", text: e?.body?.detail || "Clear failed" });
+        }
     };
 
     return (
@@ -484,8 +499,30 @@ export default function Settings() {
                                     aria-label="Start all engines"
                                 >
                                     <Play size={48} className="text-emerald-400"/>
-                                
+
                                 </button>
+                                )}
+                                {mState==="paused" && (
+                                <div className="flex gap-3">
+                                    <button
+                                        onClick={startAll}
+                                        disabled={!isAdmin}
+                                        className="w-20 h-20 rounded-full bg-emerald-600/20 hover:bg-emerald-600/30 border border-white/10 flex items-center justify-center disabled:cursor-not-allowed"
+                                        title="Resume all engines"
+                                        aria-label="Resume all engines"
+                                    >
+                                        <Play size={36} className="text-emerald-300"/>
+                                    </button>
+                                    <button
+                                        onClick={stopAll}
+                                        disabled={!isAdmin}
+                                        className="w-20 h-20 rounded-full bg-red-600/20 hover:bg-red-600/30 border border-white/10 flex items-center justify-center disabled:cursor-not-allowed"
+                                        title="Stop all engines"
+                                        aria-label="Stop all engines"
+                                    >
+                                        <Square size={32} className="text-red-300"/>
+                                    </button>
+                                </div>
                                 )}
                                 {mState==="running" && (
                                 <button
@@ -508,6 +545,7 @@ export default function Settings() {
                         </div>
                         <div className="text-muted text-sm">
                             {mState==="stopped" && "All engines stopped"}
+                            {mState==="paused" && "Engines paused"}
                             {mState==="running" && "Engines running"}
                             {mState==="loading" && "Updating..."}
                         </div>

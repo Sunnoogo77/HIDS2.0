@@ -198,18 +198,23 @@ def update_file_status(file_id: int, status: str) -> MonitoredFile:
         item = db.query(MonitoredFile).filter(MonitoredFile.id == file_id).first()
         if not item:
             raise NoResultFound(f"File item {file_id} not found")
+
+        if status not in {"active", "paused", "stopped"}:
+            raise ValueError(f"Unsupported file status: {status}")
+
         item.status = status
-        
-        # Si on arrête complètement, on supprime le hash de référence
-        if status == "paused":  # "paused" signifie arrêt complet dans votre logique
+
+        if status == "stopped":
+            # Hard stop: drop hashes so a fresh baseline is rebuilt on next run
             item.baseline_hash = None
             item.current_hash = None
-            
+
         db.commit()
         db.refresh(item)
         return item
     finally:
         db.close()
+
 
 def update_folder_status(folder_id: int, status: str) -> MonitoredFolder:
     db: Session = SessionLocal()
@@ -217,17 +222,22 @@ def update_folder_status(folder_id: int, status: str) -> MonitoredFolder:
         item = db.query(MonitoredFolder).filter(MonitoredFolder.id == folder_id).first()
         if not item:
             raise NoResultFound(f"Folder item {folder_id} not found")
+
+        if status not in {"active", "paused", "stopped"}:
+            raise ValueError(f"Unsupported folder status: {status}")
+
         item.status = status
-        
-        if status == "paused":
+
+        if status == "stopped":
             item.folder_hash = None
             item.file_count = 0
-            
+
         db.commit()
         db.refresh(item)
         return item
     finally:
         db.close()
+
 
 def update_ip_status(ip_id: int, status: str) -> MonitoredIP:
     db: Session = SessionLocal()
@@ -235,9 +245,18 @@ def update_ip_status(ip_id: int, status: str) -> MonitoredIP:
         item = db.query(MonitoredIP).filter(MonitoredIP.id == ip_id).first()
         if not item:
             raise NoResultFound(f"IP item {ip_id} not found")
+
+        if status not in {"active", "paused", "stopped"}:
+            raise ValueError(f"Unsupported IP status: {status}")
+
         item.status = status
+
+        if status == "stopped":
+            item.last_status = None
+
         db.commit()
         db.refresh(item)
         return item
     finally:
         db.close()
+

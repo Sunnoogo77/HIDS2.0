@@ -191,22 +191,30 @@ def purge_hids_logs(body: PurgeBody):
     t_to = _parse_iso(body.to)
     level = (body.level or "").upper() if body.level else None
 
-    def keep(log):
-        # Si rien ne matche les filtres → on garde la ligne
-        # Niveau
-        if level and ((log.get("level") or "").upper() != level):
-            return True  # garder si niveau différent
-        # Période
+    def should_be_purged(log):
+        """Retourne True si la ligne doit être supprimée."""
+        if not log:
+            return False
+
+        # Si aucun filtre n'est actif, on ne supprime rien
+        if not level and not t_from and not t_to:
+            return False
+
+        # Vérifier le niveau
+        if level and (log.get("level") or "").upper() != level:
+            return False # Le niveau ne correspond pas, on ne supprime pas
+
+        # Vérifier la période
         ts = log.get("ts")
         t = _parse_iso(ts) if ts else None
-        if t_from and t and t < t_from:
-            return True
-        if t_to and t and t > t_to:
-            return True
-        # Sinon (match filtres) → on SUPPRIME (donc ne PAS garder)
-        return False
+        if t_from and (not t or t < t_from):
+            return False # En dehors de la période, on ne supprime pas
+        if t_to and (not t or t > t_to):
+            return False # En dehors de la période, on ne supprime pas
 
-    kept_text = [p["text"] if p else lines[i] for i, p in enumerate(parsed) if keep(p)]
+        return True # Tous les filtres actifs correspondent, on supprime
+
+    kept_text = [p["text"] if p else lines[i] for i, p in enumerate(parsed) if not should_be_purged(p)]
     fp.write_text("\n".join(kept_text) + ("\n" if kept_text else ""), encoding="utf-8")
     purged = len(lines) - len(kept_text)
     return {"status": "success", "purged": purged}
