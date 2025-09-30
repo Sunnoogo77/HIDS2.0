@@ -251,8 +251,18 @@ export default function Settings() {
         const totalPaused = aggregates.reduce((acc, cur) => acc + (cur.paused || 0), 0);
         const totalStopped = aggregates.reduce((acc, cur) => acc + (cur.stopped || 0), 0);
 
-        const nextState = totalActive > 0 ? "running" : totalStopped > 0 ? "stopped" : totalPaused > 0 ? "paused" : "stopped";
+        // const nextState = totalActive > 0 ? "running" : totalStopped > 0 ? "stopped" : totalPaused > 0 ? "paused" : "stopped";
+        // setMState(nextState);
+        const nextState =
+            totalActive > 0 && totalStopped === 0 && totalPaused === 0
+                ? "running"
+                : totalActive > 0 && (totalStopped > 0 || totalPaused > 0)
+                ? "mixed"
+                : totalPaused > 0
+                ? "paused"
+                : "stopped";
         setMState(nextState);
+
         } catch { /* ignore */ }
     };
     useEffect(() => { if (tab==="machines") refreshMachines(); }, [tab]); // eslint-disable-line
@@ -316,6 +326,27 @@ export default function Settings() {
             }, 500);
         }
     };
+    // const stopAll = async () => {
+    //     setMState("loading");
+    //     try {
+    //         await Promise.all([
+    //         api.fetchJson("/engine/file/stop-all", { method: "POST", token }),
+    //         api.fetchJson("/engine/folder/stop-all", { method: "POST", token }),
+    //         api.fetchJson("/engine/ip/stop-all", { method: "POST", token }),
+    //         ]);
+    //         // Forcer directement l'état en "stopped"
+    //         setMState("stopped");
+    //         // Puis re-synchroniser avec le backend
+    //         setTimeout(() => {
+    //         refreshMachines().catch(console.error);
+    //         }, 1000);
+    //     } catch (e) {
+    //         console.error("Erreur stopAll:", e);
+    //         setMState("running");
+    //     }
+    // };
+
+
 
 
     /* Logs purge (inchangé pour l’instant) */
@@ -488,17 +519,20 @@ export default function Settings() {
                     <div className="card p-4 flex flex-col items-center justify-center">
                         <h3 className="text-lg font-medium mb-4">Global control</h3>
                         <div className={`relative w-44 h-44 mb-3 ${!isAdmin ? "opacity-60" : ""}`}>
-                            {mState==="running" && <div className="absolute inset-0 rounded-full bg-emerald-500/10 animate-ping" />}
-                            <div className="w-full h-full rounded-full bg-panel2 border-2 border-white/10 flex items-center justify-center">
+                            {/* {mState==="running" && <div className="absolute inset-0 rounded-full bg-emerald-500/10 animate-ping" />} */}
+                            {mState === "running" && (
+                                <div className="absolute inset-0 rounded-full bg-emerald-500/10 animate-ping pointer-events-none z-0" />
+                            )}
+                            <div className="relative z-10 w-full h-full rounded-full bg-panel2 border-2 border-white/10 flex items-center justify-center">
                                 {mState==="stopped" && (
                                 <button
                                     onClick={startAll}
                                     disabled={!isAdmin}
-                                    className="w-24 h-24 rounded-full bg-emerald-600/20 hover:bg-emerald-600/30 border border-white/10 flex items-center justify-center disabled:cursor-not-allowed"
+                                    className="w-20 h-20 rounded-full bg-emerald-600/20 hover:bg-emerald-600/30 border border-white/10 flex items-center justify-center disabled:cursor-not-allowed"
                                     title="Start all engines"
                                     aria-label="Start all engines"
                                 >
-                                    <Play size={48} className="text-emerald-400"/>
+                                    <Play size={36} className="text-emerald-400"/>
 
                                 </button>
                                 )}
@@ -524,17 +558,31 @@ export default function Settings() {
                                     </button>
                                 </div>
                                 )}
-                                {mState==="running" && (
+                                {/* {mState==="running" && (
                                 <button
                                     onClick={stopAll}
                                     disabled={!isAdmin}
-                                    className="w-24 h-24 rounded-full bg-red-600/20 hover:bg-red-600/30 border border-white/10 flex items-center justify-center disabled:cursor-not-allowed"
+                                    className="w-20 h-20 rounded-full bg-red-600/20 hover:bg-red-600/30 border border-white/10 flex items-center justify-center disabled:cursor-not-allowed"
                                     title="Stop all engines"
                                     aria-label="Stop all engines"
                                 >
-                                    <Pause size={48} className="text-red-400"/>
+                                    <Pause size={36} className="text-red-400"/>
                                 </button>
+                                )} */}
+                                {(mState==="running" || mState==="mixed") && (
+                                    <button
+                                        onClick={stopAll}
+                                        disabled={!isAdmin}
+                                        className="w-20 h-20 rounded-full bg-red-600/20 hover:bg-red-600/30 
+                                                border border-white/10 flex items-center justify-center 
+                                                disabled:cursor-not-allowed"
+                                        title="Stop all engines"
+                                        aria-label="Stop all engines"
+                                    >
+                                        <Pause size={36} className="text-red-400"/>
+                                    </button>
                                 )}
+
                                 {mState==="loading" && (
                                 <svg className="animate-spin text-white" viewBox="0 0 24 24" width="48" height="48" role="img" aria-label="Loading">
                                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
@@ -542,11 +590,15 @@ export default function Settings() {
                                 </svg>
                                 )}
                             </div>
+                            {/* <div className="w-full h-full rounded-full bg-panel2 border-2 border-white/10 flex items-center justify-center">
+                                
+                            </div> */}
                         </div>
                         <div className="text-muted text-sm">
                             {mState==="stopped" && "All engines stopped"}
                             {mState==="paused" && "Engines paused"}
                             {mState==="running" && "Engines running"}
+                            {mState==="mixed" && "Some engines running"}
                             {mState==="loading" && "Updating..."}
                         </div>
                         {!isAdmin && <div className="mt-2 text-xs text-muted">Admin required to start/stop.</div>}

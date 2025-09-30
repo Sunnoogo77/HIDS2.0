@@ -90,18 +90,22 @@ export default function Dashboard() {
             const f = mm.files ?? { total: 0, active: 0 };
             const d = mm.folders ?? { total: 0, active: 0 };
             const ip = mm.ips ?? { total: 0, active: 0 };
-            const derived = (base) => ({
-            total: base.total,
-            active: base.active,
-            paused: Math.max(0, base.total - base.active),
-            stopped: 0,
-            });
+            const derived = (base) => {
+            const stopped = Math.max(0, base.total - base.active);
+            return {
+                total: base.total,
+                active: base.active,
+                paused: 0,
+                stopped,
+                mode: base.active > 0 ? "running" : stopped > 0 ? "stopped" : "paused",
+            };
+            };
             const fileCounts = derived(f);
             const folderCounts = derived(d);
             const ipCounts = derived(ip);
             const totalActive = fileCounts.active + folderCounts.active + ipCounts.active;
-            const totalPaused = fileCounts.paused + folderCounts.paused + ipCounts.paused;
-            const engineStatus = totalActive > 0 ? "running" : totalPaused > 0 ? "paused" : "stopped";
+            const totalStopped = fileCounts.stopped + folderCounts.stopped + ipCounts.stopped;
+            const engineStatus = totalActive > 0 ? "running" : totalStopped > 0 ? "stopped" : "paused";
             s = {
             engine: engineStatus,
             file: fileCounts,
@@ -161,35 +165,7 @@ export default function Dashboard() {
         await reload();
     };
     
-    // const doAction = async (kind, action) => {
-    //     try {
-    //         // Mettre à jour l'état optimistiquement avant l'appel API
-    //         setEngine(prev => {
-    //             if (!prev) return prev;
-    //             const newState = { ...prev };
-    //             const current = newState[kind];
-                
-    //             if (action === "pause-all" || action === "stop-all") {
-    //                 newState[kind] = { ...current, active: 0, paused: current.total };
-    //             } else if (action === "resume-all") {
-    //                 newState[kind] = { ...current, active: current.total, paused: 0 };
-    //             }
-    //             return newState;
-    //         });
 
-    //         await api.fetchJson(`/engine/${kind}/${action}`, { method: "POST", token });
-            
-    //         // Recharger les données réelles après un court délai
-    //         setTimeout(() => {
-    //             reload().catch(console.error);
-    //         }, 500);
-            
-    //     } catch (error) {
-    //         console.error(`Action ${action} failed:`, error);
-    //         // Recharger pour rétablir l'état correct
-    //         reload().catch(console.error);
-    //     }
-    // };
 
     if (error) {
         return (

@@ -5,7 +5,7 @@ from typing import Literal, Optional
 class MonitoredItemBase(BaseModel):
     path: str
     frequency: Literal["minutely", "hourly", "daily", "weekly"]
-    status: Optional[Literal["active", "paused"]] = "active"
+    status: Optional[Literal["active", "paused", "stopped"]] = "stopped"
 
 class FileItemCreate(BaseModel):
     path: str
@@ -31,7 +31,7 @@ class IPMonitoredBase(BaseModel):
     ip: str
     hostname: Optional[str]
     frequency: Literal["minutely", "hourly", "daily", "weekly"]
-    status: Optional[Literal["active", "paused"]] = "active"
+    status: Optional[Literal["active", "paused", "stopped"]] = "stopped"
 
 class IPItemCreate(IPMonitoredBase):
     pass
