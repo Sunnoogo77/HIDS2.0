@@ -1,258 +1,241 @@
-# HIDS-Web
-
-**HIDS-Web** est une interface web légère, packagée en Docker, pour piloter un système HIDS (Host-Based Intrusion Detection System).  
-Il permet de configurer, lancer, arrêter et visualiser vos surveillances de fichiers, dossiers et adresses IP, le tout via un tableau de bord clair.
-
----
-
-## 🚀 Fonctionnalités (MVP v2.0)
-
-- Configuration des entités à surveiller (fichiers / dossiers / IP)  
-- Statut en temps réel du moteur et de chaque type de monitoring  
-- Dashboard graphique : cartes de statut, histogramme “Alerts by Type”, courbe “Alerts Over Time”  
-- Flux d’activité et logs paginés  
-- Génération de rapports (summary & detailed)  
-- Authentification JWT avec rôles **admin** / **user**
-
----
-
-## 📦 Architecture
-
-- **Backend** : Python 3.10+, FastAPI, Celery (pour tâches asynchrones), JWT  
-- **Base de données** : SQLite (pour le MVP) ou MongoDB  
-- **Frontend** : React (Vite) + Tailwind CSS  
-- **Packaging** : Docker Compose (backend, frontend, broker, DB)  
-
----
-
-## ⚙️ Installation rapide
-
-```bash
-# Cloner le repo
-git clone https://github.com/<ton-orga>/hids-web.git
-cd hids-web
-
-# Lancer les services
-docker-compose up --build
-
-# Le front est dispo sur http://localhost:3000
-# L’API Swagger sur http://localhost:8000/docs
-````
-
----
-
-## 🔧 Configuration
-
-* Copier `.env.example` en `.env` et renseigner :
-
-  * `JWT_SECRET`
-  * `DATABASE_URL`
-  * (plus tard) `VIRUSTOTAL_API_KEY`
-
----
-
-## 📅 Roadmap
-
-| Version | Date cible | Feature principale                             |
-| ------- | ---------- | ---------------------------------------------- |
-| **2.0** | 2025-06-15 | MVP Web App (celui-ci)                         |
-| **2.1** | 2025-07-15 | Intégration API VirusTotal                     |
-| **2.2** | 2025-08-30 | Modèle ML de classification d’IP malveillantes |
-
----
-
-## 🤝 Contribuer
-
-1. Forker le projet
-2. Créer une branche `feature/…`
-3. Commit & PR en décrivant bien vos changements
-4. Code review & merge
-
----
-
-hello for Comit
-
-## 📝 License
-
-MIT © 2025 Ton Nom
-
-# ---------------------------------
-Parfait 👍 un **README complet** est essentiel pour ton projet.
-Voici une version structurée, claire et adaptée à **HIDS 2.0**. Tu pourras l’ajouter directement à la racine du repo sous `README.md`.
-
----
-
 # HIDS-Web 2.0
 
-**Host Intrusion Detection System (HIDS) – Web API + Scheduler**
-Un projet pédagogique de sécurité permettant de **surveiller fichiers, dossiers et adresses IP** avec une API web moderne basée sur **FastAPI**, **SQLAlchemy**, et **APScheduler**.
+**Host Intrusion Detection System – local-first avec interface web.**
+Surveille **fichiers**, **dossiers** et **adresses IP**, planifie des scans, centralise les **logs** et expose une **API FastAPI**. Frontend React (Vite + Tailwind) pour piloter le tout.
 
 ---
 
-## 🚀 Fonctionnalités
+## 🚀 Fonctionnalités (MVP)
 
-* **Authentification JWT** (login avec admin/user)
-* **CRUD Monitoring**
-
-  * Fichiers
-  * Dossiers
-  * IPs
-* **Planification automatique (scheduler)**
-
-  * Fréquences configurables (`minutely`, `hourly`, `daily`)
-  * Pause / reprise
-  * Persistance au redémarrage
-* **Tableau de bord API**
-
-  * `/api/status` → état de l’application
-  * `/api/metrics` → métriques (monitored, scheduler, events)
-  * `/api/reports` → rapport JSON structuré
-  * `/api/activity` → historique brut des exécutions
-* **Sécurité**
-
-  * Utilisateurs avec rôles (`admin`, `user`)
-  * Hash des mots de passe avec `passlib[bcrypt]`
-  * Protection des routes par `get_current_active_user`
+* Authentification **JWT** (rôles *admin* / *user*)
+* CRUD de surveillance : **files**, **folders**, **IPs**
+  Fréquences : `minutely | hourly | daily | weekly` + statut `active | paused`
+* **Scheduler** (jobs persistants) et **logs** applicatifs (fichier)
+* **Reports** (base JSON, extension HTML/PDF prévue), métriques & statut
+* Intégrations (ex. VirusTotal, webhooks) & réglages “admin-only”
 
 ---
 
-## 📦 Prérequis
+## 🧱 Architecture
 
-* Docker + Docker Compose
-* Python 3.10+ (si exécution locale)
-* PowerShell (scripts de test fournis)
+**Backend** (FastAPI, SQLAlchemy, Pydantic v1, SQLite)
 
----
-
-## 🛠 Installation & Démarrage
-
-### 1. Cloner le projet
-
-```bash
-git clone https://github.com/toncompte/HIDS2.0.git
-cd HIDS2.0
+```
+backend/app/
+  api/        # routes REST (auth, users, monitoring, ...)
+  core/       # config .env, sécurité JWT, logging, scheduler
+  db/         # ORM (models.py), session (SessionLocal)
+  models/     # schémas Pydantic (I/O)
+  services/   # logique métier (users, monitoring, reports, scans)
+  main.py     # entrée FastAPI
 ```
 
-### 2. Créer un fichier `.env`
+**Frontend** (React + Vite + Tailwind)
+
+```
+hids-web/
+  src/pages/        # Dashboard, Surveillance, AlertsLogs, Reports, Settings
+  src/components/   # Sidebar, Topbar, Table, Modals, ...
+  src/context/      # AuthProvider
+  lib/api.js        # appels API
+```
+
+**Données & logs**
+
+```
+data/   -> SQLite (hids.db), jobstore (jobs.db)
+logs/   -> hids.log (+ rotation)
+```
+
+---
+
+## 🗂️ Arborescence (extrait)
+
+```
+README.md
+docker-compose.yml
+data/             hids.db, jobs.db
+logs/             hids.log, alerts.log
+backend/
+  Dockerfile
+  app/
+    api/          activity.py, alerts.py, auth.py, ... , users.py, monitoring.py
+    core/         config.py, logging.py, scheduler.py, security.py
+    db/           base.py, models.py, session.py
+    models/       auth.py, user.py, monitoring.py, alerts.py, report.py
+    services/     auth_service.py, user_service.py, monitoring_service.py, ...
+    scripts/      seed_demo.py
+    main.py
+  requirements.txt
+hids-web/
+  src/
+    pages/        Dashboard.jsx, Surveillance.jsx, AlertsLogs.jsx, Reports.jsx, Settings.jsx
+    components/   Sidebar.jsx, Topbar.jsx, Table.jsx, ...
+    context/      AuthProvider.jsx
+    lib/          api.js
+  vite.config.js, tailwind.config.js
+```
+
+---
+
+## ⚙️ Configuration
+
+Crée un fichier **`.env`** à la racine (ou dans `backend/` selon ton usage Docker) :
 
 ```env
-DATABASE_URL=sqlite:///./app.db
-SECRET_KEY=supersecretkey
-ACCESS_TOKEN_EXPIRE_MINUTES=30
+APP_NAME=HIDS-Web API
+JWT_SECRET=change_me_strong_secret
+LOG_LEVEL=INFO
+DATABASE_URL=sqlite:///data/hids.db
 ```
 
-### 3. Lancer avec Docker Compose
+> Volumes montés par `docker-compose.yml` : `./data:/app/data` et `./logs:/app/logs`.
+
+---
+
+## ▶️ Démarrage rapide (Docker)
 
 ```bash
-docker-compose up --build
+# build + run API
+docker compose up -d --build
+# logs temps réel
+docker compose logs -f api
+# Swagger UI
+# -> http://localhost:8000/docs
 ```
 
-API accessible sur [http://localhost:8000](http://localhost:8000)
+### Créer un **admin initial** (inside container)
 
----
-
-## 🔑 Authentification
-
-1. Crée un utilisateur admin via API `/users` ou migration initiale
-2. Connecte-toi via :
-
-```http
-POST /api/auth/login
-Content-Type: application/x-www-form-urlencoded
-username=admin&password=secret
+```bash
+docker compose exec -it api python - <<'PY'
+from app.services.user_service import create_user
+from app.models.user import UserCreate
+u = create_user(UserCreate(
+    username="admin_Hids",
+    email="admin@local",
+    password="ChangeMe!42",
+    is_admin=True
+))
+print("Admin created:", u.username, u.id)
+PY
 ```
 
-3. Récupère un `access_token` JWT pour accéder aux routes sécurisées.
+### Obtenir un **token JWT**
 
----
+> L’endpoint suit le flux OAuth2 « password », donc **x-www-form-urlencoded**.
 
-## 📡 Endpoints principaux
+```bash
+curl -s -X POST http://localhost:8000/api/auth/login \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "username=admin_Hids&password=ChangeMe!42"
+# {"access_token":"...","token_type":"bearer"}
+```
 
-### Status & Administration
+Exporter le token :
 
-* `GET /api/status` → état de l’application
-* `GET /api/metrics` → métriques
-* `GET /api/reports` → rapport JSON
-* `GET /api/activity` → logs récents
-
-### Monitoring (CRUD)
-
-* `GET /api/monitoring/files`
-* `POST /api/monitoring/files`
-* `PUT /api/monitoring/files/{id}`
-* `DELETE /api/monitoring/files/{id}`
-
-Idem pour :
-
-* `/api/monitoring/folders`
-* `/api/monitoring/ips`
-
----
-
-## 🧪 Tests (PowerShell)
-
-Des scripts `.ps1` sont fournis pour tester étape par étape :
-
-* `test1.ps1` → CRUD de base + auth
-* `test-2-scheduler-wiring.ps1` → wiring scheduler
-* `test-3-frequency-and-pause.ps1` → changement fréquence, pause/reprise
-* `test-4-metrics.ps1` → endpoint `/api/metrics`
-* `test-5-reports-json.ps1` → endpoint `/api/reports`
-* `test-6-jobstore-persistence.ps1` → persistance jobs après redémarrage
-
-Exemple :
-
-```powershell
-.\test1.ps1
+```bash
+export TOKEN="<colle_ici_le_access_token>"
 ```
 
 ---
 
-## 📊 Exemple de sortie `/api/metrics`
+## 🔌 API – commandes utiles (CLI)
 
-```json
-{
-  "monitored": {
-    "files": {"total":3,"active":3,"paused":0},
-    "folders": {"total":0,"active":0,"paused":0},
-    "ips": {"total":3,"active":3,"paused":0},
-    "total": 6
-  },
-  "scheduler": {"file":3,"folder":0,"ip":3,"total":6},
-  "events": {"count":12, "by_type":{"file_scan":7,"ip_scan":5}, "last":[]}
-}
+### Profil
+
+```bash
+curl -H "Authorization: Bearer $TOKEN" http://localhost:8000/api/users/me
+```
+
+### Users (admin only)
+
+```bash
+# créer
+curl -X POST http://localhost:8000/api/users \
+  -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"username":"alice","email":"a@x.y","password":"Pwd!1234","is_admin":false}'
+
+# lister / détail / update / delete
+curl -H "Authorization: Bearer $TOKEN" http://localhost:8000/api/users
+curl -H "Authorization: Bearer $TOKEN" http://localhost:8000/api/users/2
+curl -X PUT http://localhost:8000/api/users/2 \
+  -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"username":"alice2","email":"a2@x.y","is_admin":false}'
+curl -X PUT http://localhost:8000/api/users/2/password \
+  -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"new_password":"NewPwd!1234"}'
+curl -X DELETE http://localhost:8000/api/users/2 -H "Authorization: Bearer $TOKEN"
+```
+
+### Monitoring – Files / Folders / IPs
+
+```bash
+# Files
+curl -X POST http://localhost:8000/api/monitoring/files \
+  -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"path":"/tmp/foo","frequency":"hourly"}'
+curl -H "Authorization: Bearer $TOKEN" http://localhost:8000/api/monitoring/files
+curl -H "Authorization: Bearer $TOKEN" http://localhost:8000/api/monitoring/files/1
+curl -X PUT http://localhost:8000/api/monitoring/files/1 \
+  -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"path":"/tmp/bar","frequency":"daily"}'
+curl -X DELETE http://localhost:8000/api/monitoring/files/1 -H "Authorization: Bearer $TOKEN"
+
+# Folders
+curl -X POST http://localhost:8000/api/monitoring/folders \
+  -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"path":"/var/log","frequency":"weekly"}'
+curl -H "Authorization: Bearer $TOKEN" http://localhost:8000/api/monitoring/folders
+
+# IPs
+curl -X POST http://localhost:8000/api/monitoring/ips \
+  -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"ip":"8.8.4.4","hostname":"dns4","frequency":"hourly"}'
+curl -H "Authorization: Bearer $TOKEN" http://localhost:8000/api/monitoring/ips
+```
+
+### Statut / métriques / reports
+
+```bash
+curl http://localhost:8000/api/status
+curl http://localhost:8000/api/metrics
+curl http://localhost:8000/api/reports
 ```
 
 ---
 
-## 📂 Arborescence projet
+## 🌐 Frontend (dev local)
 
-```
-HIDS2.0/
-│   README.md
-│   docker-compose.yml
-│   requirements.txt
-│
-├── backend/
-│   ├── app/
-│   │   ├── api/              # routes FastAPI
-│   │   ├── core/             # sécurité, scheduler
-│   │   ├── db/               # modèles & session SQLAlchemy
-│   │   ├── models/           # schémas Pydantic
-│   │   └── services/         # logique CRUD & tâches scan
-│   └── main.py               # entrée FastAPI
-│
-├── tests/
-│   └── *.ps1                 # scripts PowerShell automatisés
+```bash
+cd hids-web
+npm install
+npm run dev
+# http://localhost:5173
+# Ajuste src/lib/api.js si ton backend n'est pas sur 8000
 ```
 
 ---
 
-## 🧑‍💻 Auteurs
+## 🧪 Débogage rapide
 
-Projet développé dans le cadre d’un apprentissage **EFREI – Cybersécurité & Cloud**.
+```bash
+docker compose logs -f api
+tail -n 200 logs/hids.log
+sqlite3 data/hids.db ".tables"
+sqlite3 data/hids.db "pragma table_info('monitored_files');"
+```
 
 ---
 
-👉 Voilà un **README professionnel, clair et exploitable**.
-Veux-tu que je prépare aussi une **version courte (résumé 10 lignes)** pour GitHub (utile en description rapide), ou on garde la version complète uniquement ?
+## 🗺️ Roadmap courte
+
+* Génération **HTML/PDF** + email des reports
+* Règles d’alerte, notifications, journal d’audit admin
+* Scan “on-demand”, throttling, meilleur filtrage/pagination
+* Migrations (Alembic), durcissement sécurité (2FA, rate-limit)
+
+---
+
+## 📄 Licence
+
+MIT
