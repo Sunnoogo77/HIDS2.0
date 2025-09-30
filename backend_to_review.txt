@@ -1,849 +1,686 @@
----------- START OF FILE: backend/app/api/monitoring.py ----------
+---------- START OF FILE: backend/app/api/backend_logs.py ----------
 
-# File: backend/app/api/monitoring.py
-from typing import List, Any
-from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.exc import IntegrityError
-from datetime import datetime
-
-# Scheduler + scan tasks
-from app.core.scheduler import add_interval_job, remove_job, FREQ_SECONDS
-from app.services.scan_tasks import scan_file, scan_folder, scan_ip
-
-# Schemas (Pydantic)
-from app.models.monitoring import (
-    FileItemCreate, FileItemRead,
-    IPItemCreate, IPItemRead,
-    FolderItemCreate, FolderItemRead
-)
-
-# Services (DB CRUD)
-from app.services.monitoring_service import (
-    get_file_items, get_file_item, create_file_item, update_file_item, delete_file_item,
-    get_ip_items, get_ip_item, create_ip_item, update_ip_item, delete_ip_item,
-    get_folder_items, get_folder_item, create_folder_item, update_folder_item, delete_folder_item
-)
-
-# Auth
+from fastapi import APIRouter, Depends, HTTPException, Query
 from app.core.security import get_current_active_user
-from app.db.models import User as ORMUser  # éventuellement utile
-
-# (optionnel) mini logger
-import logging
-log = logging.getLogger("monitoring-api")
+from pathlib import Path
+import os
 
 router = APIRouter(
-    prefix="/api/monitoring",
-    tags=["monitoring"],
+    prefix="/api/logs/backend",
+    tags=["backend-logs"],
     dependencies=[Depends(get_current_active_user)]
 )
 
-# -------------------------------------------------------------------------
-# Helpers: support dict OU objet (ORM/Pydantic) de façon uniforme
-# -------------------------------------------------------------------------
+LOG_DIR = Path(os.getenv("HIDS_LOG_DIR", "logs")).resolve()
 
-def _val(obj: Any, name: str, default: Any = None) -> Any:
-    """Récupère un champ soit en attribut, soit en clé dict, sinon default."""
-    if obj is None:
-        return default
-    if isinstance(obj, dict):
-        return obj.get(name, default)
-    return getattr(obj, name, default)
+def _safe_join(filename: str) -> Path:
+    fp = (LOG_DIR / filename).resolve()
+    if not str(fp).startswith(str(LOG_DIR)):
+        raise HTTPException(status_code=400, detail="Invalid path")
+    return fp
 
-def _schedule_file(item: Any) -> None:
-    """(Re)pose un job de scan pour un File si status=active, sinon retire."""
-    iid = _val(item, "id")
-    if iid is None:
-        return
-    status = _val(item, "status", "active")
-    freq = _val(item, "frequency", "hourly")
-    path = _val(item, "path")
+@router.get("/files")
+def list_files():
+    LOG_DIR.mkdir(parents=True, exist_ok=True)
+    files = [f.name for f in LOG_DIR.iterdir() if f.is_file() and f.name.lower().endswith((".log", ".log.txt", ".txt"))]
+    files.sort()
+    return {"files": files or ["app.log"]}
 
-    if status == "active":
-        sec = FREQ_SECONDS.get(freq, 3600)
-        try:
-            add_interval_job("file", iid, sec, scan_file, item_id=iid, path=path)
-            log.debug(f"[scheduler] file #{iid} scheduled every {sec}s (status={status}, freq={freq})")
-        except Exception as e:
-            log.warning(f"[scheduler] cannot schedule file #{iid}: {e}")
-    else:
-        try:
-            remove_job("file", iid)
-            log.debug(f"[scheduler] file #{iid} job removed (status={status})")
-        except Exception as e:
-            log.warning(f"[scheduler] cannot remove file job #{iid}: {e}")
+@router.get("")
+def read_logs(
+    file: str = Query("app.log"),
+    page: int = Query(1, ge=1),
+    limit: int = Query(15, ge=1, le=500),
+    level: str | None = Query(None, description="DEBUG|INFO|WARNING|ERROR|CRITICAL"),
+    contains: str | None = Query(None),
+):
+    LOG_DIR.mkdir(parents=True, exist_ok=True)
+    fp = _safe_join(file)
+    if not fp.exists():
+        return {"file": file, "page": 1, "page_count": 1, "lines": []}
 
-def _schedule_folder(item: Any) -> None:
-    iid = _val(item, "id")
-    if iid is None:
-        return
-    status = _val(item, "status", "active")
-    freq = _val(item, "frequency", "hourly")
-    path = _val(item, "path")
+    lines = fp.read_text(encoding="utf-8", errors="ignore").splitlines()
 
-    if status == "active":
-        sec = FREQ_SECONDS.get(freq, 3600)
-        try:
-            add_interval_job("folder", iid, sec, scan_folder, item_id=iid, path=path)
-            log.debug(f"[scheduler] folder #{iid} scheduled every {sec}s (status={status}, freq={freq})")
-        except Exception as e:
-            log.warning(f"[scheduler] cannot schedule folder #{iid}: {e}")
-    else:
-        try:
-            remove_job("folder", iid)
-            log.debug(f"[scheduler] folder #{iid} job removed (status={status})")
-        except Exception as e:
-            log.warning(f"[scheduler] cannot remove folder job #{iid}: {e}")
+    def parse(line: str):
+        l = line.strip()
+        lv = None
+        # Naïf : détecte un niveau de log standard
+        for cand in ["DEBUG","INFO","WARNING","ERROR","CRITICAL"]:
+            if f" {cand} " in l or l.startswith(cand) or f"[{cand}]" in l:
+                lv = cand
+                break
+        # L'horodatage n'est pas garanti, on retourne la ligne brute pour la lisibilité
+        return {"ts": "", "level": lv, "msg": l, "text": l}
 
-def _schedule_ip(item: Any) -> None:
-    iid = _val(item, "id")
-    if iid is None:
-        return
-    status = _val(item, "status", "active")
-    freq = _val(item, "frequency", "hourly")
-    ip = _val(item, "ip")
-    hostname = _val(item, "hostname", None)
+    rows = [parse(l) for l in lines]
 
-    if status == "active":
-        sec = FREQ_SECONDS.get(freq, 3600)
-        try:
-            add_interval_job("ip", iid, sec, scan_ip, item_id=iid, ip=ip, hostname=hostname)
-            log.debug(f"[scheduler] ip #{iid} scheduled every {sec}s (status={status}, freq={freq})")
-        except Exception as e:
-            log.warning(f"[scheduler] cannot schedule ip #{iid}: {e}")
-    else:
-        try:
-            remove_job("ip", iid)
-            log.debug(f"[scheduler] ip #{iid} job removed (status={status})")
-        except Exception as e:
-            log.warning(f"[scheduler] cannot remove ip job #{iid}: {e}")
+    if level:
+        rows = [r for r in rows if (r["level"] or "").upper() == level.upper()]
+    if contains:
+        s = contains.lower()
+        rows = [r for r in rows if s in (r["msg"] or "").lower()]
 
-# -------------------------------------------------------------------------
-# File monitoring endpoints
-# -------------------------------------------------------------------------
+    total = len(rows)
+    page_count = max(1, (total + limit - 1) // limit)
+    page = min(page, page_count)
+    start = (page - 1) * limit
+    end = start + limit
+    return {"file": file, "page": page, "page_count": page_count, "lines": rows[start:end]}
 
-@router.get("/files/{file_id}", response_model=FileItemRead)
-def read_file_item(file_id: int):
-    """Get a single monitored file by ID."""
-    item = get_file_item(file_id)
-    if not item:
-        raise HTTPException(status_code=404, detail="File not found")
-    return item
+---------- END OF FILE: backend/app/api/backend_logs.py ----------
 
-@router.get("/files", response_model=List[FileItemRead])
-def read_file_items(skip: int = 0, limit: int = 100):
-    return get_file_items(skip=skip, limit=limit)
 
-@router.post("/files", response_model=FileItemRead, status_code=status.HTTP_201_CREATED)
-def add_file_item(file_in: FileItemCreate):
+---------- START OF FILE: backend/app/api/hids_logs.py ----------
+
+from fastapi import APIRouter, Depends, Query, HTTPException
+from app.core.security import get_current_active_user
+from pathlib import Path
+import os
+import re
+
+router = APIRouter(
+    tags=["hids-logs"],
+    dependencies=[Depends(get_current_active_user)]
+)
+
+LOG_DIR = Path(os.getenv("HIDS_LOG_DIR", "logs")).resolve()
+
+# Regex pour parser les logs HIDS
+HIDS_LOG_REGEX = re.compile(r"^(\d{4}-\d{2}-\d{2})\s(\d{2}:\d{2}:\d{2}),(\d{3})\s\|\s([A-Z]+)\s\|\s(.+?)\s\|\s(.+)$")
+HIDS_ALERT_REGEX = re.compile(r"^(\d{4}-\d{2}-\d{2})\s(\d{2}:\d{2}:\d{2}),(\d{3})\s\|\s([A-Z]+)\s\|\s(.+)$")
+
+def parse_hids_log(line: str):
+    """Parse une ligne de log HIDS et retourne un dictionnaire."""
+    line = line.strip()
+    if not line:
+        return None
+    
+    # Tente d'abord de faire correspondre la regex standard (avec la source)
+    match = HIDS_LOG_REGEX.match(line)
+    if match:
+        date, time, ms, level, source, message = match.groups()
+        return {
+            "ts": f"{date}T{time}.{ms}Z",
+            "level": level,
+            "source": source.strip(),
+            "msg": message.strip(),
+            "text": line
+        }
+
+    # Tente de faire correspondre la regex alternative (sans la source)
+    match = HIDS_ALERT_REGEX.match(line)
+    if match:
+        date, time, ms, level, message = match.groups()
+        return {
+            "ts": f"{date}T{time}.{ms}Z",
+            "level": level,
+            "source": "",
+            "msg": message.strip(),
+            "text": line
+        }
+    
+    # Si aucune regex ne correspond, retourne la ligne brute
+    return {
+        "ts": None,
+        "level": "RAW",
+        "source": "",
+        "msg": line,
+        "text": line
+    }
+
+def read_log_file(filename: str):
+    """Lit un fichier de log et renvoie les lignes parsées."""
+    fp = (LOG_DIR / filename).resolve()
+    
+    if not str(fp).startswith(str(LOG_DIR)):
+        raise HTTPException(status_code=400, detail="Invalid path")
+
+    if not fp.exists():
+        return []
+
     try:
-        item = create_file_item(file_in)
-        _schedule_file(item)
-        return item
-    except IntegrityError:
-        raise HTTPException(status_code=409, detail="File path already exists")
-
-@router.put("/files/{file_id}", response_model=FileItemRead)
-def edit_file_item(file_id: int, file_in: FileItemCreate):
-    item = get_file_item(file_id)
-    if not item:
-        raise HTTPException(status_code=404, detail="File not found")
-    item = update_file_item(file_id, file_in)
-    _schedule_file(item)
-    return item
-
-@router.delete("/files/{file_id}", status_code=status.HTTP_204_NO_CONTENT)
-def remove_file_item(file_id: int):
-    item = get_file_item(file_id)
-    if not item:
-        raise HTTPException(status_code=404, detail="File not found")
-    delete_file_item(file_id)
-    remove_job("file", file_id)
-    return None
-
-# -------------------------------------------------------------------------
-# IP monitoring endpoints
-# -------------------------------------------------------------------------
-
-@router.get("/ips/{ip_id}", response_model=IPItemRead)
-def read_ip_item(ip_id: int):
-    """Get a single monitored IP by ID."""
-    item = get_ip_item(ip_id)
-    if not item:
-        raise HTTPException(status_code=404, detail="IP not found")
-    return item
-
-@router.get("/ips", response_model=List[IPItemRead])
-def read_ip_items(skip: int = 0, limit: int = 100):
-    return get_ip_items(skip=skip, limit=limit)
-
-@router.post("/ips", response_model=IPItemRead, status_code=status.HTTP_201_CREATED)
-def add_ip_item(ip_in: IPItemCreate):
-    try:
-        item = create_ip_item(ip_in)
-        _schedule_ip(item)
-        return item
-    except IntegrityError:
-        raise HTTPException(status_code=409, detail="IP address already exists")
-
-@router.put("/ips/{ip_id}", response_model=IPItemRead)
-def edit_ip_item(ip_id: int, ip_in: IPItemCreate):
-    item = get_ip_item(ip_id)
-    if not item:
-        raise HTTPException(status_code=404, detail="IP not found")
-    item = update_ip_item(ip_id, ip_in)
-    _schedule_ip(item)
-    return item
-
-@router.delete("/ips/{ip_id}", status_code=status.HTTP_204_NO_CONTENT)
-def remove_ip_item(ip_id: int):
-    item = get_ip_item(ip_id)
-    if not item:
-        raise HTTPException(status_code=404, detail="IP not found")
-    delete_ip_item(ip_id)
-    remove_job("ip", ip_id)
-    return None
-
-# -------------------------------------------------------------------------
-# Folder monitoring endpoints
-# -------------------------------------------------------------------------
-
-@router.get("/folders/{folder_id}", response_model=FolderItemRead)
-def read_folder_item(folder_id: int):
-    """Get a single monitored folder by ID."""
-    item = get_folder_item(folder_id)
-    if not item:
-        raise HTTPException(status_code=404, detail="Folder not found")
-    return item
-
-@router.get("/folders", response_model=List[FolderItemRead])
-def read_folder_items(skip: int = 0, limit: int = 100):
-    return get_folder_items(skip=skip, limit=limit)
-
-@router.post("/folders", response_model=FolderItemRead, status_code=status.HTTP_201_CREATED)
-def add_folder_item(folder_in: FolderItemCreate):
-    try:
-        item = create_folder_item(folder_in)
-        _schedule_folder(item)
-        return item
-    except IntegrityError:
-        raise HTTPException(status_code=409, detail="Folder already monitored")
+        lines = fp.read_text(encoding="utf-8", errors="ignore").splitlines()
+        parsed_lines = [parse_hids_log(line) for line in lines]
+        return [l for l in parsed_lines if l is not None]
     except Exception as e:
-        if "UNIQUE constraint failed: monitored_folders.path" in str(e):
-            raise HTTPException(status_code=409, detail="Folder already monitored")
-        raise
-
-@router.put("/folders/{folder_id}", response_model=FolderItemRead)
-def edit_folder_item(folder_id: int, folder_in: FolderItemCreate):
-    item = get_folder_item(folder_id)
-    if not item:
-        raise HTTPException(status_code=404, detail="Folder not found")
-    item = update_folder_item(folder_id, folder_in)
-    _schedule_folder(item)
-    return item
-
-@router.delete("/folders/{folder_id}", status_code=status.HTTP_204_NO_CONTENT)
-def remove_folder_item(folder_id: int):
-    item = get_folder_item(folder_id)
-    if not item:
-        raise HTTPException(status_code=404, detail="Folder not found")
-    delete_folder_item(folder_id)
-    remove_job("folder", folder_id)
-    return None
-
-# -------------------------------------------------------------------------
-# Scan now endpoints
-# -------------------------------------------------------------------------
-
-@router.post("/files/{file_id}/scan-now")
-def scan_now_file(file_id: int):
-    item = get_file_item(file_id)
-    if not item:
-        raise HTTPException(status_code=404, detail="File not found")
-    # on scanne même si status=paused (action manuelle)
-    scan_file(item_id=item["id"] if isinstance(item, dict) else item.id,
-                path=item["path"] if isinstance(item, dict) else item.path)
-    return {"executed": True, "type": "file_scan", "id": item["id"] if isinstance(item, dict) else item.id,
-            "ts": datetime.utcnow().isoformat()}
-
-@router.post("/folders/{folder_id}/scan-now")
-def scan_now_folder(folder_id: int):
-    item = get_folder_item(folder_id)
-    if not item:
-        raise HTTPException(status_code=404, detail="Folder not found")
-    scan_folder(item_id=item["id"] if isinstance(item, dict) else item.id,
-                path=item["path"] if isinstance(item, dict) else item.path)
-    return {"executed": True, "type": "folder_scan", "id": item["id"] if isinstance(item, dict) else item.id,
-            "ts": datetime.utcnow().isoformat()}
-
-@router.post("/ips/{ip_id}/scan-now")
-def scan_now_ip(ip_id: int):
-    item = get_ip_item(ip_id)
-    if not item:
-        raise HTTPException(status_code=404, detail="IP not found")
-    scan_ip(item_id=item["id"] if isinstance(item, dict) else item.id,
-            ip=item["ip"] if isinstance(item, dict) else item.ip,
-            hostname=(item.get("hostname") if isinstance(item, dict) else getattr(item, "hostname", None)))
-    return {"executed": True, "type": "ip_scan", "id": item["id"] if isinstance(item, dict) else item.id,
-            "ts": datetime.utcnow().isoformat()}
----------- END OF FILE: backend/app/api/monitoring.py ----------
-
-
----------- START OF FILE: backend/app/services/monitoring_service.py ----------
-
-# # File: backend/app/services/monitoring_service.py
-# from typing import List, Optional
-# from sqlalchemy.orm import Session
-# from sqlalchemy.exc import NoResultFound
-# from sqlalchemy.exc import IntegrityError
-
-
-# from app.db.session import SessionLocal
-# from app.db.models import MonitoredFile, MonitoredIP, MonitoredFolder
-# from app.models.monitoring import FileItemCreate, IPItemCreate, FolderItemCreate
-
-
-# # ---- Monitored Files CRUD ----
-
-# def get_file_items(skip: int = 0, limit: int = 100) -> List[MonitoredFile]:
-#     db: Session = SessionLocal()
-#     items = db.query(MonitoredFile).offset(skip).limit(limit).all()
-#     db.close()
-#     return items
-
-
-# def get_file_item(file_id: int) -> Optional[MonitoredFile]:
-#     db: Session = SessionLocal()
-#     item = db.query(MonitoredFile).filter(MonitoredFile.id == file_id).first()
-#     db.close()
-#     return item
-
-
-
-# def create_file_item(file_in: FileItemCreate) -> MonitoredFile:
-#     db: Session = SessionLocal()
-#     try:
-#         existing = db.query(MonitoredFile).filter(MonitoredFile.path == file_in.path).first()
-#         if existing:
-#             db.close()
-#             return existing
-#         db_item = MonitoredFile(path=file_in.path, frequency=file_in.frequency)
-#         db.add(db_item)
-#         db.commit()
-#         db.refresh(db_item)
-#         db.close()
-#         return db_item
-#     except IntegrityError:
-#         db.rollback()
-#         db.close()
-#         raise
-
-# def update_file_item(file_id: int, file_in: FileItemCreate) -> MonitoredFile:
-#     db: Session = SessionLocal()
-#     item = db.query(MonitoredFile).filter(MonitoredFile.id == file_id).first()
-#     if not item:
-#         db.close()
-#         raise NoResultFound(f"File item {file_id} not found")
-#     item.path = file_in.path
-#     item.frequency = file_in.frequency
-#     db.commit()
-#     db.refresh(item)
-#     db.close()
-#     return item
-
-
-# def delete_file_item(file_id: int) -> None:
-#     db: Session = SessionLocal()
-#     item = db.query(MonitoredFile).filter(MonitoredFile.id == file_id).first()
-#     if item:
-#         db.delete(item)
-#         db.commit()
-#     db.close()
-
-
-# # ---- Monitored IPs CRUD ----
-
-# def get_ip_items(skip: int = 0, limit: int = 100) -> List[MonitoredIP]:
-#     db: Session = SessionLocal()
-#     items = db.query(MonitoredIP).offset(skip).limit(limit).all()
-#     db.close()
-#     return items
-
-
-# def get_ip_item(ip_id: int) -> Optional[MonitoredIP]:
-#     db: Session = SessionLocal()
-#     item = db.query(MonitoredIP).filter(MonitoredIP.id == ip_id).first()
-#     db.close()
-#     return item
-
-
-# def create_ip_item(ip_in: IPItemCreate) -> MonitoredIP:
-#     db: Session = SessionLocal()
-#     try:
-#         existing = db.query(MonitoredIP).filter(MonitoredIP.ip == ip_in.ip).first()
-#         if existing:
-#             db.close()
-#             return existing
-#         db_item = MonitoredIP(
-#             ip=ip_in.ip,
-#             hostname=ip_in.hostname,
-#             frequency=ip_in.frequency
-#         )
-#         db.add(db_item)
-#         db.commit()
-#         db.refresh(db_item)
-#         db.close()
-#         return db_item
-#     except IntegrityError:
-#         db.rollback()
-#         db.close()
-#         raise
-
-
-# def update_ip_item(ip_id: int, ip_in: IPItemCreate) -> MonitoredIP:
-#     db: Session = SessionLocal()
-#     item = db.query(MonitoredIP).filter(MonitoredIP.id == ip_id).first()
-#     if not item:
-#         db.close()
-#         raise NoResultFound(f"IP item {ip_id} not found")
-#     item.ip = ip_in.ip
-#     item.hostname = ip_in.hostname
-#     item.frequency = ip_in.frequency
-#     db.commit()
-#     db.refresh(item)
-#     db.close()
-#     return item
-
-
-# def delete_ip_item(ip_id: int) -> None:
-#     db: Session = SessionLocal()
-#     item = db.query(MonitoredIP).filter(MonitoredIP.id == ip_id).first()
-#     if item:
-#         db.delete(item)
-#         db.commit()
-#     db.close()
-
-
-# # ---- Monitored Folders CRUD ----
-
-# def get_folder_items(skip: int = 0, limit: int = 100) -> List[MonitoredFolder]:
-#     db: Session = SessionLocal()
-#     items = db.query(MonitoredFolder).offset(skip).limit(limit).all()
-#     db.close()
-#     return items
-
-
-# def get_folder_item(folder_id: int) -> Optional[MonitoredFolder]:
-#     db: Session = SessionLocal()
-#     item = db.query(MonitoredFolder).filter(MonitoredFolder.id == folder_id).first()
-#     db.close()
-#     return item
-
-
-# def create_folder_item(folder_in: FolderItemCreate) -> MonitoredFolder:
-#     db: Session = SessionLocal()
-#     try:
-        
-#         existing = db.query(MonitoredFolder).filter(MonitoredFolder.path == folder_in.path).first()
-#         if existing:
-#             db.close()
-#             return existing
-#         db_item = MonitoredFolder(path=folder_in.path, frequency=folder_in.frequency)
-#         db.add(db_item); db.commit(); db.refresh(db_item)
-#         db.close()
-#         return db_item
-#     except IntegrityError:
-#         db.rollback()
-#         db.close()
-        
-#         raise
-
-
-# def update_folder_item(folder_id: int, folder_in: FolderItemCreate) -> MonitoredFolder:
-#     db: Session = SessionLocal()
-#     item = db.query(MonitoredFolder).filter(MonitoredFolder.id == folder_id).first()
-#     if not item:
-#         db.close()
-#         raise NoResultFound(f"Folder item {folder_id} not found")
-#     item.path = folder_in.path
-#     item.frequency = folder_in.frequency
-#     db.commit()
-#     db.refresh(item)
-#     db.close()
-#     return item
-
-
-# def delete_folder_item(folder_id: int) -> None:
-#     db: Session = SessionLocal()
-#     item = db.query(MonitoredFolder).filter(MonitoredFolder.id == folder_id).first()
-#     if item:
-#         db.delete(item)
-#         db.commit()
-#     db.close()
-
-
-# # ------------------------------
-# # ---- Status update functions ----
-
-# def update_file_status(file_id: int, status: str) -> MonitoredFile:
-#     db: Session = SessionLocal()
-#     try:
-#         item = db.query(MonitoredFile).filter(MonitoredFile.id == file_id).first()
-#         if not item:
-#             raise NoResultFound(f"File item {file_id} not found")
-
-#         if status == "paused":
-#             status = "stopped"
-#         if status not in {"active", "stopped"}:
-#             raise ValueError(f"Unsupported file status: {status}")
-
-#         item.status = status
-
-#         if status == "stopped":
-#             # Hard stop: drop hashes so a fresh baseline is rebuilt on next run
-#             item.baseline_hash = None
-#             item.current_hash = None
-
-#         db.commit()
-#         db.refresh(item)
-#         return item
-#     finally:
-#         db.close()
-
-
-# def update_folder_status(folder_id: int, status: str) -> MonitoredFolder:
-#     db: Session = SessionLocal()
-#     try:
-#         item = db.query(MonitoredFolder).filter(MonitoredFolder.id == folder_id).first()
-#         if not item:
-#             raise NoResultFound(f"Folder item {folder_id} not found")
-
-#         if status == "paused":
-#             status = "stopped"
-#         if status not in {"active", "stopped"}:
-#             raise ValueError(f"Unsupported folder status: {status}")
-
-#         item.status = status
-
-#         if status == "stopped":
-#             item.folder_hash = None
-#             item.file_count = 0
-
-#         db.commit()
-#         db.refresh(item)
-#         return item
-#     finally:
-#         db.close()
-
-
-# def update_ip_status(ip_id: int, status: str) -> MonitoredIP:
-#     db: Session = SessionLocal()
-#     try:
-#         item = db.query(MonitoredIP).filter(MonitoredIP.id == ip_id).first()
-#         if not item:
-#             raise NoResultFound(f"IP item {ip_id} not found")
-
-#         if status == "paused":
-#             status = "stopped"
-#         if status not in {"active", "stopped"}:
-#             raise ValueError(f"Unsupported IP status: {status}")
-
-#         item.status = status
-
-#         if status == "stopped":
-#             item.last_status = None
-
-#         db.commit()
-#         db.refresh(item)
-#         return item
-#     finally:
-#         db.close()
-
-
-
-# File: backend/app/services/monitoring_service.py
-import os, re
-
-from typing import List, Optional
+        raise HTTPException(status_code=500, detail=f"Error reading file: {e}")
+
+@router.get("/hids")
+def get_hids_logs(
+    log_type: str = Query("activity", description="activity|alerts"),
+    page: int = Query(1, ge=1),
+    limit: int = Query(15, ge=1, le=500),
+    level: str | None = Query(None, description="DEBUG|INFO|WARNING|ERROR|CRITICAL"),
+    contains: str | None = Query(None),
+):
+    """
+    Endpoint pour récupérer les logs d'activité ou d'alerte.
+    """
+    if log_type == "alerts":
+        filename = "alerts.log"
+    else:
+        filename = "hids.log"
+    
+    all_logs = read_log_file(filename)
+    
+    # Filtrer les logs
+    filtered_logs = [
+        log for log in all_logs
+        if (not level or log['level'].lower() == level.lower()) and
+           (not contains or contains.lower() in log['msg'].lower())
+    ]
+    
+    # Inverser l'ordre pour les plus récents en premier
+    filtered_logs.reverse()
+
+    # Paginer les résultats
+    total = len(filtered_logs)
+    page_count = max(1, (total + limit - 1) // limit)
+    page = min(page, page_count)
+    start_index = (page - 1) * limit
+    end_index = start_index + limit
+    paginated_logs = filtered_logs[start_index:end_index]
+    
+    return {
+        "lines": paginated_logs,
+        "total": total,
+        "page_count": page_count
+    }
+
+---------- END OF FILE: backend/app/api/hids_logs.py ----------
+
+
+---------- START OF FILE: backend/app/api/logs.py ----------
+
+# backend/app/api/logs.py
+import os
+import re
+from pathlib import Path
+from datetime import datetime
+from typing import Optional
+
+from fastapi import APIRouter, Depends, Query, HTTPException
+from pydantic import BaseModel, Field
+
+from app.core.security import get_current_active_user
+
+# ⚠️ Définir le router AVANT d'utiliser les décorateurs
+router = APIRouter(
+    prefix="/logs",
+    tags=["logs"],
+    dependencies=[Depends(get_current_active_user)]
+)
+
+LOG_DIR = Path(os.getenv("HIDS_LOG_DIR", "logs")).resolve()
+
+# Regex pour les logs d'activité et d'alerte avec et sans la source
+HIDS_LOG_REGEX_FULL = re.compile(
+    r"^(\d{4}-\d{2}-\d{2})\s(\d{2}:\d{2}:\d{2}),(\d{3})\s\|\s([A-Z]+)\s\|\s(.+?)\s\|\s(.+)$"
+)
+HIDS_LOG_REGEX_NO_SOURCE = re.compile(
+    r"^(\d{4}-\d{2}-\d{2})\s(\d{2}:\d{2}:\d{2}),(\d{3})\s\|\s([A-Z]+)\s\|\s(.+)$"
+)
+
+def parse_log_line(line: str):
+    """Parse une ligne de log HIDS et retourne un dictionnaire."""
+    line = line.strip()
+    if not line:
+        return None
+
+    match = HIDS_LOG_REGEX_FULL.match(line)
+    if match:
+        date, time, ms, level, source, message = match.groups()
+        return {
+            "ts": f"{date}T{time}.{ms}Z",
+            "level": level,
+            "source": source.strip(),
+            "msg": message.strip(),
+            "text": line
+        }
+
+    match = HIDS_LOG_REGEX_NO_SOURCE.match(line)
+    if match:
+        date, time, ms, level, message = match.groups()
+        return {
+            "ts": f"{date}T{time}.{ms}Z",
+            "level": level,
+            "source": "",
+            "msg": message.strip(),
+            "text": line
+        }
+
+    return {
+        "ts": None,
+        "level": "RAW",
+        "source": "",
+        "msg": line,
+        "text": line
+    }
+
+def read_log_file(filename: str):
+    """Lit un fichier de log et renvoie les lignes parsées."""
+    fp = (LOG_DIR / filename).resolve()
+
+    if not str(fp).startswith(str(LOG_DIR)):
+        raise HTTPException(status_code=400, detail="Invalid path")
+
+    if not fp.exists():
+        return []
+
+    try:
+        lines = fp.read_text(encoding="utf-8", errors="ignore").splitlines()
+        parsed_lines = [parse_log_line(line) for line in lines]
+        return [l for l in parsed_lines if l is not None]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error reading file: {e}")
+
+@router.get("/hids")
+def get_hids_logs(
+    log_type: str = Query("activity", description="Type de log: 'activity' ou 'alerts'"),
+    page: int = Query(1, ge=1),
+    limit: int = Query(15, ge=1, le=500),
+    level: Optional[str] = Query(None, description="DEBUG|INFO|WARNING|ERROR|CRITICAL"),
+    contains: Optional[str] = Query(None),
+):
+    """
+    Endpoint unifié pour récupérer les logs d'activité ou d'alerte.
+    """
+    if log_type not in ["activity", "alerts"]:
+        raise HTTPException(status_code=400, detail="Log type must be 'activity' or 'alerts'")
+
+    filename = "hids.log" if log_type == "activity" else "alerts.log"
+    all_logs = read_log_file(filename)
+
+    filtered_logs = [
+        log for log in all_logs
+        if (not level or (log.get('level') or '').lower() == level.lower()) and
+            (not contains or contains.lower() in (log.get('msg') or '').lower())
+    ]
+
+    filtered_logs.reverse()
+
+    total = len(filtered_logs)
+    page_count = max(1, (total + limit - 1) // limit)
+    page = min(page, page_count)
+    start_index = (page - 1) * limit
+    end_index = start_index + limit
+    paginated_logs = filtered_logs[start_index:end_index]
+
+    return {
+        "lines": paginated_logs,
+        "total": total,
+        "page_count": page_count
+    }
+
+# ---------- Clear & Purge (compat front) ----------
+
+class ClearBody(BaseModel):
+    type: str = Field("activity", description="'activity' | 'alerts'")
+
+class PurgeBody(BaseModel):
+    type: str                         # 'activity' | 'alerts'
+    level: Optional[str] = None
+    from_: Optional[str] = Field(None, alias="from")  # accepte 'from' depuis le front
+    to: Optional[str] = None
+
+def _parse_iso(s: Optional[str]) -> Optional[datetime]:
+    if not s:
+        return None
+    try:
+        return datetime.fromisoformat(s.replace("Z", "+00:00"))
+    except Exception:
+        return None
+
+def _ensure_admin(current_user=Depends(get_current_active_user)):
+    if not getattr(current_user, "is_admin", False):
+        raise HTTPException(status_code=403, detail="Admin privileges required")
+    return current_user
+
+@router.post("/hids/clear", dependencies=[Depends(_ensure_admin)])
+def clear_hids_logs(body: ClearBody):
+    """
+    Vide entièrement le fichier de logs demandé.
+    Corps attendu (front): { "type": "activity" | "alerts" }
+    """
+    log_type = body.type
+    if log_type not in ["activity", "alerts"]:
+        raise HTTPException(status_code=400, detail="Log type must be 'activity' or 'alerts'")
+
+    filename = "hids.log" if log_type == "activity" else "alerts.log"
+    fp = (LOG_DIR / filename).resolve()
+
+    if not str(fp).startswith(str(LOG_DIR)):
+        raise HTTPException(status_code=400, detail="Invalid path")
+
+    try:
+        LOG_DIR.mkdir(parents=True, exist_ok=True)
+        if fp.exists():
+            fp.write_text("", encoding="utf-8")
+        return {"status": "success", "message": f"Log file '{filename}' cleared."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error clearing file: {e}")
+
+@router.post("/hids/purge", dependencies=[Depends(_ensure_admin)])
+def purge_hids_logs(body: PurgeBody):
+    """
+    Supprime les lignes correspondant aux filtres.
+    Corps attendu (front): { type, level?, from?, to? }
+    """
+    if body.type not in ["activity", "alerts"]:
+        raise HTTPException(status_code=400, detail="type must be 'activity' or 'alerts'")
+
+    filename = "hids.log" if body.type == "activity" else "alerts.log"
+    fp = (LOG_DIR / filename).resolve()
+
+    if not str(fp).startswith(str(LOG_DIR)):
+        raise HTTPException(status_code=400, detail="Invalid path")
+
+    if not fp.exists():
+        return {"status": "success", "message": "Nothing to purge."}
+
+    lines = fp.read_text(encoding="utf-8", errors="ignore").splitlines()
+    parsed = [parse_log_line(l) for l in lines]
+
+    t_from = _parse_iso(body.from_)
+    t_to = _parse_iso(body.to)
+    level = (body.level or "").upper() if body.level else None
+
+    def should_be_purged(log):
+        """Retourne True si la ligne doit être supprimée."""
+        if not log:
+            return False
+
+        # Si aucun filtre n'est actif, on ne supprime rien
+        if not level and not t_from and not t_to:
+            return False
+
+        # Vérifier le niveau
+        if level and (log.get("level") or "").upper() != level:
+            return False # Le niveau ne correspond pas, on ne supprime pas
+
+        # Vérifier la période
+        ts = log.get("ts")
+        t = _parse_iso(ts) if ts else None
+        if t_from and (not t or t < t_from):
+            return False # En dehors de la période, on ne supprime pas
+        if t_to and (not t or t > t_to):
+            return False # En dehors de la période, on ne supprime pas
+
+        return True # Tous les filtres actifs correspondent, on supprime
+
+    kept_text = [p["text"] if p else lines[i] for i, p in enumerate(parsed) if not should_be_purged(p)]
+    fp.write_text("\n".join(kept_text) + ("\n" if kept_text else ""), encoding="utf-8")
+    purged = len(lines) - len(kept_text)
+    return {"status": "success", "purged": purged}
+
+---------- END OF FILE: backend/app/api/logs.py ----------
+
+
+---------- START OF FILE: backend/app/models/alerts.py ----------
+
+# backend/app/models/alerts.py
+from pydantic import BaseModel
+from typing import Any, Optional, List
+from datetime import datetime
+
+class AlertOut(BaseModel):
+    id: int | None = None
+    ts: datetime | None = None
+    severity: str | None = None
+    rule: Optional[str] = None
+    entity_type: Optional[str] = None
+    entity_id: Optional[int] = None
+    entity_label: Optional[str] = None
+    message: Optional[str] = None
+    meta: Optional[Any] = None
+    class Config:
+        from_attributes = True
+
+class ActivityOut(BaseModel):
+    id: int | None = None
+    ts: datetime | None = None
+    kind: str | None = None
+    entity_type: Optional[str] = None
+    entity_id: Optional[int] = None
+    entity_label: Optional[str] = None
+    message: Optional[str] = None
+    meta: Optional[Any] = None
+    class Config:
+        from_attributes = True
+
+class PageOut(BaseModel):
+    items: List[Any]
+    count: int
+    total: int
+
+---------- END OF FILE: backend/app/models/alerts.py ----------
+
+
+---------- START OF FILE: backend/app/services/alert_service.py ----------
+
+
+---------- END OF FILE: backend/app/services/alert_service.py ----------
+
+
+---------- START OF FILE: backend/app/services/report_service.py ----------
+
+
+---------- END OF FILE: backend/app/services/report_service.py ----------
+
+
+---------- START OF FILE: backend/app/services/scan_tasks.py ----------
+
+import os, json, logging, hashlib
+from datetime import datetime
 from sqlalchemy.orm import Session
-from sqlalchemy.exc import NoResultFound, IntegrityError
 
 from app.db.session import SessionLocal
-from app.db.models import MonitoredFile, MonitoredIP, MonitoredFolder
-from app.models.monitoring import FileItemCreate, IPItemCreate, FolderItemCreate
+from app.db.models import MonitoredFile, MonitoredFolder
+from .hash_service import calculate_file_hash, calculate_folder_fingerprint, check_ip_activity
 
-# ---- Monitored Files CRUD ----
+# Configuration logging
+LOG_PATH = os.getenv("HIDS_LOG_PATH", "logs/hids.log")
+os.makedirs(os.path.dirname(LOG_PATH), exist_ok=True)
 
-def get_file_items(skip: int = 0, limit: int = 100) -> List[MonitoredFile]:
+logger = logging.getLogger("hids-scanner")
+logger.setLevel(logging.INFO)
+if not logger.handlers:
+    fh = logging.FileHandler(LOG_PATH)
+    fmt = logging.Formatter("%(asctime)s | %(levelname)s | %(message)s")
+    fh.setFormatter(fmt)
+    logger.addHandler(fh)
+
+def _write_alert(event_type: str, item_id: int, details: dict):
+    """Écrit une alerte dans les logs"""
+    event = {
+        "type": "alert",
+        "alert_type": event_type,
+        "item_id": item_id,
+        "timestamp": datetime.utcnow().isoformat(),
+        **details
+    }
+    logger.warning(json.dumps(event, ensure_ascii=False))
+
+def _write_activity(event_type: str, item_id: int, details: dict):
+    """Écrit une activité normale dans les logs"""
+    event = {
+        "type": "activity",
+        "activity_type": event_type,
+        "item_id": item_id,
+        "timestamp": datetime.utcnow().isoformat(),
+        **details
+    }
+    logger.info(json.dumps(event, ensure_ascii=False))
+
+def scan_file(item_id: int, path: str):
+    """Scan réel d'un fichier avec comparaison de hash"""
     db: Session = SessionLocal()
-    items = db.query(MonitoredFile).offset(skip).limit(limit).all()
-    db.close()
-    return items
-
-
-def get_file_item(file_id: int) -> Optional[MonitoredFile]:
-    db: Session = SessionLocal()
-    item = db.query(MonitoredFile).filter(MonitoredFile.id == file_id).first()
-    db.close()
-    return item
-
-
-def create_file_item(file_in: FileItemCreate) -> MonitoredFile:
-    db: Session = SessionLocal()
+    
     try:
-        normalized_path = normalize_path(file_in.path)
-        existing = db.query(MonitoredFile).filter(MonitoredFile.path == normalized_path).first()
-        if existing:
-            db.close()
-            return existing
-        db_item = MonitoredFile(path=normalized_path, frequency=file_in.frequency)
-        db.add(db_item)
-        db.commit()
-        db.refresh(db_item)
-        db.close()
-        return db_item
-    except IntegrityError:
-        db.rollback()
-        db.close()
-        raise
-
-
-
-def update_file_item(file_id: int, file_in: FileItemCreate) -> MonitoredFile:
-    db: Session = SessionLocal()
-    item = db.query(MonitoredFile).filter(MonitoredFile.id == file_id).first()
-    if not item:
-        db.close()
-        raise NoResultFound(f"File item {file_id} not found")
-    item.path = file_in.path
-    item.frequency = file_in.frequency
-    db.commit()
-    db.refresh(item)
-    db.close()
-    return item
-
-
-def delete_file_item(file_id: int) -> None:
-    db: Session = SessionLocal()
-    item = db.query(MonitoredFile).filter(MonitoredFile.id == file_id).first()
-    if item:
-        db.delete(item)
-        db.commit()
-    db.close()
-
-
-# ---- Monitored IPs CRUD ----
-
-def get_ip_items(skip: int = 0, limit: int = 100) -> List[MonitoredIP]:
-    db: Session = SessionLocal()
-    items = db.query(MonitoredIP).offset(skip).limit(limit).all()
-    db.close()
-    return items
-
-
-def get_ip_item(ip_id: int) -> Optional[MonitoredIP]:
-    db: Session = SessionLocal()
-    item = db.query(MonitoredIP).filter(MonitoredIP.id == ip_id).first()
-    db.close()
-    return item
-
-
-def create_ip_item(ip_in: IPItemCreate) -> MonitoredIP:
-    db: Session = SessionLocal()
-    try:
-        existing = db.query(MonitoredIP).filter(MonitoredIP.ip == ip_in.ip).first()
-        if existing:
-            db.close()
-            return existing
-        db_item = MonitoredIP(
-            ip=ip_in.ip,
-            hostname=ip_in.hostname,
-            frequency=ip_in.frequency
-        )
-        db.add(db_item)
-        db.commit()
-        db.refresh(db_item)
-        db.close()
-        return db_item
-    except IntegrityError:
-        db.rollback()
-        db.close()
-        raise
-
-
-def update_ip_item(ip_id: int, ip_in: IPItemCreate) -> MonitoredIP:
-    db: Session = SessionLocal()
-    item = db.query(MonitoredIP).filter(MonitoredIP.id == ip_id).first()
-    if not item:
-        db.close()
-        raise NoResultFound(f"IP item {ip_id} not found")
-    item.ip = ip_in.ip
-    item.hostname = ip_in.hostname
-    item.frequency = ip_in.frequency
-    db.commit()
-    db.refresh(item)
-    db.close()
-    return item
-
-
-def delete_ip_item(ip_id: int) -> None:
-    db: Session = SessionLocal()
-    item = db.query(MonitoredIP).filter(MonitoredIP.id == ip_id).first()
-    if item:
-        db.delete(item)
-        db.commit()
-    db.close()
-
-
-# ---- Monitored Folders CRUD ----
-
-def get_folder_items(skip: int = 0, limit: int = 100) -> List[MonitoredFolder]:
-    db: Session = SessionLocal()
-    items = db.query(MonitoredFolder).offset(skip).limit(limit).all()
-    db.close()
-    return items
-
-
-def get_folder_item(folder_id: int) -> Optional[MonitoredFolder]:
-    db: Session = SessionLocal()
-    item = db.query(MonitoredFolder).filter(MonitoredFolder.id == folder_id).first()
-    db.close()
-    return item
-
-
-def create_folder_item(folder_in: FolderItemCreate) -> MonitoredFolder:
-    db: Session = SessionLocal()
-    try:
-        existing = db.query(MonitoredFolder).filter(MonitoredFolder.path == folder_in.path).first()
-        if existing:
-            db.close()
-            return existing
-        db_item = MonitoredFolder(path=folder_in.path, frequency=folder_in.frequency)
-        db.add(db_item); db.commit(); db.refresh(db_item)
-        db.close()
-        return db_item
-    except IntegrityError:
-        db.rollback()
-        db.close()
-        raise
-
-
-def update_folder_item(folder_id: int, folder_in: FolderItemCreate) -> MonitoredFolder:
-    db: Session = SessionLocal()
-    item = db.query(MonitoredFolder).filter(MonitoredFolder.id == folder_id).first()
-    if not item:
-        db.close()
-        raise NoResultFound(f"Folder item {folder_id} not found")
-    item.path = folder_in.path
-    item.frequency = folder_in.frequency
-    db.commit()
-    db.refresh(item)
-    db.close()
-    return item
-
-
-def delete_folder_item(folder_id: int) -> None:
-    db: Session = SessionLocal()
-    item = db.query(MonitoredFolder).filter(MonitoredFolder.id == folder_id).first()
-    if item:
-        db.delete(item)
-        db.commit()
-    db.close()
-
-
-# ------------------------------
-# ---- Status update functions ----
-
-def update_file_status(file_id: int, status: str) -> MonitoredFile:
-    db: Session = SessionLocal()
-    try:
-        item = db.query(MonitoredFile).filter(MonitoredFile.id == file_id).first()
+        # Récupérer l'item depuis la base
+        item = db.query(MonitoredFile).filter(MonitoredFile.id == item_id).first()
         if not item:
-            raise NoResultFound(f"File item {file_id} not found")
+            _write_alert("file_error", item_id, {"error": "Item not found in database", "path": path})
+            return
 
-        if status not in {"active", "paused", "stopped"}:
-            raise ValueError(f"Unsupported file status: {status}")
-
-        item.status = status
-
-        if status == "stopped":
-            # Hard stop: drop hashes so a fresh baseline is rebuilt on next run
-            item.baseline_hash = None
+        # Vérifier si le fichier existe
+        if not os.path.exists(path):
+            _write_alert("file_not_found", item_id, {"path": path})
+            # Mettre à jour le statut
             item.current_hash = None
-        # NOTE: 'paused' NE change rien aux hashes.
+            item.last_scan = datetime.utcnow()
+            db.commit()
+            return
 
+        # Calculer le hash actuel
+        current_hash = calculate_file_hash(path)
+        if not current_hash:
+            _write_alert("file_hash_error", item_id, {"path": path})
+            return
+
+        # Premier scan : établir la baseline
+        if not item.baseline_hash:
+            item.baseline_hash = current_hash
+            item.current_hash = current_hash
+            item.last_scan = datetime.utcnow()
+            db.commit()
+            _write_activity("file_baseline_established", item_id, {
+                "path": path, 
+                "baseline_hash": current_hash
+            })
+            return
+
+        # Scans suivants : comparer avec la baseline
+        item.current_hash = current_hash
+        item.last_scan = datetime.utcnow()
         db.commit()
-        db.refresh(item)
-        return item
+
+        if current_hash != item.baseline_hash:
+            _write_alert("file_modified", item_id, {
+                "path": path,
+                "previous_hash": item.baseline_hash,
+                "current_hash": current_hash
+            })
+        else:
+            _write_activity("file_unchanged", item_id, {"path": path})
+
+    except Exception as e:
+        _write_alert("file_scan_error", item_id, {"path": path, "error": str(e)})
     finally:
         db.close()
 
-
-def update_folder_status(folder_id: int, status: str) -> MonitoredFolder:
+def scan_folder(item_id: int, path: str):
+    """Scan réel d'un dossier"""
     db: Session = SessionLocal()
+    
     try:
-        item = db.query(MonitoredFolder).filter(MonitoredFolder.id == folder_id).first()
+        item = db.query(MonitoredFolder).filter(MonitoredFolder.id == item_id).first()
         if not item:
-            raise NoResultFound(f"Folder item {folder_id} not found")
+            _write_alert("folder_error", item_id, {"error": "Item not found in database", "path": path})
+            return
 
-        if status not in {"active", "paused", "stopped"}:
-            raise ValueError(f"Unsupported folder status: {status}")
-
-        item.status = status
-
-        if status == "stopped":
-            # Arrêt fort: on oublie les états agrégés
+        if not os.path.exists(path) or not os.path.isdir(path):
+            _write_alert("folder_not_found", item_id, {"path": path})
             item.folder_hash = None
             item.file_count = 0
-        # 'paused' : on ne touche pas
+            item.last_scan = datetime.utcnow()
+            db.commit()
+            return
 
+        # Calculer l'empreinte du dossier
+        fingerprint = calculate_folder_fingerprint(path)
+        if not fingerprint:
+            _write_alert("folder_scan_error", item_id, {"path": path})
+            return
+
+        current_hash, file_count = fingerprint
+
+        # Premier scan
+        if not item.folder_hash:
+            item.folder_hash = current_hash
+            item.file_count = file_count
+            item.last_scan = datetime.utcnow()
+            db.commit()
+            _write_activity("folder_baseline_established", item_id, {
+                "path": path,
+                "baseline_hash": current_hash,
+                "file_count": file_count
+            })
+            return
+
+        # Scans suivants
+        previous_file_count = item.file_count
+        item.file_count = file_count
+        item.last_scan = datetime.utcnow()
         db.commit()
-        db.refresh(item)
-        return item
+
+        if current_hash != item.folder_hash:
+            _write_alert("folder_modified", item_id, {
+                "path": path,
+                "previous_hash": item.folder_hash,
+                "current_hash": current_hash,
+                "previous_file_count": previous_file_count,
+                "current_file_count": file_count
+            })
+            
+            # Mettre à jour la baseline pour les prochains scans
+            item.folder_hash = current_hash
+            db.commit()
+        else:
+            _write_activity("folder_unchanged", item_id, {
+                "path": path, 
+                "file_count": file_count
+            })
+
+    except Exception as e:
+        _write_alert("folder_scan_error", item_id, {"path": path, "error": str(e)})
     finally:
         db.close()
 
-
-def update_ip_status(ip_id: int, status: str) -> MonitoredIP:
-    """
-    Les IPs n’ont pas de vraie pause métier. On accepte 'paused' pour compat UI,
-    mais on traite 'paused' comme 'stopped' côté données (pas de hash à conserver).
-    """
+def scan_ip(item_id: int, ip: str, hostname: str = None):
+    """Scan réel d'une IP"""
     db: Session = SessionLocal()
+    
     try:
-        item = db.query(MonitoredIP).filter(MonitoredIP.id == ip_id).first()
+        item = db.query(MonitoredIP).filter(MonitoredIP.id == item_id).first()
         if not item:
-            raise NoResultFound(f"IP item {ip_id} not found")
+            _write_alert("ip_error", item_id, {"error": "Item not found in database", "ip": ip})
+            return
 
-        if status not in {"active", "paused", "stopped"}:
-            raise ValueError(f"Unsupported IP status: {status}")
+        # Vérifier l'activité de l'IP
+        ip_status = check_ip_activity(ip)
+        
+        # Premier scan
+        if not hasattr(item, 'last_status') or not item.last_status:
+            item.last_status = json.dumps(ip_status)
+            item.last_scan = datetime.utcnow()
+            db.commit()
+            _write_activity("ip_baseline_established", item_id, {
+                "ip": ip,
+                "status": ip_status
+            })
+            return
 
-        # Normaliser: paused -> stopped pour IP
-        normalized = "stopped" if status in {"paused", "stopped"} else "active"
-        item.status = normalized
-
-        if normalized == "stopped":
-            item.last_status = None
-
+        # Comparaison avec le statut précédent
+        previous_status = json.loads(item.last_status)
+        item.last_status = json.dumps(ip_status)
+        item.last_scan = datetime.utcnow()
         db.commit()
-        db.refresh(item)
-        return item
+
+        # Détection des changements
+        if previous_status.get('is_active') != ip_status.get('is_active'):
+            _write_alert("ip_status_changed", item_id, {
+                "ip": ip,
+                "previous_active": previous_status.get('is_active'),
+                "current_active": ip_status.get('is_active'),
+                "connections": ip_status.get('connections', [])
+            })
+
+    except Exception as e:
+        _write_alert("ip_scan_error", item_id, {"ip": ip, "error": str(e)})
     finally:
         db.close()
-
-
-def normalize_path(path: str) -> str:
-    if not path:
-        return path
-    # Convertir backslashes → slashes
-    path = path.replace("\\", "/")
-    # Supprimer les espaces début/fin
-    path = path.strip()
-    # Remplacer doubles slashes par simples (hors protocole type http://)
-    path = re.sub(r'(?<!:)//+', '/', path)
-    return path
-
----------- END OF FILE: backend/app/services/monitoring_service.py ----------
+---------- END OF FILE: backend/app/services/scan_tasks.py ----------
 
 
 ---------- START OF FILE: backend/app/main.py ----------
@@ -987,160 +824,228 @@ app.include_router(fs.router)
 ---------- END OF FILE: backend/app/main.py ----------
 
 
----------- START OF FILE: hids-web/src/lib/api.js ----------
+---------- START OF FILE: hids-web/src/pages/AlertsLogs.jsx ----------
 
-// src/lib/api.js
-const BASE = import.meta.env.VITE_API_BASE || "";
-console.log("API base:", BASE);
+// src/pages/AlertsLogs.jsx
 
-async function fetchJson(path, { method = "GET", token, body, form } = {}) {
-    const url = `${BASE}${path}`;
-    const headers = {};
-    if (token) headers["Authorization"] = `Bearer ${token}`;
-    if (!form) headers["Content-Type"] = "application/json";
+import { useEffect, useState } from "react";
+import { api } from "../lib/api";
+import { useAuth } from "../context/AuthProvider";
+import { useNavigate } from "react-router-dom";
 
-    const res = await fetch(url, {
-        method,
-        headers,
-        body: form ? body : body ? JSON.stringify(body) : undefined,
-    });
+const PAGE_SIZE = 15;
 
-    const ct = res.headers.get("content-type") || "";
-    const txt = await res.text();
-
-    if (!res.ok) {
-        let data = null;
-        try { if (ct.includes("application/json")) data = JSON.parse(txt); } catch {}
-        const err = new Error(`HTTP ${res.status} ${res.statusText}`);
-        err.status = res.status;
-        err.body = data ?? txt;
-        throw err;
-    }
-    try { return ct.includes("application/json") ? JSON.parse(txt) : txt; }
-    catch { return txt; }
+// ── UI bits ────────────────────────────────────────────────────────────────────
+function Badge({ children, className = "" }) {
+  return (
+    <span className={`px-2 py-1 rounded-full text-xs font-bold inline-flex items-center ${className}`}>
+      {children}
+    </span>
+  );
 }
 
-/* -------------------------------- Utilities -------------------------------- */
-const qs = (obj = {}) =>
-    Object.entries(obj)
-        .filter(([, v]) => v !== undefined && v !== null && v !== "")
-        .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
-        .join("&");
-
-/* ------------------------------ Public API --------------------------------- */
-export const api = {
-    /* ------------------ Auth ------------------ */
-    login: (username, password) =>
-        fetchJson("/auth/login", {
-        method: "POST",
-        form: true,
-        body: new URLSearchParams({ username, password }),
-        }),
-    me: (t) => fetchJson("/users/me", { token: t }),
-
-    /* -------------- Monitoring --------------- */
-    listFiles:   (t)        => fetchJson("/monitoring/files", { token: t }),
-    createFile:  (t, d)     => fetchJson("/monitoring/files", { method: "POST", token: t, body: d }),
-    updateFile:  (t, id, d) => fetchJson(`/monitoring/files/${id}`, { method: "PUT", token: t, body: d }),
-    deleteFile:  (t, id)    => fetchJson(`/monitoring/files/${id}`, { method: "DELETE", token: t }),
-    scanNowFile: (t, id)    => fetchJson(`/monitoring/files/${id}/scan-now`, { method: "POST", token: t }),
-
-    listFolders: (t)        => fetchJson("/monitoring/folders", { token: t }),
-    createFolder:(t, d)     => fetchJson("/monitoring/folders", { method: "POST", token: t, body: d }),
-    updateFolder:(t, id, d) => fetchJson(`/monitoring/folders/${id}`, { method: "PUT", token: t, body: d }),
-    deleteFolder:(t, id)    => fetchJson(`/monitoring/folders/${id}`, { method: "DELETE", token: t }),
-    scanNowFolder:(t, id)   => fetchJson(`/monitoring/folders/${id}/scan-now`, { method: "POST", token: t }),
-
-    listIps:     (t)        => fetchJson("/monitoring/ips", { token: t }),
-    createIp:    (t, d)     => fetchJson("/monitoring/ips", { method: "POST", token: t, body: d }),
-    updateIp:    (t, id, d) => fetchJson(`/monitoring/ips/${id}`, { method: "PUT", token: t, body: d }),
-    deleteIp:    (t, id)    => fetchJson(`/monitoring/ips/${id}`, { method: "DELETE", token: t }),
-    scanNowIp:   (t, id)    => fetchJson(`/monitoring/ips/${id}/scan-now`, { method: "POST", token: t }),
-
-    setFileFreq:   (t, id, frequency) => fetchJson(`/monitoring/files/${id}`,   { method: "PUT", token: t, body: { frequency } }),
-    setFolderFreq: (t, id, frequency) => fetchJson(`/monitoring/folders/${id}`, { method: "PUT", token: t, body: { frequency } }),
-    setIpFreq:     (t, id, frequency) => fetchJson(`/monitoring/ips/${id}`,     { method: "PUT", token: t, body: { frequency } }),
-
-    /* ----------------- Metrics/Reports ---------------- */
-    metrics: (t) => fetchJson("/metrics?limit_events=10", { token: t }),
-    reports: (t) => fetchJson("/reports?limit_events=50", { token: t }),
-
-    /* ---------------- Alerts & Activity (LOG FILE FIRST) --------------- */
-    listHidsLog: async (t, { type = "activity", page = 1, limit = 10, level = "", contains = "" } = {}) => {
-        try {
-        const r = await fetchJson(`/logs/hids?${qs({ log_type: type, page, limit, level, contains })}`, { token: t });
-        return { lines: r.lines, page_count: r.page_count, total: r.total };
-        } catch (e) {
-        // Fallback si l’endpoint n’existe pas encore
-        if (e.status === 404) {
-            if (type === "activity") {
-            const a = await fetchJson(`/activity?${qs({ limit, offset: (page - 1) * limit })}`, { token: t });
-            const items = a?.items || a || [];
-            return { lines: items.map(x => ({ ts: x.ts, level: x.level || "INFO", source: x.kind || x.entity_type, msg: x.message || x.raw || "" })), page_count: 1, total: items.length };
-            } else {
-            const al = await fetchJson(`/alerts?${qs({ limit, offset: (page - 1) * limit })}`, { token: t });
-            const items = al?.items || al || [];
-            return { lines: items.map(x => ({ ts: x.ts, level: x.severity || "INFO", source: x.entity_type, msg: x.message || "" })), page_count: 1, total: items.length };
-            }
-        }
-        throw e;
-        }
-    },
-    clearHidsLog: (t, type) =>
-        fetchJson("/logs/hids/clear", { method: "POST", token: t, body: { type } }),
-    // purge avancée: type=activity|alerts, level=..., from=ISO, to=ISO
-    purgeHidsLog: (t, { type, level, from, to }) =>
-        fetchJson("/logs/hids/purge", { method: "POST", token: t, body: { type, level, from, to } }),
-
-    // Compat list
-    listAlerts: (t, { limit, offset, severity, entity_type } = {}) =>
-        fetchJson(`/alerts?${qs({ limit, offset, severity, entity_type })}`, { token: t })
-        .then((res) => Array.isArray(res) ? ({ items: res, total: res.length }) :
-            ({ items: res.items || [], total: res.total ?? res.count ?? (res.items || []).length })),
-    listActivity: (t, { limit, offset, kind, entity_type } = {}) =>
-        fetchJson(`/activity?${qs({ limit, offset, kind, entity_type })}`, { token: t })
-        .then((res) => Array.isArray(res) ? ({ items: res, total: res.length }) :
-            ({ items: res.items || [], total: res.total ?? res.count ?? (res.items || []).length })),
-
-    /* ---------------- Users (Settings) --------------- */
-    listUsers:   (t)                 => fetchJson("/users", { token: t }),
-    createUser:  (t, { username, email, password, is_admin }) =>
-        fetchJson("/users", { method: "POST", token: t, body: { username, email, password, is_admin: !!is_admin } }),
-//     updateUserPassword: (t, id, { password }) =>
-//         fetchJson(`/users/${id}/password`, { method: "PUT", token: t, body: { password } }),
-    updateUserPassword: (t, id, { password }) =>
-    fetchJson(`/users/${id}/password`, {
-        method: "PUT",
-        token: t,
-        body: { new_password: password }   // <-- attendu par l’API
-    }),
-    
-    deleteUser:  (t, id)             => fetchJson(`/users/${id}`, { method: "DELETE", token: t }),
-
-    /* ---------------- Engine all-in-one --------------- */
-    engineState: (t)                 => fetchJson("/engine/state", { token: t }),
-    startAll:    (t)                 => fetchJson("/engine/all/start", { method: "POST", token: t }),
-    stopAll:     (t)                 => fetchJson("/engine/all/stop",  { method: "POST", token: t }),
-
-
-    /* ---------------- Engine controls individuels --------------- */
-    pauseAllFiles:    (t) => fetchJson("/engine/file/pause-all", { method: "POST", token: t }),
-    resumeAllFiles:   (t) => fetchJson("/engine/file/resume-all", { method: "POST", token: t }),
-    stopAllFiles:     (t) => fetchJson("/engine/file/stop-all", { method: "POST", token: t }),
-
-    pauseAllFolders:  (t) => fetchJson("/engine/folder/pause-all", { method: "POST", token: t }),
-    resumeAllFolders: (t) => fetchJson("/engine/folder/resume-all", { method: "POST", token: t }),
-    stopAllFolders:   (t) => fetchJson("/engine/folder/stop-all", { method: "POST", token: t }),
-
-    pauseAllIps:      (t) => fetchJson("/engine/ip/pause-all", { method: "POST", token: t }),
-    resumeAllIps:     (t) => fetchJson("/engine/ip/resume-all", { method: "POST", token: t }),
-    stopAllIps:       (t) => fetchJson("/engine/ip/stop-all", { method: "POST", token: t }),
-
-    /* utilitaire */
-    fetchJson,
+// Composant LevelBadge mis à jour pour correspondre aux couleurs douces
+const LevelBadge = ({ level }) => {
+  const L = String(level || "").toUpperCase();
+  const cls =
+    L === "CRITICAL" ? "bg-red-500/30 text-white" :
+    L === "HIGH"     ? "bg-red-500/20 text-red-300" :
+    L === "MEDIUM"   ? "bg-yellow-500/20 text-yellow-300" :
+    L === "LOW"      ? "bg-sky-500/20 text-sky-300" :
+    L === "WARNING"  ? "bg-yellow-500/20 text-yellow-300" :
+    L === "INFO"     ? "bg-green-500/20 text-green-300" :
+                    "bg-white/5 text-muted";
+  return <Badge className={cls}>{L || "—"}</Badge>;
 };
-export default api;
 
----------- END OF FILE: hids-web/src/lib/api.js ----------
+function TableShell({ headers, children }) {
+  return (
+    <div className="card p-0 overflow-hidden">
+      <table className="w-full text-sm">
+        <thead className="bg-white/5 text-muted sticky top-0">
+          <tr>
+            {headers.map((h, i) => (
+              <th key={i} className={`px-4 py-3 ${i === headers.length - 1 ? "text-right" : "text-left"}`}>{h}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>{children}</tbody>
+      </table>
+    </div>
+  );
+}
+
+function Pager({ page, pageCount, onPage }) {
+  return (
+    <div className="flex items-center justify-between gap-2">
+      <div className="text-xs text-muted">Page {Math.min(page, pageCount) || 1} / {pageCount || 1}</div>
+      <div className="flex gap-2">
+        <button
+          className="px-3 py-1.5 rounded-md border border-white/10 bg-panel/50 disabled:opacity-50"
+          onClick={() => onPage(Math.max(1, page - 1))}
+          disabled={page <= 1}
+        >← Prev</button>
+        <button
+          className="px-3 py-1.5 rounded-md border border-white/10 bg-panel/50 disabled:opacity-50"
+          onClick={() => onPage(Math.min(pageCount || 1, page + 1))}
+          disabled={page >= (pageCount || 1)}
+        >Next →</button>
+      </div>
+    </div>
+  );
+}
+
+// ── Page ──────────────────────────────────────────────────────────────────────
+export default function AlertsLogs() {
+  const { token, user } = useAuth(); // on récupère l'objet user
+  const navigate = useNavigate();
+
+  const [tab, setTab] = useState("alerts"); // "alerts" | "activity"
+  const [page, setPage] = useState(1);
+
+  // filtres
+  const [level, setLevel] = useState("");
+  const [contains, setContains] = useState("");
+
+  // données
+  const [items, setItems] = useState([]);
+  const [pageCount, setPageCount] = useState(1);
+  const [loading, setLoading] = useState(false);
+
+  // reset pagination si on change d’onglet
+  useEffect(() => {
+    setPage(1);
+    setLevel("");
+    setContains("");
+  }, [tab]);
+
+  // charge une page depuis le backend
+  useEffect(() => {
+    // Si le token n'est pas encore disponible, on ne fait pas l'appel
+    if (!token) {
+        return;
+    }
+
+    let stopped = false;
+    (async () => {
+      setLoading(true);
+      try {
+        const r = await api.listHidsLog(token, {
+          type: tab, page, limit: PAGE_SIZE, level, contains
+        });
+        if (stopped) return;
+        setItems(r.lines || []);
+        setPageCount(r.page_count || 1);
+      } catch (e) {
+        console.error("Failed to fetch logs:", e);
+        if (!stopped) {
+          setItems([]);
+          setPageCount(1);
+        }
+      } finally {
+        if (!stopped) setLoading(false);
+      }
+    })();
+    return () => { stopped = true; };
+  }, [token, tab, page, level, contains]);
+
+  const onClear = async () => {
+    // On utilise une boîte de dialogue personnalisée au lieu de window.confirm
+    // const confirmed = await showCustomConfirmDialog("⚠️ This will permanently clear logs. Continue?");
+    if (!window.confirm(`⚠️ This will permanently clear ${tab} logs. Continue?`)) return;
+    try {
+      await api.clearHidsLog(token, tab);
+      setPage(1);
+    } catch (e) {
+      // On utilise une boîte de dialogue personnalisée au lieu de window.alert
+      // showCustomAlertDialog("Clear failed: " + (e?.body?.detail || e.message));
+      window.alert("Clear failed: " + (e?.body?.detail || e.message));
+    }
+  };
+
+  const headers = ["Date", "Time", "Level", "Source", "Message"];
+
+  // Déterminer les niveaux de filtre en fonction de l'onglet actif
+  const levels = tab === "alerts"
+    ? ["CRITICAL", "HIGH", "MEDIUM", "LOW", "INFO"]
+    : ["INFO", "WARNING", "ERROR"];
+
+  const isAdmin = user?.is_admin; // Vérifie si l'utilisateur est admin
+
+  return (
+    <div className="space-y-6">
+      {/* Tabs + Clear */}
+      <div className="flex items-center justify-between">
+        <div className="flex gap-2">
+          {["alerts", "activity"].map(t => (
+            <button
+              key={t}
+              onClick={() => setTab(t)}
+              className={`px-3 py-1.5 rounded-md border capitalize ${tab===t ? "bg-panel2 border-white/10" : "bg-panel/50 border-white/5"}`}
+            >{t}</button>
+          ))}
+        </div>
+
+        <button
+          onClick={onClear}
+          disabled={!isAdmin} // Bouton désactivé si l'utilisateur n'est pas admin
+          className="px-3 py-1.5 rounded-md border border-white/10 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+          title={`Clear ${tab} logs (admin only server-side)`}
+          style={{
+            background: isAdmin ? "linear-gradient(90deg, #d32f2f, #ef5350)" : "rgba(255, 255, 255, 0.05)",
+            borderColor: isAdmin ? "#ef5350" : "rgba(255, 255, 255, 0.1)",
+            color: isAdmin ? "white" : "rgba(255, 255, 255, 0.5)",
+          }}
+        >
+          Clear logs
+        </button>
+      </div>
+
+      {/* Filtres */}
+      <div className="card p-3">
+        <div className="flex flex-wrap gap-3">
+          <select
+            className="bg-panel2 border border-white/10 rounded-md text-sm px-2 py-1"
+            value={level}
+            onChange={e=>{ setLevel(e.target.value); setPage(1); }}
+          >
+            <option value="">Level: any</option>
+            {levels.map(l => (
+              <option key={l} value={l}>{l}</option>
+            ))}
+          </select>
+
+          <input
+            className="bg-panel2 border border-white/10 rounded-md text-sm px-2 py-1"
+            placeholder="Search message…"
+            value={contains}
+            onChange={e=>{ setContains(e.target.value); setPage(1); }}
+          />
+        </div>
+      </div>
+
+      {/* Tableau */}
+      <TableShell headers={headers}>
+        {loading && (<tr><td colSpan={headers.length} className="px-4 py-6 text-muted">Loading…</td></tr>)}
+        {!loading && items.length === 0 && (
+          <tr><td colSpan={headers.length} className="px-4 py-6 text-muted">No log lines</td></tr>
+        )}
+        {!loading && items.map((ln, i)=>(
+          <tr key={`${ln.ts}-${i}`} className="border-t border-white/5">
+            <td className="px-4 py-2">{ln.ts ? new Date(ln.ts).toLocaleDateString() : "—"}</td>
+            <td className="px-4 py-2 text-muted">{ln.ts ? new Date(ln.ts).toLocaleTimeString() : "—"}</td>
+            <td className="px-4 py-2"><LevelBadge level={ln.level} /></td>
+            <td className="px-4 py-2">{ln.source || "—"}</td>
+            <td className="px-4 py-2 text-right font-mono">{ln.msg || "—"}</td>
+          </tr>
+        ))}
+      </TableShell>
+
+      <Pager page={page} pageCount={pageCount} onPage={setPage}/>
+    </div>
+  );
+}
+
+---------- END OF FILE: hids-web/src/pages/AlertsLogs.jsx ----------
 
 

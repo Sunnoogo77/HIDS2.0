@@ -458,12 +458,15 @@ export default function Surveillance() {
                     <span
                       className={`badge ${
                         it.status === "active"
-                          ? "bg-emerald-500/20 text-emerald-300"
-                          : "bg-white/5 text-muted"
+                          ? "bg-emerald-500/20 text-emerald-300"   // vert
+                          : it.status === "paused"
+                          ? "bg-orange-500/20 text-orange-300"     // orange
+                          : "bg-red-500/20 text-red-300"           // rouge (stopped ou autre)
                       }`}
                     >
                       {it.status || "inactive"}
                     </span>
+
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex justify-end gap-2">

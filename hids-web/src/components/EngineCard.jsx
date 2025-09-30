@@ -66,8 +66,16 @@ export default function EngineCard({ title, counts = {}, onAction, disabled = fa
     
     const status = active > 0 ? "running" : total === 0 ? "stopped" : paused === total ? "paused" : "stopped";
 
-    const tone = status === "running" ? "success" : status === "paused" ? "warn" : "danger";
-    const dot = tone === "success" ? "bg-success" : tone === "warn" ? "bg-warn" : "bg-danger";
+    // const tone = status === "running" ? "success" : status === "paused" ? "warn" : "danger";
+    // const dot = tone === "success" ? "bg-success" : tone === "warn" ? "bg-warn" : "bg-danger";
+
+    const dot =
+        status === "running"
+            ? "bg-green-500"   
+            : status === "paused"
+            ? "bg-orange-300"  
+            : "bg-red-700";    
+
 
     // Boutons conditionnels
     const actions = status === "running"
