@@ -110,8 +110,11 @@ def _read_recent_events(limit: int = 50) -> list[dict]:
         payload = line.split("|", 2)[2].strip() if "|" in line else line.strip()
         try:
             ev = json.loads(payload)
-            if isinstance(ev, dict) and ev.get("type") in {"file_scan","folder_scan","ip_scan"}:
+            # if isinstance(ev, dict) and ev.get("type") in {"file_scan","folder_scan","ip_scan"}:
+            #     events.append(ev)
+            if isinstance(ev, dict) and ev.get("type") in {"activity"}:
                 events.append(ev)
+
         except Exception:
             continue
     return events[-limit:]

@@ -10,6 +10,7 @@ class MonitoredItemBase(BaseModel):
 class FileItemCreate(BaseModel):
     path: str
     frequency: Literal["minutely", "hourly", "daily", "weekly"]
+    status: Optional[Literal["active", "paused", "stopped"]] = "active"
 
 class FileItemRead(MonitoredItemBase):
     id: int
@@ -20,6 +21,7 @@ class FileItemRead(MonitoredItemBase):
 class FolderItemCreate(BaseModel):
     path: str
     frequency: Literal["minutely", "hourly", "daily", "weekly"]
+    status: Optional[Literal["active", "paused", "stopped"]] = "active"
 
 class FolderItemRead(MonitoredItemBase):
     id: int
@@ -34,7 +36,7 @@ class IPMonitoredBase(BaseModel):
     status: Optional[Literal["active", "paused", "stopped"]] = "stopped"
 
 class IPItemCreate(IPMonitoredBase):
-    pass
+    status: Optional[Literal["active", "paused", "stopped"]] = "active"
 
 class IPItemRead(IPMonitoredBase):
     id: int

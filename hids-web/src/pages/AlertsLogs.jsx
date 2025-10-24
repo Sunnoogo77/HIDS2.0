@@ -99,7 +99,27 @@ export default function AlertsLogs() {
     }
 
     let stopped = false;
-    (async () => {
+
+    // (async () => {
+    //   setLoading(true);
+    //   try {
+    //     const r = await api.listHidsLog(token, {
+    //       type: tab, page, limit: PAGE_SIZE, level, contains
+    //     });
+    //     if (stopped) return;
+    //     setItems(r.lines || []);
+    //     setPageCount(r.page_count || 1);
+    //   } catch (e) {
+    //     console.error("Failed to fetch logs:", e);
+    //     if (!stopped) {
+    //       setItems([]);
+    //       setPageCount(1);
+    //     }
+    //   } finally {
+    //     if (!stopped) setLoading(false);
+    //   }
+    // })();
+    const load = async () => {
       setLoading(true);
       try {
         const r = await api.listHidsLog(token, {
@@ -117,8 +137,11 @@ export default function AlertsLogs() {
       } finally {
         if (!stopped) setLoading(false);
       }
-    })();
-    return () => { stopped = true; };
+    };
+    load()
+    // return () => { stopped = true; };
+    const id = setInterval(() => {loading, 4000});
+    return () => { stopped = true; clearInterval(id); };
   }, [token, tab, page, level, contains]);
 
   const onClear = async () => {

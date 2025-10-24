@@ -55,31 +55,32 @@ files_to_process = [
     # 'backend/app/api/integrations.py',
     'backend/app/api/logs.py',
     # 'backend/app/api/metrics.py',
-    # 'backend/app/api/monitoring.py',
-    # 'backend/app/api/reports.py',
+    'backend/app/api/monitoring.py',
+    'backend/app/api/reports.py',
     # 'backend/app/api/status.py',
     # 'backend/app/api/users.py',
     # 'backend/app/core/...
-    # 'backend/app/core/config.py',
-    # 'backend/app/core/logging.py',
-    # 'backend/app/core/scheduler.py',
-    # 'backend/app/core/security.py',
+    'backend/app/core/config.py',
+    'backend/app/core/logging.py',
+    'backend/app/core/scheduler.py',
+    'backend/app/core/security.py',
     # 'backend/app/db/...
     # 'backend/app/db/base.py',
-    # 'backend/app/db/models.py',
+    'backend/app/db/models.py',
     # 'backend/app/db/session.py',
     # 'backend/app/models/...
     'backend/app/models/alerts.py',
     # 'backend/app/models/auth.py',
-    # 'backend/app/models/monitoring.py',
+    'backend/app/models/monitoring.py',
     # 'backend/app/models/report.py',
     # 'backend/app/models/user.py',
     # 'backend/app/services/...
     'backend/app/services/alert_service.py',
     # 'backend/app/services/auth_service.py',
-    # 'backend/app/services/monitoring_service.py',
+    'backend/app/services/monitoring_service.py',
     'backend/app/services/report_service.py',
     'backend/app/services/scan_tasks.py',
+    'backend/app/services/hash_service.py',
     # 'backend/app/services/user_service.py',
     # 'backend/app/...
     'backend/app/main.py',
@@ -96,7 +97,7 @@ files_to_process = [
     # ------------------------------------------------------------------
     # # 'hids-web/src/....
     # # 'hids-web/src/components/......',
-    # 'hids-web/src/components/EngineCard.jsx',
+    'hids-web/src/components/EngineCard.jsx',
     # 'hids-web/src/components/IconButton.jsx',
     # 'hids-web/src/components/Modal.jsx',
     # 'hids-web/src/components/ServerPathPicker.jsx',
@@ -106,21 +107,23 @@ files_to_process = [
     # 'hids-web/src/components/Topbar.jsx',
 
     # # 'hids-web/src/context/......',
-    # 'hids-web/src/context/AuthProvider.jsx',
+    'hids-web/src/context/AuthProvider.jsx',
     
     # # 'hids-web/src/pages/......',
     'hids-web/src/pages/AlertsLogs.jsx',
     # 'hids-web/src/pages/Dashboard.jsx',
     # 'hids-web/src/pages/Login.jsx',
-    # 'hids-web/src/pages/Reports.jsx',
+    'hids-web/src/pages/Reports.jsx',
     # 'hids-web/src/pages/Settings.jsx',
-    # 'hids-web/src/pages/Surveillance.jsx',
+    'hids-web/src/pages/Surveillance.jsx',
     
     # # 'hids-web/src/lib/......',
-    # 'hids-web/src/lib/api.js',
+    'hids-web/src/lib/api.js',
     
-    # 'hids-web/src/App.jsx',
-    # 'hids-web/src/main.jsx',
+    'hids-web/src/App.jsx',
+    'hids-web/src/main.jsx',
+    
+    'docker-compose.yml',
 ]
 
 # Name of the output file

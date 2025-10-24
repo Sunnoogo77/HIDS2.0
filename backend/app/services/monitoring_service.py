@@ -33,7 +33,10 @@ def create_file_item(file_in: FileItemCreate) -> MonitoredFile:
         if existing:
             db.close()
             return existing
-        db_item = MonitoredFile(path=normalized_path, frequency=file_in.frequency, status="stopped")
+        # db_item = MonitoredFile(path=normalized_path, frequency=file_in.frequency, status="stopped")
+        db_item = MonitoredFile(path=normalize_path(file_in.path),
+                        frequency=file_in.frequency,
+                        status=file_in.status or "active")
         db.add(db_item)
         db.commit()
         db.refresh(db_item)
@@ -96,7 +99,8 @@ def create_ip_item(ip_in: IPItemCreate) -> MonitoredIP:
             ip=ip_in.ip,
             hostname=ip_in.hostname,
             frequency=ip_in.frequency,
-            status="stopped"
+            # status="stopped"
+            status=ip_in.status or "active"
         )
         db.add(db_item)
         db.commit()
@@ -156,7 +160,10 @@ def create_folder_item(folder_in: FolderItemCreate) -> MonitoredFolder:
         if existing:
             db.close()
             return existing
-        db_item = MonitoredFolder(path=folder_in.path, frequency=folder_in.frequency, status="stopped")
+        # db_item = MonitoredFolder(path=folder_in.path, frequency=folder_in.frequency, status="stopped")
+        db_item = MonitoredFolder(path=normalize_path(folder_in.path),
+                        frequency=folder_in.frequency,
+                        status=folder_in.status or "active")
         db.add(db_item); db.commit(); db.refresh(db_item)
         db.close()
         return db_item

@@ -230,7 +230,9 @@ hids_logger = logging.getLogger("hids")
 hids_logger.setLevel(logging.INFO)
 if not hids_logger.handlers:
     fh = logging.FileHandler(HIDS_LOG_PATH)
-    fmt = logging.Formatter("%(asctime)s | %(levelname)s | %(message)s")
+    # fmt = logging.Formatter("%(asctime)s | %(levelname)s | %(message)s")
+    fmt = logging.Formatter("%(asctime)s | %(levelname)s | %(name)s | %(message)s")
+
     fh.setFormatter(fmt)
     hids_logger.addHandler(fh)
 
@@ -239,7 +241,9 @@ alerts_logger = logging.getLogger("alerts")
 alerts_logger.setLevel(logging.WARNING)
 if not alerts_logger.handlers:
     fh = logging.FileHandler(ALERTS_LOG_PATH)
-    fmt = logging.Formatter("%(asctime)s | %(levelname)s | %(message)s")
+    # fmt = logging.Formatter("%(asctime)s | %(levelname)s | %(message)s")
+    fmt = logging.Formatter("%(asctime)s | %(levelname)s | %(name)s | %(message)s")
+
     fh.setFormatter(fmt)
     alerts_logger.addHandler(fh)
 
