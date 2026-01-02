@@ -70,7 +70,7 @@
 
 // hids-web/src/components/Sidebar.jsx
 import { NavLink } from "react-router-dom";
-import { LayoutDashboard, Shield, Bell, FileText, Settings, ShieldCheck } from "lucide-react";
+import { Activity, LayoutDashboard, Shield, Bell, FileText, Settings, ShieldCheck } from "lucide-react";
 import { useAuth } from "../context/AuthProvider";
 
 const LinkItem = ({ to, icon: Icon, label }) => (
@@ -111,6 +111,7 @@ export default function Sidebar() {
       <nav className="flex flex-col gap-1 p-4 flex-1">
         <LinkItem to="/dashboard" icon={LayoutDashboard} label="Dashboard" />
         <LinkItem to="/surveillance" icon={Shield} label="Surveillance" />
+        <LinkItem to="/connections" icon={Activity} label="Network Monitor" />
         <LinkItem to="/alerts" icon={Bell} label="Alerts & Logs" />
         <LinkItem to="/reports" icon={FileText} label="Reports" />
 

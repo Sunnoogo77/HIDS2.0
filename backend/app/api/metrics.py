@@ -1,12 +1,13 @@
 # File: backend/app/api/metrics.py
 from fastapi import APIRouter, Depends, Query
 from typing import Dict, Any
-import os, json, time
+import os
 
 from app.core.security import get_current_active_user
 from app.db.session import SessionLocal
 from app.db.models import MonitoredFile, MonitoredFolder, MonitoredIP
 from app.core.scheduler import get_scheduler
+from app.core.log_parsing import extract_json_payload, classify_scan_event
 
 LOG_PATH = os.getenv("HIDS_LOG_PATH", "logs/hids.log")
 
@@ -61,18 +62,15 @@ def _recent_events(limit: int = 50) -> Dict[str, Any]:
 
         events = []
         for line in reversed(lines):  # chrono asc
-            try:
-                payload = line.split("|", 2)[2].strip() if "|" in line else line.strip()
-                ev = json.loads(payload)
+            ev = extract_json_payload(line)
+            if ev:
                 events.append(ev)
-            except Exception:
-                continue
 
         out["count"] = len(events)
         for ev in events:
-            t = ev.get("type")
-            if t in out["by_type"]:
-                out["by_type"][t] += 1
+            scan_kind = classify_scan_event(ev)
+            if scan_kind in out["by_type"]:
+                out["by_type"][scan_kind] += 1
         out["last"] = events[-5:] if len(events) > 5 else events
         return out
     except Exception:

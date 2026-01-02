@@ -3,51 +3,69 @@ from typing import Literal
 from pathlib import Path
 from pydantic import BaseModel
 
-# si tu veux protéger la route par auth, décommente et adapte :
-# from app.core.security import get_current_user
+from app.core.config import settings
+from app.core.security import get_current_active_user
 
-router = APIRouter(prefix="/api/fs", tags=["filesystem"])
+
+def _require_admin(user=Depends(get_current_active_user)):
+    if not getattr(user, "is_admin", False):
+        raise HTTPException(status_code=403, detail="Admin privileges required")
+    return user
+
+
+router = APIRouter(
+    prefix="/api/fs",
+    tags=["filesystem"],
+    dependencies=[Depends(_require_admin)],
+)
+
 
 class FsItem(BaseModel):
     name: str
     path: str
     type: Literal["file", "dir"]
 
+
 class FsListResponse(BaseModel):
     cwd: str
     items: list[FsItem]
 
-# Optionnel: limite la navigation à ces racines (sécurité)
-ALLOWED_ROOTS: list[Path] = [Path("/")]  # ajoute /data, /var, etc. si besoin
+
+def _parse_allowlist(raw: str) -> list[Path]:
+    if not raw:
+        return []
+    items = [p.strip() for p in raw.split(",") if p.strip()]
+    return [Path(p).expanduser() for p in items]
+
+
+# Limite la navigation a ces racines (configurable via FS_ALLOWLIST)
+ALLOWED_ROOTS: list[Path] = _parse_allowlist(settings.FS_ALLOWLIST)
+
 
 def _is_under_allowed_roots(p: Path) -> bool:
-    try:
-        r = p.resolve()
-    except FileNotFoundError:
-        # autorise la résolution même si le dossier n'existe pas encore
-        r = p
+    if not ALLOWED_ROOTS:
+        return False
+    r = p.resolve(strict=False)
     for root in ALLOWED_ROOTS:
-        try:
-            if r == root.resolve() or root.resolve() in r.parents:
-                return True
-        except FileNotFoundError:
-            pass
+        rr = root.resolve(strict=False)
+        if r == rr or rr in r.parents:
+            return True
     return False
+
 
 @router.get("/list", response_model=FsListResponse)
 def list_entries(
     path: str = Query("/", description="Chemin absolu sur le serveur"),
     kind: Literal["any", "file", "dir"] = Query("any")
-    # , user=Depends(get_current_user)  # si tu sécurises
 ):
     p = Path(path).expanduser()
     if not p.is_absolute():
         raise HTTPException(status_code=400, detail="Path must be absolute")
 
     if not _is_under_allowed_roots(p):
-        raise HTTPException(status_code=403, detail="Path not allowed")
+        raise HTTPException(status_code=403, detail="Path not allowed or FS allowlist not configured")
 
-    # Si le chemin demandé est un fichier, on liste son dossier parent
+    # Si le chemin demande est un fichier, on liste son dossier parent
     if p.is_file():
         p = p.parent
 

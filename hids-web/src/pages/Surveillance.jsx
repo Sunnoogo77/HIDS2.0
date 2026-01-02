@@ -5,7 +5,7 @@ import { api } from "../lib/api";
 import IconButton from "../components/IconButton";
 import { Pencil, ScanLine, Trash2, Upload } from "lucide-react";
 
-const FREQS = ["minutely", "hourly", "daily"];
+const FREQS = ["minutely", "hourly", "daily", "weekly"];
 
 /* --------------------------------------------------------------
    Utils
@@ -304,9 +304,9 @@ export default function Surveillance() {
     ips: (id) => api.scanNowIp(token, id),
   };
   const updaters = {
-    files: (id, body) => api.updateFile(token, id, body),
-    folders: (id, body) => api.updateFolder(token, id, body),
-    ips: (id, body) => api.updateIp(token, id, body),
+    files: (id, frequency) => api.setFileFreq(token, id, frequency),
+    folders: (id, frequency) => api.setFolderFreq(token, id, frequency),
+    ips: (id, frequency) => api.setIpFreq(token, id, frequency),
   };
   const creators = {
     files: (data) => api.createFile(token, data),
@@ -348,7 +348,7 @@ export default function Surveillance() {
     if (!editing) return;
     const { entity, item } = editing;
     try {
-      await updaters[entity](item.id, { frequency: newFreq });
+      await updaters[entity](item.id, newFreq);
       setEditing(null);
       await reload();
     } catch (e) {

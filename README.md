@@ -11,6 +11,7 @@ Surveille **fichiers**, **dossiers** et **adresses IP**, planifie des scans, cen
 * CRUD de surveillance : **files**, **folders**, **IPs**
   Fréquences : `minutely | hourly | daily | weekly` + statut `active | paused`
 * **Scheduler** (jobs persistants) et **logs** applicatifs (fichier)
+* **Network Monitor** : connexions actives (IP/ports/proto/PID/process)
 * **Reports** (base JSON, extension HTML/PDF prévue), métriques & statut
 * Intégrations (ex. VirusTotal, webhooks) & réglages “admin-only”
 
@@ -69,7 +70,7 @@ backend/
   requirements.txt
 hids-web/
   src/
-    pages/        Dashboard.jsx, Surveillance.jsx, AlertsLogs.jsx, Reports.jsx, Settings.jsx
+    pages/        Dashboard.jsx, Surveillance.jsx, Connections.jsx, AlertsLogs.jsx, Reports.jsx, Settings.jsx
     components/   Sidebar.jsx, Topbar.jsx, Table.jsx, ...
     context/      AuthProvider.jsx
     lib/          api.js
@@ -87,7 +88,13 @@ APP_NAME=HIDS-Web API
 JWT_SECRET=change_me_strong_secret
 LOG_LEVEL=INFO
 DATABASE_URL=sqlite:///data/hids.db
+FS_ALLOWLIST=/app/data,/app/logs
+VITE_API_BASE=http://localhost:8000/api
 ```
+
+Notes:
+- FS_ALLOWLIST limite /api/fs/list (admin only) a des chemins absolus.
+- VITE_API_BASE definit la base API pour le frontend (Vite / Docker).
 
 > Volumes montés par `docker-compose.yml` : `./data:/app/data` et `./logs:/app/logs`.
 
@@ -98,6 +105,7 @@ DATABASE_URL=sqlite:///data/hids.db
 ```bash
 # build + run API
 docker compose up -d --build
+# frontend (Vite) -> http://localhost:5173
 # logs temps réel
 docker compose logs -f api
 # Swagger UI
@@ -179,6 +187,9 @@ curl -H "Authorization: Bearer $TOKEN" http://localhost:8000/api/monitoring/file
 curl -X PUT http://localhost:8000/api/monitoring/files/1 \
   -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
   -d '{"path":"/tmp/bar","frequency":"daily"}'
+curl -X PATCH http://localhost:8000/api/monitoring/files/1/frequency \
+  -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"frequency":"weekly"}'
 curl -X DELETE http://localhost:8000/api/monitoring/files/1 -H "Authorization: Bearer $TOKEN"
 
 # Folders
@@ -202,6 +213,23 @@ curl http://localhost:8000/api/metrics
 curl http://localhost:8000/api/reports
 ```
 
+### Live Network Monitor (WebSocket)
+
+```bash
+# WS (token dans query string)
+# ws://localhost:8000/ws/network?interval_ms=500&token=$TOKEN
+```
+Note: si le WS est indisponible, l'UI retombe sur /api/network/connections.
+
+### Network Monitor
+
+```bash
+curl -H "Authorization: Bearer $TOKEN" \
+  "http://localhost:8000/api/network/connections?require_running=false"
+```
+Note: les noms de processus peuvent etre null si les permissions OS sont insuffisantes (Windows admin recommande).
+
+
 ---
 
 ## 🌐 Frontend (dev local)
@@ -209,9 +237,8 @@ curl http://localhost:8000/api/reports
 ```bash
 cd hids-web
 npm install
-npm run dev
+VITE_API_BASE=http://localhost:8000/api npm run dev
 # http://localhost:5173
-# Ajuste src/lib/api.js si ton backend n'est pas sur 8000
 ```
 
 ---

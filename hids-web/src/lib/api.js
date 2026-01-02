@@ -66,13 +66,17 @@ export const api = {
     deleteIp:    (t, id)    => fetchJson(`/monitoring/ips/${id}`, { method: "DELETE", token: t }),
     scanNowIp:   (t, id)    => fetchJson(`/monitoring/ips/${id}/scan-now`, { method: "POST", token: t }),
 
-    setFileFreq:   (t, id, frequency) => fetchJson(`/monitoring/files/${id}`,   { method: "PUT", token: t, body: { frequency } }),
-    setFolderFreq: (t, id, frequency) => fetchJson(`/monitoring/folders/${id}`, { method: "PUT", token: t, body: { frequency } }),
-    setIpFreq:     (t, id, frequency) => fetchJson(`/monitoring/ips/${id}`,     { method: "PUT", token: t, body: { frequency } }),
+    setFileFreq:   (t, id, frequency) => fetchJson(`/monitoring/files/${id}/frequency`,   { method: "PATCH", token: t, body: { frequency } }),
+    setFolderFreq: (t, id, frequency) => fetchJson(`/monitoring/folders/${id}/frequency`, { method: "PATCH", token: t, body: { frequency } }),
+    setIpFreq:     (t, id, frequency) => fetchJson(`/monitoring/ips/${id}/frequency`,     { method: "PATCH", token: t, body: { frequency } }),
 
     /* ----------------- Metrics/Reports ---------------- */
     metrics: (t) => fetchJson("/metrics?limit_events=10", { token: t }),
     reports: (t) => fetchJson("/reports?limit_events=50", { token: t }),
+
+    /* ---------------- Network ---------------- */
+    listConnections: (t, { since, limit = 500, requireRunning = true } = {}) =>
+        fetchJson(`/network/connections?${qs({ since, limit, require_running: requireRunning })}`, { token: t }),
 
     /* ---------------- Alerts & Activity (LOG FILE FIRST) --------------- */
     listHidsLog: async (t, { type = "activity", page = 1, limit = 10, level = "", contains = "" } = {}) => {

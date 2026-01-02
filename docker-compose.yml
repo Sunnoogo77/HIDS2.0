@@ -42,6 +42,9 @@ services:
 
       # Logs
       HIDS_LOG_DIR: "${HIDS_LOG_DIR:-/app/logs}"
+
+      # Filesystem allowlist for /api/fs/list
+      FS_ALLOWLIST: "${FS_ALLOWLIST:-/app/data,/app/logs}"
       
       # - HIDS_LOG_DIR=/app/logs
 
@@ -67,4 +70,19 @@ services:
         fi
       "
 
+    restart: unless-stopped
+
+  web:
+    image: node:20-alpine
+    working_dir: /app
+    environment:
+      VITE_API_BASE: "${VITE_API_BASE:-http://localhost:8000/api}"
+    volumes:
+      - ./hids-web:/app
+    ports:
+      - "5173:5173"
+    command: >
+      sh -c "npm install && npm run dev -- --host 0.0.0.0 --port 5173"
+    depends_on:
+      - api
     restart: unless-stopped

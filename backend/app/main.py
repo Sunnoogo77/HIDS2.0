@@ -19,6 +19,8 @@ from app.api.metrics import router as metrics_router
 from app.api.reports import router as reports_router
 from app.api import engine as engine_routes
 from app.api import fs 
+from app.api import network as network_routes
+from app.api import network_ws as network_ws_routes
 # Importation du nouveau routeur unifié pour les logs
 from app.api import logs
 
@@ -134,3 +136,5 @@ app.include_router(metrics_router)
 app.include_router(reports_router)
 app.include_router(engine_routes.router)
 app.include_router(fs.router)
+app.include_router(network_routes.router)
+app.include_router(network_ws_routes.router)

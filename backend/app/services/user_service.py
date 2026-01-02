@@ -1,7 +1,7 @@
 # File: backend/app/services/user_service.py
 from typing import List, Optional
 from sqlalchemy.orm import Session
-from app.db.session import SessionLocal
+from app.db.session import SessionLocal, commit_with_retry
 from app.db.models import User as ORMUser
 from app.models.user import UserCreate
 from app.services.auth_service import get_password_hash
@@ -39,7 +39,7 @@ def create_user(user_in: UserCreate) -> ORMUser:
         is_active=True
     )
     db.add(db_user)
-    db.commit()
+    commit_with_retry(db)
     db.refresh(db_user)
     db.close()
     return db_user
@@ -55,7 +55,7 @@ def update_user(user_id: int, user_in: UserCreate) -> Optional[ORMUser]:
     user.username = user_in.username
     user.email = user_in.email
     user.is_admin = user_in.is_admin
-    db.commit()
+    commit_with_retry(db)
     db.refresh(user)
     db.close()
     return user
@@ -68,7 +68,7 @@ def delete_user(user_id: int) -> bool:
         db.close()
         return False
     db.delete(user)
-    db.commit()
+    commit_with_retry(db)
     db.close()
     return True
 
@@ -80,6 +80,6 @@ def change_user_password(user_id: int, new_password: str) -> bool:
         db.close()
         return False
     user.password_hash = get_password_hash(new_password)
-    db.commit()
+    commit_with_retry(db)
     db.close()
     return True

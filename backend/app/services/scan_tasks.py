@@ -2,7 +2,7 @@
 # from datetime import datetime
 # from sqlalchemy.orm import Session
 
-# from app.db.session import SessionLocal
+# from app.db.session import SessionLocal, commit_with_retry
 # from app.db.models import MonitoredFile, MonitoredFolder
 # from .hash_service import calculate_file_hash, calculate_folder_fingerprint, check_ip_activity
 
@@ -57,7 +57,7 @@
 #             # Mettre à jour le statut
 #             item.current_hash = None
 #             item.last_scan = datetime.utcnow()
-#             db.commit()
+#             commit_with_retry(db)
 #             return
 
 #         # Calculer le hash actuel
@@ -71,7 +71,7 @@
 #             item.baseline_hash = current_hash
 #             item.current_hash = current_hash
 #             item.last_scan = datetime.utcnow()
-#             db.commit()
+#             commit_with_retry(db)
 #             _write_activity("file_baseline_established", item_id, {
 #                 "path": path, 
 #                 "baseline_hash": current_hash
@@ -81,7 +81,7 @@
 #         # Scans suivants : comparer avec la baseline
 #         item.current_hash = current_hash
 #         item.last_scan = datetime.utcnow()
-#         db.commit()
+#         commit_with_retry(db)
 
 #         if current_hash != item.baseline_hash:
 #             _write_alert("file_modified", item_id, {
@@ -112,7 +112,7 @@
 #             item.folder_hash = None
 #             item.file_count = 0
 #             item.last_scan = datetime.utcnow()
-#             db.commit()
+#             commit_with_retry(db)
 #             return
 
 #         # Calculer l'empreinte du dossier
@@ -128,7 +128,7 @@
 #             item.folder_hash = current_hash
 #             item.file_count = file_count
 #             item.last_scan = datetime.utcnow()
-#             db.commit()
+#             commit_with_retry(db)
 #             _write_activity("folder_baseline_established", item_id, {
 #                 "path": path,
 #                 "baseline_hash": current_hash,
@@ -140,7 +140,7 @@
 #         previous_file_count = item.file_count
 #         item.file_count = file_count
 #         item.last_scan = datetime.utcnow()
-#         db.commit()
+#         commit_with_retry(db)
 
 #         if current_hash != item.folder_hash:
 #             _write_alert("folder_modified", item_id, {
@@ -153,7 +153,7 @@
             
 #             # Mettre à jour la baseline pour les prochains scans
 #             item.folder_hash = current_hash
-#             db.commit()
+#             commit_with_retry(db)
 #         else:
 #             _write_activity("folder_unchanged", item_id, {
 #                 "path": path, 
@@ -182,7 +182,7 @@
 #         if not hasattr(item, 'last_status') or not item.last_status:
 #             item.last_status = json.dumps(ip_status)
 #             item.last_scan = datetime.utcnow()
-#             db.commit()
+#             commit_with_retry(db)
 #             _write_activity("ip_baseline_established", item_id, {
 #                 "ip": ip,
 #                 "status": ip_status
@@ -193,7 +193,7 @@
 #         previous_status = json.loads(item.last_status)
 #         item.last_status = json.dumps(ip_status)
 #         item.last_scan = datetime.utcnow()
-#         db.commit()
+#         commit_with_retry(db)
 
 #         # Détection des changements
 #         if previous_status.get('is_active') != ip_status.get('is_active'):
@@ -213,7 +213,7 @@ import os, json, logging
 from datetime import datetime
 from sqlalchemy.orm import Session
 
-from app.db.session import SessionLocal
+from app.db.session import SessionLocal, commit_with_retry
 from app.db.models import MonitoredFile, MonitoredFolder, MonitoredIP
 from .hash_service import calculate_file_hash, calculate_folder_fingerprint, check_ip_activity
 
@@ -306,7 +306,7 @@ def scan_file(item_id: int, path: str):
             _write_alert("file_not_found", item_id, "HIGH", {"path": path})
             item.current_hash = None
             item.last_scan = datetime.utcnow()
-            db.commit()
+            commit_with_retry(db)
             return
 
         current_hash = calculate_file_hash(path)
@@ -318,16 +318,18 @@ def scan_file(item_id: int, path: str):
             item.baseline_hash = current_hash
             item.current_hash = current_hash
             item.last_scan = datetime.utcnow()
-            db.commit()
+            commit_with_retry(db)
             _write_activity("file_baseline_established", item_id, {
-                "path": path, "baseline_hash": current_hash
+                "scan_type": "file",
+                "path": path,
+                "baseline_hash": current_hash
             })
             return
 
         # Comparaison
         item.current_hash = current_hash
         item.last_scan = datetime.utcnow()
-        db.commit()
+        commit_with_retry(db)
 
         if current_hash != item.baseline_hash:
             _write_alert("file_modified", item_id, "CRITICAL", {
@@ -336,7 +338,7 @@ def scan_file(item_id: int, path: str):
                 "current_hash": current_hash
             })
         else:
-            _write_activity("file_unchanged", item_id, {"path": path})
+            _write_activity("file_unchanged", item_id, {"scan_type": "file", "path": path})
 
     except Exception as e:
         _write_alert("file_scan_error", item_id, "CRITICAL", {"path": path, "error": str(e)})
@@ -358,7 +360,7 @@ def scan_folder(item_id: int, path: str):
             item.folder_hash = None
             item.file_count = 0
             item.last_scan = datetime.utcnow()
-            db.commit()
+            commit_with_retry(db)
             return
 
         fingerprint = calculate_folder_fingerprint(path)
@@ -372,16 +374,19 @@ def scan_folder(item_id: int, path: str):
             item.folder_hash = current_hash
             item.file_count = file_count
             item.last_scan = datetime.utcnow()
-            db.commit()
+            commit_with_retry(db)
             _write_activity("folder_baseline_established", item_id, {
-                "path": path, "baseline_hash": current_hash, "file_count": file_count
+                "scan_type": "folder",
+                "path": path,
+                "baseline_hash": current_hash,
+                "file_count": file_count
             })
             return
 
         previous_file_count = item.file_count
         item.file_count = file_count
         item.last_scan = datetime.utcnow()
-        db.commit()
+        commit_with_retry(db)
 
         if current_hash != item.folder_hash:
             _write_alert("folder_modified", item_id, "HIGH", {
@@ -392,9 +397,13 @@ def scan_folder(item_id: int, path: str):
                 "current_file_count": file_count
             })
             item.folder_hash = current_hash
-            db.commit()
+            commit_with_retry(db)
         else:
-            _write_activity("folder_unchanged", item_id, {"path": path, "file_count": file_count})
+            _write_activity("folder_unchanged", item_id, {
+                "scan_type": "folder",
+                "path": path,
+                "file_count": file_count
+            })
 
     except Exception as e:
         _write_alert("folder_scan_error", item_id, "CRITICAL", {"path": path, "error": str(e)})
@@ -416,14 +425,18 @@ def scan_ip(item_id: int, ip: str, hostname: str = None):
         if not hasattr(item, 'last_status') or not item.last_status:
             item.last_status = json.dumps(ip_status)
             item.last_scan = datetime.utcnow()
-            db.commit()
-            _write_activity("ip_baseline_established", item_id, {"ip": ip, "status": ip_status})
+            commit_with_retry(db)
+            _write_activity("ip_baseline_established", item_id, {
+                "scan_type": "ip",
+                "ip": ip,
+                "status": ip_status
+            })
             return
 
         previous_status = json.loads(item.last_status)
         item.last_status = json.dumps(ip_status)
         item.last_scan = datetime.utcnow()
-        db.commit()
+        commit_with_retry(db)
 
         if previous_status.get('is_active') != ip_status.get('is_active'):
             _write_alert("ip_status_changed", item_id, "MEDIUM", {

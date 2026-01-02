@@ -42,3 +42,7 @@ class IPItemRead(IPMonitoredBase):
     id: int
     class Config:
         orm_mode = True
+
+
+class FrequencyUpdate(BaseModel):
+    frequency: Literal["minutely", "hourly", "daily", "weekly"]

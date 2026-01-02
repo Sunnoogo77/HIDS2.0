@@ -1,8 +1,9 @@
 # File: backend/app/api/monitoring.py
 from typing import List, Any
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
 from sqlalchemy.exc import IntegrityError
 from datetime import datetime
+from uuid import uuid4
 
 # Scheduler + scan tasks
 from app.core.scheduler import add_interval_job, remove_job, FREQ_SECONDS
@@ -12,14 +13,18 @@ from app.services.scan_tasks import scan_file, scan_folder, scan_ip
 from app.models.monitoring import (
     FileItemCreate, FileItemRead,
     IPItemCreate, IPItemRead,
-    FolderItemCreate, FolderItemRead
+    FolderItemCreate, FolderItemRead,
+    FrequencyUpdate
 )
 
 # Services (DB CRUD)
 from app.services.monitoring_service import (
     get_file_items, get_file_item, create_file_item, update_file_item, delete_file_item,
+    update_file_frequency,
     get_ip_items, get_ip_item, create_ip_item, update_ip_item, delete_ip_item,
-    get_folder_items, get_folder_item, create_folder_item, update_folder_item, delete_folder_item
+    update_ip_frequency,
+    get_folder_items, get_folder_item, create_folder_item, update_folder_item, delete_folder_item,
+    update_folder_frequency
 )
 
 # Auth
@@ -150,6 +155,15 @@ def edit_file_item(file_id: int, file_in: FileItemCreate):
     _schedule_file(item)
     return item
 
+@router.patch("/files/{file_id}/frequency", response_model=FileItemRead)
+def patch_file_frequency(file_id: int, payload: FrequencyUpdate):
+    item = get_file_item(file_id)
+    if not item:
+        raise HTTPException(status_code=404, detail="File not found")
+    item = update_file_frequency(file_id, payload.frequency)
+    _schedule_file(item)
+    return item
+
 @router.delete("/files/{file_id}", status_code=status.HTTP_204_NO_CONTENT)
 def remove_file_item(file_id: int):
     item = get_file_item(file_id)
@@ -190,6 +204,15 @@ def edit_ip_item(ip_id: int, ip_in: IPItemCreate):
     if not item:
         raise HTTPException(status_code=404, detail="IP not found")
     item = update_ip_item(ip_id, ip_in)
+    _schedule_ip(item)
+    return item
+
+@router.patch("/ips/{ip_id}/frequency", response_model=IPItemRead)
+def patch_ip_frequency(ip_id: int, payload: FrequencyUpdate):
+    item = get_ip_item(ip_id)
+    if not item:
+        raise HTTPException(status_code=404, detail="IP not found")
+    item = update_ip_frequency(ip_id, payload.frequency)
     _schedule_ip(item)
     return item
 
@@ -240,6 +263,15 @@ def edit_folder_item(folder_id: int, folder_in: FolderItemCreate):
     _schedule_folder(item)
     return item
 
+@router.patch("/folders/{folder_id}/frequency", response_model=FolderItemRead)
+def patch_folder_frequency(folder_id: int, payload: FrequencyUpdate):
+    item = get_folder_item(folder_id)
+    if not item:
+        raise HTTPException(status_code=404, detail="Folder not found")
+    item = update_folder_frequency(folder_id, payload.frequency)
+    _schedule_folder(item)
+    return item
+
 @router.delete("/folders/{folder_id}", status_code=status.HTTP_204_NO_CONTENT)
 def remove_folder_item(folder_id: int):
     item = get_folder_item(folder_id)
@@ -254,33 +286,60 @@ def remove_folder_item(folder_id: int):
 # -------------------------------------------------------------------------
 
 @router.post("/files/{file_id}/scan-now")
-def scan_now_file(file_id: int):
+def scan_now_file(file_id: int, background_tasks: BackgroundTasks):
     item = get_file_item(file_id)
     if not item:
         raise HTTPException(status_code=404, detail="File not found")
-    # on scanne même si status=paused (action manuelle)
-    scan_file(item_id=item["id"] if isinstance(item, dict) else item.id,
-                path=item["path"] if isinstance(item, dict) else item.path)
-    return {"executed": True, "type": "file_scan", "id": item["id"] if isinstance(item, dict) else item.id,
-            "ts": datetime.utcnow().isoformat()}
+    # on scanne meme si status=paused (action manuelle)
+    job_id = uuid4().hex
+    background_tasks.add_task(
+        scan_file,
+        item_id=item["id"] if isinstance(item, dict) else item.id,
+        path=item["path"] if isinstance(item, dict) else item.path,
+    )
+    return {
+        "queued": True,
+        "job_id": job_id,
+        "type": "file_scan",
+        "id": item["id"] if isinstance(item, dict) else item.id,
+        "ts": datetime.utcnow().isoformat(),
+    }
 
 @router.post("/folders/{folder_id}/scan-now")
-def scan_now_folder(folder_id: int):
+def scan_now_folder(folder_id: int, background_tasks: BackgroundTasks):
     item = get_folder_item(folder_id)
     if not item:
         raise HTTPException(status_code=404, detail="Folder not found")
-    scan_folder(item_id=item["id"] if isinstance(item, dict) else item.id,
-                path=item["path"] if isinstance(item, dict) else item.path)
-    return {"executed": True, "type": "folder_scan", "id": item["id"] if isinstance(item, dict) else item.id,
-            "ts": datetime.utcnow().isoformat()}
+    job_id = uuid4().hex
+    background_tasks.add_task(
+        scan_folder,
+        item_id=item["id"] if isinstance(item, dict) else item.id,
+        path=item["path"] if isinstance(item, dict) else item.path,
+    )
+    return {
+        "queued": True,
+        "job_id": job_id,
+        "type": "folder_scan",
+        "id": item["id"] if isinstance(item, dict) else item.id,
+        "ts": datetime.utcnow().isoformat(),
+    }
 
 @router.post("/ips/{ip_id}/scan-now")
-def scan_now_ip(ip_id: int):
+def scan_now_ip(ip_id: int, background_tasks: BackgroundTasks):
     item = get_ip_item(ip_id)
     if not item:
         raise HTTPException(status_code=404, detail="IP not found")
-    scan_ip(item_id=item["id"] if isinstance(item, dict) else item.id,
-            ip=item["ip"] if isinstance(item, dict) else item.ip,
-            hostname=(item.get("hostname") if isinstance(item, dict) else getattr(item, "hostname", None)))
-    return {"executed": True, "type": "ip_scan", "id": item["id"] if isinstance(item, dict) else item.id,
-            "ts": datetime.utcnow().isoformat()}
+    job_id = uuid4().hex
+    background_tasks.add_task(
+        scan_ip,
+        item_id=item["id"] if isinstance(item, dict) else item.id,
+        ip=item["ip"] if isinstance(item, dict) else item.ip,
+        hostname=(item.get("hostname") if isinstance(item, dict) else getattr(item, "hostname", None)),
+    )
+    return {
+        "queued": True,
+        "job_id": job_id,
+        "type": "ip_scan",
+        "id": item["id"] if isinstance(item, dict) else item.id,
+        "ts": datetime.utcnow().isoformat(),
+    }

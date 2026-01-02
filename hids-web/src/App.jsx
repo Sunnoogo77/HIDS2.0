@@ -73,6 +73,7 @@ import Surveillance from "./pages/Surveillance";
 import AlertsLogs from "./pages/AlertsLogs";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
+import Connections from "./pages/Connections";
 import Sidebar from "./components/Sidebar";
 import Topbar from "./components/Topbar";
 import { useAuth } from "./context/AuthProvider";
@@ -115,6 +116,7 @@ export default function App() {
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/surveillance" element={<Surveillance />} />
                   <Route path="/alerts" element={<AlertsLogs />} />
+                  <Route path="/connections" element={<Connections />} />
                   <Route path="/reports" element={<Reports />} />
                   <Route path="/settings" element={<Settings />} />
                 </Routes>

@@ -1,0 +1,54 @@
+# Env / secrets
+.env
+.env.*
+*.env
+
+# Certificates / keys
+certs/
+*.pem
+*.crt
+*.key
+*.pfx
+
+# Databases / data
+data/
+*.db
+*.sqlite
+*.sqlite3
+jobs.db
+hids.db
+
+# Logs / reports
+logs/
+*.log
+*.log.*
+reports/
+*.jsonl
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+env/
+.envrc
+
+# Node / frontend
+node_modules/
+dist/
+build/
+.vite/
+
+# OS / tooling
+.DS_Store
+Thumbs.db
+
+# Local snapshots / dumps
+*_snapshot*
+*snapshot*.txt
+*snapshot*.ps1
+*dump*

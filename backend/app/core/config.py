@@ -14,6 +14,10 @@ class Settings(BaseSettings):
         default="http://localhost:5173,http://localhost:3000,https://localhost:5173,https://localhost:3000",
         description="Comma-separated list of allowed CORS origins."
     )
+    FS_ALLOWLIST: str = Field(
+        default="",
+        description="Comma-separated list of absolute paths allowed for /api/fs/list."
+    )
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"

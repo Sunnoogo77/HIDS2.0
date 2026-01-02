@@ -5,7 +5,7 @@ from typing import List, Optional
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import NoResultFound, IntegrityError
 
-from app.db.session import SessionLocal
+from app.db.session import SessionLocal, commit_with_retry
 from app.db.models import MonitoredFile, MonitoredIP, MonitoredFolder
 from app.models.monitoring import FileItemCreate, IPItemCreate, FolderItemCreate
 
@@ -38,7 +38,7 @@ def create_file_item(file_in: FileItemCreate) -> MonitoredFile:
                         frequency=file_in.frequency,
                         status=file_in.status or "active")
         db.add(db_item)
-        db.commit()
+        commit_with_retry(db)
         db.refresh(db_item)
         db.close()
         return db_item
@@ -57,7 +57,20 @@ def update_file_item(file_id: int, file_in: FileItemCreate) -> MonitoredFile:
         raise NoResultFound(f"File item {file_id} not found")
     item.path = normalize_path(file_in.path)
     item.frequency = file_in.frequency
-    db.commit()
+    commit_with_retry(db)
+    db.refresh(item)
+    db.close()
+    return item
+
+
+def update_file_frequency(file_id: int, frequency: str) -> MonitoredFile:
+    db: Session = SessionLocal()
+    item = db.query(MonitoredFile).filter(MonitoredFile.id == file_id).first()
+    if not item:
+        db.close()
+        raise NoResultFound(f"File item {file_id} not found")
+    item.frequency = frequency
+    commit_with_retry(db)
     db.refresh(item)
     db.close()
     return item
@@ -68,7 +81,7 @@ def delete_file_item(file_id: int) -> None:
     item = db.query(MonitoredFile).filter(MonitoredFile.id == file_id).first()
     if item:
         db.delete(item)
-        db.commit()
+        commit_with_retry(db)
     db.close()
 
 
@@ -103,7 +116,7 @@ def create_ip_item(ip_in: IPItemCreate) -> MonitoredIP:
             status=ip_in.status or "active"
         )
         db.add(db_item)
-        db.commit()
+        commit_with_retry(db)
         db.refresh(db_item)
         db.close()
         return db_item
@@ -122,7 +135,20 @@ def update_ip_item(ip_id: int, ip_in: IPItemCreate) -> MonitoredIP:
     item.ip = ip_in.ip
     item.hostname = ip_in.hostname
     item.frequency = ip_in.frequency
-    db.commit()
+    commit_with_retry(db)
+    db.refresh(item)
+    db.close()
+    return item
+
+
+def update_ip_frequency(ip_id: int, frequency: str) -> MonitoredIP:
+    db: Session = SessionLocal()
+    item = db.query(MonitoredIP).filter(MonitoredIP.id == ip_id).first()
+    if not item:
+        db.close()
+        raise NoResultFound(f"IP item {ip_id} not found")
+    item.frequency = frequency
+    commit_with_retry(db)
     db.refresh(item)
     db.close()
     return item
@@ -133,7 +159,7 @@ def delete_ip_item(ip_id: int) -> None:
     item = db.query(MonitoredIP).filter(MonitoredIP.id == ip_id).first()
     if item:
         db.delete(item)
-        db.commit()
+        commit_with_retry(db)
     db.close()
 
 
@@ -164,7 +190,7 @@ def create_folder_item(folder_in: FolderItemCreate) -> MonitoredFolder:
         db_item = MonitoredFolder(path=normalize_path(folder_in.path),
                         frequency=folder_in.frequency,
                         status=folder_in.status or "active")
-        db.add(db_item); db.commit(); db.refresh(db_item)
+        db.add(db_item); commit_with_retry(db); db.refresh(db_item)
         db.close()
         return db_item
     except IntegrityError:
@@ -181,7 +207,20 @@ def update_folder_item(folder_id: int, folder_in: FolderItemCreate) -> Monitored
         raise NoResultFound(f"Folder item {folder_id} not found")
     item.path = normalize_path(folder_in.path) 
     item.frequency = folder_in.frequency
-    db.commit()
+    commit_with_retry(db)
+    db.refresh(item)
+    db.close()
+    return item
+
+
+def update_folder_frequency(folder_id: int, frequency: str) -> MonitoredFolder:
+    db: Session = SessionLocal()
+    item = db.query(MonitoredFolder).filter(MonitoredFolder.id == folder_id).first()
+    if not item:
+        db.close()
+        raise NoResultFound(f"Folder item {folder_id} not found")
+    item.frequency = frequency
+    commit_with_retry(db)
     db.refresh(item)
     db.close()
     return item
@@ -192,7 +231,7 @@ def delete_folder_item(folder_id: int) -> None:
     item = db.query(MonitoredFolder).filter(MonitoredFolder.id == folder_id).first()
     if item:
         db.delete(item)
-        db.commit()
+        commit_with_retry(db)
     db.close()
 
 
@@ -217,7 +256,7 @@ def update_file_status(file_id: int, status: str) -> MonitoredFile:
             item.current_hash = None
         # NOTE: 'paused' NE change rien aux hashes.
 
-        db.commit()
+        commit_with_retry(db)
         db.refresh(item)
         return item
     finally:
@@ -242,7 +281,7 @@ def update_folder_status(folder_id: int, status: str) -> MonitoredFolder:
             item.file_count = 0
         # 'paused' : on ne touche pas
 
-        db.commit()
+        commit_with_retry(db)
         db.refresh(item)
         return item
     finally:
@@ -270,7 +309,7 @@ def update_ip_status(ip_id: int, status: str) -> MonitoredIP:
         if normalized == "stopped":
             item.last_status = None
 
-        db.commit()
+        commit_with_retry(db)
         db.refresh(item)
         return item
     finally:
