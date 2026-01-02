@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     JWT_SECRET: str     = Field(..., env="JWT_SECRET")
 
     ALLOWED_ORIGINS: str = Field(
-        default="http://localhost:5173,http://localhost:3000,https://localhost:5173,https://localhost:3000",
+        default="http://localhost:5173,http://localhost:3000,https://localhost:5173,https://localhost:3000,http://localhost:8080,https://localhost:8080,",
         description="Comma-separated list of allowed CORS origins."
     )
     FS_ALLOWLIST: str = Field(
