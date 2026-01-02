@@ -472,7 +472,7 @@ def resume_all(kind: str):
             add_interval_job(tag, item.id, interval, scan_fn, item_id=item.id, path=item.path)
         else:
             add_interval_job("ip", item.id, interval, scan_fn,
-                             item_id=item.id, ip=item.ip, hostname=getattr(item, "hostname", None))
+                            item_id=item.id, ip=item.ip, hostname=getattr(item, "hostname", None))
         resumed_count += 1
 
     return {"ok": True, "resumed": resumed_count}

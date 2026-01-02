@@ -23,6 +23,7 @@ from app.api import network as network_routes
 from app.api import network_ws as network_ws_routes
 # Importation du nouveau routeur unifié pour les logs
 from app.api import logs
+from app.api import activity
 
 logger.info(f"Starting {settings.APP_NAME}... (version: {settings.VERSION})")
 
